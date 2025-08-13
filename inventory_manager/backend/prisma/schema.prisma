@@ -1,0 +1,78 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+enum SystemRole {
+  USER
+  ADMIN
+}
+
+enum InventoryRole {
+  OWNER
+  WRITER
+  READER
+}
+
+model User {
+  id            Int             @id @default(autoincrement())
+  email         String          @unique
+  name          String
+  password      String?
+  imageUrl      String?
+  role          SystemRole      @default(USER)
+  locale        String          @default("en")
+  theme         String          @default("light")
+  emailVerified DateTime?
+  createdAt     DateTime        @default(now())
+  updatedAt     DateTime        @updatedAt
+  accounts      OAuthAccount[]
+  refreshTokens RefreshToken[]
+  members       InventoryMember[]
+}
+
+model OAuthAccount {
+  id             Int    @id @default(autoincrement())
+  provider       String
+  providerUserId String
+  userId         Int
+  user           User   @relation(fields: [userId], references: [id])
+
+  @@unique([provider, providerUserId])
+}
+
+model RefreshToken {
+  id         Int      @id @default(autoincrement())
+  token      String   @unique
+  userId     Int
+  user       User     @relation(fields: [userId], references: [id])
+  ipAddress  String?
+  userAgent  String?
+  expiresAt  DateTime
+  revokedAt  DateTime?
+  createdAt  DateTime @default(now())
+}
+
+model Inventory {
+  id        Int               @id @default(autoincrement())
+  title     String
+  ownerId   Int
+  createdAt DateTime          @default(now())
+  updatedAt DateTime          @updatedAt
+  members   InventoryMember[]
+}
+
+model InventoryMember {
+  id          Int           @id @default(autoincrement())
+  inventoryId Int
+  userId      Int
+  role        InventoryRole
+  inventory   Inventory     @relation(fields: [inventoryId], references: [id])
+  user        User          @relation(fields: [userId], references: [id])
+
+  @@unique([inventoryId, userId])
+}
