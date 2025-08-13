@@ -1,8 +1,8 @@
 import { Request, Response } from "express";
-import { AuthService } from "../services/auth/AuthService.ts";
+import { AuthService } from "../services/authService/AuthService.ts";
 import { BaseController } from "./BaseController.ts";
 import { sign } from "jsonwebtoken";
-import { RefreshTokenService } from "../services/auth/RefreshTokenService.ts";
+import { RefreshTokenService } from "../services/authService/RefreshTokenService.ts";
 
 const authService = new AuthService();
 

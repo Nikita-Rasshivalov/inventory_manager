@@ -1,6 +1,6 @@
 import { Request, Response, NextFunction } from "express";
 import { InventoryRole } from "../models/types.ts";
-import { InventoryService } from "../services/user/InventoryService.ts";
+import { InventoryService } from "../services/userService/InventoryService.ts";
 
 const inventoryService = new InventoryService();
 
@@ -15,7 +15,6 @@ export function authorizeInventoryRole(...allowedRoles: InventoryRole[]) {
     if (!role || !allowedRoles.includes(role)) {
       return res.status(403).json({ message: "Forbidden" });
     }
-
     next();
   };
 }

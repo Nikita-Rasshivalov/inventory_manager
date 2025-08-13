@@ -31,3 +31,9 @@ export class User {
     return comparePasswords(password, this.password);
   }
 }
+
+export type AuthPayload = {
+  userId: number;
+  email: string;
+  role: SystemRole;
+};

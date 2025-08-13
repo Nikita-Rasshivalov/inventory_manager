@@ -1,18 +1,11 @@
 import { Request, Response, NextFunction } from "express";
-import { AuthService } from "../services/auth/AuthService.ts";
+import { AuthService } from "../services/authService/AuthService.ts";
+import { AuthPayload } from "../models/types.ts";
 
 const authService = new AuthService();
 
-interface AuthenticatedRequest extends Request {
-  user?: {
-    userId: number;
-    role: string;
-    [key: string]: any;
-  };
-}
-
 export async function authMiddleware(
-  req: AuthenticatedRequest,
+  req: Request,
   res: Response,
   next: NextFunction
 ) {
@@ -23,12 +16,14 @@ export async function authMiddleware(
     }
 
     const token = authHeader.split(" ")[1];
-    const payload = authService.getJwtPayload(token);
+    const payload = authService.getJwtPayload(token) as AuthPayload | null;
+
     if (!payload) {
       return res.status(401).json({ message: "Unauthorized" });
     }
 
-    req.user = payload;
+    (req as Request & { user?: AuthPayload }).user = payload;
+
     next();
   } catch (err) {
     console.error("Auth middleware error:", err);

@@ -2,7 +2,7 @@ import crypto from "crypto";
 import { addHours } from "date-fns";
 import { hashPassword, comparePasswords } from "../../utils/hash.ts";
 import { prisma } from "../../prisma/client.ts";
-import { JwtService } from "./JwtService.ts";
+import { JwtService } from "../authService/JwtService.ts";
 
 export class AuthService {
   private jwtService = JwtService.getInstance();

@@ -1,4 +1,4 @@
-import { prisma } from "../prisma/client.ts";
+import { prisma } from "../../prisma/client.ts";
 
 export class RefreshTokenService {
   async findValid(token: string, ipAddress?: string, userAgent?: string) {

@@ -1,11 +1,5 @@
 import jwt, { SignOptions } from "jsonwebtoken";
-import { SystemRole } from "../models/types.ts";
-
-export type JwtPayload = {
-  userId: number;
-  email: string;
-  role: SystemRole;
-};
+import { AuthPayload } from "../../models/types.ts";
 
 export class JwtService {
   private static instance: JwtService;
@@ -19,14 +13,14 @@ export class JwtService {
     return JwtService.instance;
   }
 
-  sign(payload: JwtPayload): string {
+  sign(payload: AuthPayload): string {
     const options: SignOptions = { expiresIn: this.expiresIn };
     return jwt.sign(payload, this.secret, options);
   }
 
-  verify(token: string): JwtPayload | null {
+  verify(token: string): AuthPayload | null {
     try {
-      return jwt.verify(token, this.secret) as JwtPayload;
+      return jwt.verify(token, this.secret) as AuthPayload;
     } catch {
       return null;
     }
