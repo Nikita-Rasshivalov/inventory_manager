@@ -1,0 +1,15 @@
+services:
+  backend:
+    build: ./backend
+    restart: always
+    ports:
+      - "3001:3001"
+
+  frontend:
+    build:
+      context: ./frontend            
+      dockerfile: Dockerfile
+    ports:
+      - "3000:80"
+    depends_on:
+      - backend
