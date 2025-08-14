@@ -1,15 +1,5 @@
+import { SystemRole } from "@prisma/client";
 import { comparePasswords } from "../utils/hash.ts";
-
-export enum SystemRole {
-  USER = "USER",
-  ADMIN = "ADMIN",
-}
-
-export enum InventoryRole {
-  OWNER = "OWNER",
-  WRITER = "WRITER",
-  READER = "READER",
-}
 
 export class User {
   id: number;

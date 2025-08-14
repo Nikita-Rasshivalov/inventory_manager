@@ -12,6 +12,7 @@ export class AuthService {
     if (existing) throw new Error("Email already registered");
 
     const hashedPassword = await hashPassword(password);
+
     const user = await prisma.user.create({
       data: { name, email, password: hashedPassword },
     });
@@ -26,7 +27,7 @@ export class AuthService {
     const match = await comparePasswords(password, user.password!);
     if (!match) throw new Error("Invalid credentials");
 
-    const accessToken = this.jwtService.sign({
+    const accessToken = this.jwtService.signAccess({
       userId: user.id,
       email: user.email,
       role: user.role,
@@ -69,7 +70,7 @@ export class AuthService {
     const user = await prisma.user.findUnique({ where: { id: stored.userId } });
     if (!user) throw new Error("User not found");
 
-    const accessToken = this.jwtService.sign({
+    const accessToken = this.jwtService.signAccess({
       userId: user.id,
       email: user.email,
       role: user.role,
@@ -79,7 +80,7 @@ export class AuthService {
   }
 
   getJwtPayload(token: string) {
-    return this.jwtService.verify(token);
+    return this.jwtService.verifyAccess(token);
   }
 
   async getUserById(id: number) {

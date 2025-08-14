@@ -44,13 +44,14 @@ export class OAuthService {
     const user = await prisma.user.findUnique({ where: { id: userId } });
     if (!user) throw new Error("User not found");
 
-    const accessToken = this.jwt.sign({
+    const accessToken = this.jwt.signAccess({
       userId: user.id,
       email: user.email,
       role: user.role,
     });
 
     const refreshToken = crypto.randomBytes(64).toString("hex");
+
     await prisma.refreshToken.create({
       data: {
         token: refreshToken,

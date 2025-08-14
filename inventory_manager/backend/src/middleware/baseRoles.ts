@@ -1,5 +1,5 @@
+import { SystemRole } from "@prisma/client";
 import { Request, Response, NextFunction } from "express";
-import { SystemRole } from "../models/types.ts";
 
 export function authorizeRoles(...allowedRoles: SystemRole[]) {
   return (req: Request, res: Response, next: NextFunction) => {

@@ -2,7 +2,11 @@ import { prisma } from "../../prisma/client.ts";
 
 export class RefreshTokenService {
   async findValid(token: string, ipAddress?: string, userAgent?: string) {
-    const stored = await prisma.refreshToken.findUnique({ where: { token } });
+    const stored = await prisma.refreshToken.findUnique({
+      where: { token },
+      include: { user: true },
+    });
+
     if (!stored || stored.revokedAt || stored.expiresAt < new Date())
       return null;
 

@@ -1,14 +1,13 @@
+import { InventoryRole } from "@prisma/client";
 import { prisma } from "../../prisma/client.ts";
-import { InventoryRole } from "../../models/types.ts";
-
 export class InventoryService {
   async getUserRole(
     userId: number,
-    inventoryId: string
+    inventoryId: number
   ): Promise<InventoryRole | null> {
-    const record = await prisma.inventoryUser.findUnique({
+    const record = await prisma.inventoryMember.findUnique({
       where: {
-        userId_inventoryId: { userId, inventoryId },
+        inventoryId_userId: { inventoryId, userId },
       },
       select: {
         role: true,
