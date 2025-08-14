@@ -36,4 +36,11 @@ export const AuthService = {
   getCurrentUser: async (): Promise<User> => {
     return AuthApi.getCurrentUser();
   },
+  loginWithGoogle: () => {
+    AuthApi.loginWithGoogle();
+  },
+
+  loginWithGitHub: () => {
+    AuthApi.loginWithGitHub();
+  },
 };

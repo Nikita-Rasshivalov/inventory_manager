@@ -4,6 +4,8 @@ import { useNavigate, Link } from "react-router-dom";
 import Button from "../components/common/Button";
 import Input from "../components/common/Input";
 import { isValidEmail } from "../utils/validators";
+import { FaGoogle, FaGithub } from "react-icons/fa";
+import { AuthService } from "../services/authService";
 
 const RegisterPage = () => {
   const [email, setEmail] = useState("");
@@ -28,7 +30,7 @@ const RegisterPage = () => {
       await register(email, name, password);
       navigate("/dashboard");
     } catch (err: any) {
-      if (err.response && err.response.data && err.response.data.error) {
+      if (err.response?.data?.error) {
         setError(err.response.data.error);
       } else {
         setError(err.message || "Registration failed");
@@ -77,6 +79,28 @@ const RegisterPage = () => {
             Register
           </Button>
         </form>
+
+        <div className="mt-6">
+          <p className="text-center text-gray-600 mb-4">Or sign up with</p>
+          <div className="flex gap-4 justify-center">
+            <button
+              type="button"
+              onClick={AuthService.loginWithGoogle}
+              className="flex items-center gap-2 px-4 py-2 bg-red-500 text-white rounded hover:bg-red-600 transition"
+            >
+              <FaGoogle />
+              Google
+            </button>
+            <button
+              type="button"
+              onClick={AuthService.loginWithGitHub}
+              className="flex items-center gap-2 px-4 py-2 bg-gray-800 text-white rounded hover:bg-gray-900 transition"
+            >
+              <FaGithub />
+              GitHub
+            </button>
+          </div>
+        </div>
 
         <p className="mt-6 text-center text-gray-600">
           Already have an account?{" "}
