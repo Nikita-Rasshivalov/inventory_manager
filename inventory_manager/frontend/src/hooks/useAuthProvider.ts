@@ -55,7 +55,6 @@ export const useAuthProvider = () => {
 
   const login = useCallback(
     async (email: string, password: string) => {
-      setLoading(true);
       try {
         const { accessToken, refreshToken, user } = await AuthApi.login({
           email,
@@ -69,8 +68,6 @@ export const useAuthProvider = () => {
         const message =
           err?.response?.data?.error || err?.message || "Login failed";
         throw new Error(message);
-      } finally {
-        setLoading(false);
       }
     },
     [navigate]

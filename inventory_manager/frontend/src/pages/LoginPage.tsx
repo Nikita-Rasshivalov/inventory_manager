@@ -9,15 +9,19 @@ const LoginPage = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
-  const { login, loading } = useAuth();
+  const [loading, setLoading] = useState(false);
+  const { login } = useAuth();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError("");
+    setLoading(true);
     try {
       await login(email, password);
     } catch (err: any) {
       setError(err.response?.data?.error || err.message || "Login failed");
+    } finally {
+      setLoading(false);
     }
   };
 
