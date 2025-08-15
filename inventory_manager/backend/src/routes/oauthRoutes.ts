@@ -19,7 +19,14 @@ router.get(
   }),
   (req: any, res) => {
     const { accessToken, refreshToken, user } = req.user;
-    res.json({ accessToken, refreshToken, user });
+    const frontendUrl = process.env.FRONTEND_URL;
+    const redirectUrl =
+      `${frontendUrl}/auth/success` +
+      `?accessToken=${accessToken}` +
+      `&refreshToken=${refreshToken}` +
+      `&name=${encodeURIComponent(user.name)}`;
+
+    res.redirect(redirectUrl);
   }
 );
 
@@ -36,7 +43,14 @@ router.get(
   }),
   (req: any, res) => {
     const { accessToken, refreshToken, user } = req.user;
-    res.json({ accessToken, refreshToken, user });
+    const frontendUrl = process.env.FRONTEND_URL;
+    const redirectUrl =
+      `${frontendUrl}/auth/success` +
+      `?accessToken=${accessToken}` +
+      `&refreshToken=${refreshToken}` +
+      `&name=${encodeURIComponent(user.name)}`;
+
+    res.redirect(redirectUrl);
   }
 );
 

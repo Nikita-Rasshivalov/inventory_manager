@@ -18,7 +18,7 @@ app.use(express.json());
 
 app.use("/api/auth", authRoutes);
 app.use("/api/auth", oauthRoutes);
-
-app.listen(3001, "0.0.0.0", () => {
-  console.log("Server started ", process.env.PORT);
+const PORT = process.env.PORT ? Number(process.env.PORT) : 3001;
+app.listen(PORT, "0.0.0.0", () => {
+  console.log("Server started ", PORT);
 });

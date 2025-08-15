@@ -2,7 +2,6 @@ import { Request, Response } from "express";
 import { AuthService } from "../services/authService/AuthService.ts";
 import { BaseController } from "./BaseController.ts";
 import { RefreshTokenService } from "../services/authService/RefreshTokenService.ts";
-import { sendErrorResponse } from "../utils/errorHandler.ts";
 import { JwtService } from "../services/authService/JwtService.ts";
 
 const authService = new AuthService();
@@ -11,40 +10,31 @@ const jwtService = JwtService.getInstance();
 export class AuthController extends BaseController {
   refreshTokenService = new RefreshTokenService();
 
-  login = async (req: Request, res: Response) => {
-    try {
+  login = (req: Request, res: Response) =>
+    this.handle(res, async () => {
       const { email, password } = req.body;
-      const result = await authService.login(email, password);
-      res.json(result);
-    } catch (error) {
-      sendErrorResponse(res, error, 400);
-    }
-  };
+      return await authService.login(email, password);
+    });
 
-  register = async (req: Request, res: Response) => {
-    try {
-      const { name, email, password } = req.body;
-      const result = await authService.register(name, email, password);
-      res.status(201).json(result);
-    } catch (error) {
-      sendErrorResponse(res, error, 400);
-    }
-  };
+  register = (req: Request, res: Response) =>
+    this.handle(
+      res,
+      async () => {
+        const { name, email, password } = req.body;
+        return await authService.register(name, email, password);
+      },
+      201
+    );
 
-  logout = async (req: Request, res: Response) => {
-    try {
+  logout = (req: Request, res: Response) =>
+    this.handle(res, async () => {
       const { refreshToken } = req.body;
       if (!refreshToken) throw new Error("No refresh token provided");
+      return await authService.logout(refreshToken);
+    });
 
-      const result = await authService.logout(refreshToken);
-      res.json(result);
-    } catch (error) {
-      sendErrorResponse(res, error, 400);
-    }
-  };
-
-  refresh = async (req: Request, res: Response) => {
-    try {
+  refresh = (req: Request, res: Response) =>
+    this.handle(res, async () => {
       const { token, ipAddress, userAgent } = req.body;
       if (!token) throw new Error("No token provided");
 
@@ -60,23 +50,18 @@ export class AuthController extends BaseController {
         email: stored.user.email,
         role: stored.user.role,
       });
-      res.json({ accessToken });
-    } catch (error) {
-      sendErrorResponse(res, error, 401);
-    }
-  };
 
-  me = async (req: Request, res: Response) => {
-    try {
+      return { accessToken };
+    });
+
+  me = (req: Request, res: Response) =>
+    this.handle(res, async () => {
       const user = (req as any).user;
       if (!user) throw new Error("User not authenticated");
 
       const dbUser = await authService.getUserById(user.userId);
       if (!dbUser) throw new Error("User not found");
 
-      res.json({ user: dbUser });
-    } catch (error) {
-      sendErrorResponse(res, error, 400);
-    }
-  };
+      return { user: dbUser };
+    });
 }
