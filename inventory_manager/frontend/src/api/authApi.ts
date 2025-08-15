@@ -5,6 +5,7 @@ export interface AuthResponse {
   accessToken: string;
   refreshToken: string;
   user: User;
+  error?: string;
 }
 
 export class AuthApi {
@@ -49,10 +50,10 @@ export class AuthApi {
   }
 
   static loginWithGoogle() {
-    window.location.href = `${import.meta.env.VITE_API_URL}/oauth/google`;
+    window.location.href = `${import.meta.env.VITE_API_URL}/auth/google`;
   }
 
   static loginWithGitHub() {
-    window.location.href = `${import.meta.env.VITE_API_URL}/oauth/github`;
+    window.location.href = `${import.meta.env.VITE_API_URL}/auth/github`;
   }
 }

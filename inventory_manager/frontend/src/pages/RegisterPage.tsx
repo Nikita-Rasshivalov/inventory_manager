@@ -1,11 +1,10 @@
 import React, { useState } from "react";
 import { useAuth } from "../hooks/useAuth";
-import { useNavigate, Link } from "react-router-dom";
+import { Link } from "react-router-dom";
 import Button from "../components/common/Button";
 import Input from "../components/common/Input";
 import { isValidEmail } from "../utils/validators";
-import { FaGoogle, FaGithub } from "react-icons/fa";
-import { AuthService } from "../services/authService";
+import Socials from "../components/common/Socials";
 
 const RegisterPage = () => {
   const [email, setEmail] = useState("");
@@ -13,7 +12,6 @@ const RegisterPage = () => {
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const { register } = useAuth();
-  const navigate = useNavigate();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -25,16 +23,12 @@ const RegisterPage = () => {
       );
       return;
     }
-
     try {
-      await register(email, name, password);
-      navigate("/dashboard");
+      await register(name, email, password);
     } catch (err: any) {
-      if (err.response?.data?.error) {
-        setError(err.response.data.error);
-      } else {
-        setError(err.message || "Registration failed");
-      }
+      setError(
+        err.response?.data?.error || err.message || "Registration failed"
+      );
     }
   };
 
@@ -82,24 +76,7 @@ const RegisterPage = () => {
 
         <div className="mt-6">
           <p className="text-center text-gray-600 mb-4">Or sign up with</p>
-          <div className="flex gap-4 justify-center">
-            <button
-              type="button"
-              onClick={AuthService.loginWithGoogle}
-              className="flex items-center gap-2 px-4 py-2 bg-red-500 text-white rounded hover:bg-red-600 transition"
-            >
-              <FaGoogle />
-              Google
-            </button>
-            <button
-              type="button"
-              onClick={AuthService.loginWithGitHub}
-              className="flex items-center gap-2 px-4 py-2 bg-gray-800 text-white rounded hover:bg-gray-900 transition"
-            >
-              <FaGithub />
-              GitHub
-            </button>
-          </div>
+          <Socials />
         </div>
 
         <p className="mt-6 text-center text-gray-600">

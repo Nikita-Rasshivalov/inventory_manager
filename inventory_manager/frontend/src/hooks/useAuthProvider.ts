@@ -40,10 +40,7 @@ export const useAuthProvider = () => {
           currentAccess = res.accessToken;
           saveTokens(currentAccess, refresh);
         }
-
         const currentUser = await AuthApi.getCurrentUser();
-
-        console.log("render");
         setToken(currentAccess);
         setUser(currentUser);
       } catch {
@@ -68,6 +65,10 @@ export const useAuthProvider = () => {
         setToken(accessToken);
         setUser(user);
         navigate("/dashboard");
+      } catch (err: any) {
+        const message =
+          err?.response?.data?.error || err?.message || "Login failed";
+        throw new Error(message);
       } finally {
         setLoading(false);
       }
@@ -113,7 +114,7 @@ export const useAuthProvider = () => {
       navigate("/dashboard");
     },
     [setAuth, navigate]
-  );
+  ); //this!!!!
 
   return {
     token,
