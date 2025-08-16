@@ -15,13 +15,13 @@ router.get(
   "/google/callback",
   passport.authenticate("google", {
     session: false,
-    failureRedirect: "/api/auth/failure",
+    failureRedirect: process.env.FRONTEND_URL + "/login",
   }),
   (req: any, res) => {
     const { accessToken, refreshToken, user } = req.user;
     const frontendUrl = process.env.FRONTEND_URL;
     const redirectUrl =
-      `${frontendUrl}/auth/success` +
+      `${frontendUrl}/success` +
       `?accessToken=${accessToken}` +
       `&refreshToken=${refreshToken}` +
       `&name=${encodeURIComponent(user.name)}`;
@@ -39,13 +39,13 @@ router.get(
   "/github/callback",
   passport.authenticate("github", {
     session: false,
-    failureRedirect: "/api/auth/failure",
+    failureRedirect: process.env.FRONTEND_URL + "/login",
   }),
   (req: any, res) => {
     const { accessToken, refreshToken, user } = req.user;
     const frontendUrl = process.env.FRONTEND_URL;
     const redirectUrl =
-      `${frontendUrl}/auth/success` +
+      `${frontendUrl}/success` +
       `?accessToken=${accessToken}` +
       `&refreshToken=${refreshToken}` +
       `&name=${encodeURIComponent(user.name)}`;
@@ -53,9 +53,4 @@ router.get(
     res.redirect(redirectUrl);
   }
 );
-
-router.get("/failure", (_req, res) => {
-  res.status(401).json({ message: "OAuth login failed" });
-});
-
 export default router;

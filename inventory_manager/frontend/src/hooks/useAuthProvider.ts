@@ -2,56 +2,53 @@ import { useCallback, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { AuthApi } from "../api/authApi";
 import { User } from "../models/models";
-import {
-  getAccessToken,
-  getRefreshToken,
-  saveTokens,
-} from "../utils/tokenUtils";
 import { logout as serviceLogout } from "../services/authActions";
+import { useAuthTokens } from "./useAuthTokens";
 
 export const useAuthProvider = () => {
   const navigate = useNavigate();
+  const [initialized, setInitialized] = useState(false);
+  const { token, setTokens, clearAuth, refreshToken } = useAuthTokens();
 
-  const [token, setToken] = useState<string | null>(getAccessToken());
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
 
   const logout = useCallback(() => {
-    setToken(null);
+    clearAuth();
     setUser(null);
     serviceLogout();
     navigate("/login");
-  }, [navigate]);
+  }, [clearAuth, navigate]);
 
   useEffect(() => {
-    const initAuth = async () => {
-      const access = getAccessToken();
-      const refresh = getRefreshToken();
+    if (initialized) return;
 
-      if (!refresh) {
+    const initAuth = async () => {
+      if (!refreshToken) {
         setLoading(false);
+        setInitialized(true);
         return;
       }
 
       try {
-        let currentAccess = access;
+        let currentAccess = token;
         if (!currentAccess) {
           const res = await AuthApi.refresh();
           currentAccess = res.accessToken;
-          saveTokens(currentAccess, refresh);
+          setTokens(currentAccess, refreshToken);
         }
         const currentUser = await AuthApi.getCurrentUser();
-        setToken(currentAccess);
         setUser(currentUser);
       } catch {
         logout();
       } finally {
         setLoading(false);
+        setInitialized(true);
       }
     };
 
     initAuth();
-  }, [logout]);
+  }, [initialized, token, refreshToken, logout, setTokens]);
 
   const login = useCallback(
     async (email: string, password: string) => {
@@ -60,8 +57,7 @@ export const useAuthProvider = () => {
           email,
           password,
         });
-        saveTokens(accessToken, refreshToken);
-        setToken(accessToken);
+        setTokens(accessToken, refreshToken);
         setUser(user);
         navigate("/dashboard");
       } catch (err: any) {
@@ -70,7 +66,7 @@ export const useAuthProvider = () => {
         throw new Error(message);
       }
     },
-    [navigate]
+    [navigate, setTokens]
   );
 
   const register = useCallback(
@@ -82,36 +78,25 @@ export const useAuthProvider = () => {
   );
 
   const refresh = useCallback(async () => {
-    const refreshToken = getRefreshToken();
     if (!refreshToken) {
       logout();
       return;
     }
     try {
       const res = await AuthApi.refresh();
-      saveTokens(res.accessToken, refreshToken);
-      setToken(res.accessToken);
+      setTokens(res.accessToken, refreshToken);
     } catch {
       logout();
     }
-  }, [logout]);
+  }, [refreshToken, logout, setTokens]);
 
   const setAuth = useCallback(
     (accessToken: string, refreshToken: string, user: User) => {
-      saveTokens(accessToken, refreshToken);
-      setToken(accessToken);
+      setTokens(accessToken, refreshToken);
       setUser(user);
     },
-    []
+    [setTokens]
   );
-
-  const loginWithProvider = useCallback(
-    (accessToken: string, refreshToken: string, user: User) => {
-      setAuth(accessToken, refreshToken, user);
-      navigate("/dashboard");
-    },
-    [setAuth, navigate]
-  ); //this!!!!
 
   return {
     token,
@@ -122,6 +107,5 @@ export const useAuthProvider = () => {
     logout,
     refresh,
     setAuth,
-    loginWithProvider,
   };
 };

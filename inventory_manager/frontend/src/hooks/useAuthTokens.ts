@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useCallback } from "react";
 import {
   getAccessToken,
   getRefreshToken,
@@ -8,16 +8,24 @@ import {
 
 export const useAuthTokens = () => {
   const [token, setToken] = useState<string | null>(getAccessToken());
+  const [refreshToken, setRefreshToken] = useState<string | null>(
+    getRefreshToken()
+  );
 
-  const setAuth = (accessToken: string, refreshToken: string) => {
-    saveTokens(accessToken, refreshToken);
-    setToken(accessToken);
-  };
+  const setTokens = useCallback(
+    (accessToken: string, newRefreshToken: string) => {
+      saveTokens(accessToken, newRefreshToken);
+      setToken(accessToken);
+      setRefreshToken(newRefreshToken);
+    },
+    []
+  );
 
-  const clearAuth = () => {
+  const clearAuth = useCallback(() => {
     clearAuthData();
     setToken(null);
-  };
+    setRefreshToken(null);
+  }, []);
 
-  return { token, setAuth, clearAuth, refreshToken: getRefreshToken() };
+  return { token, setTokens, clearAuth, refreshToken };
 };
