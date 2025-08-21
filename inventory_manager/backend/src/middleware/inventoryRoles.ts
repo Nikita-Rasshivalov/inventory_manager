@@ -1,6 +1,7 @@
 import { Request, Response, NextFunction } from "express";
-import { InventoryService } from "../services/userService/InventoryService.ts";
+
 import { InventoryRole } from "@prisma/client";
+import { InventoryService } from "../services/InventoryService.ts";
 
 const inventoryService = new InventoryService();
 
