@@ -1,16 +1,21 @@
 import { useState } from "react";
+import { toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 import Socials from "../components/common/Socials";
 import RegisterForm from "../components/Froms/RegisterForm";
 import LoginForm from "../components/Froms/LoginForm";
 import Button from "../components/common/Button";
+
 const AuthPage = () => {
   const [mode, setMode] = useState<"login" | "register">("login");
-  const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
 
   const handleModeChange = (newMode: "login" | "register") => {
     setMode(newMode);
-    setError("");
+  };
+  const handleError = (message: string) => {
+    if (!message) return;
+    toast.error(message);
   };
 
   return (
@@ -32,21 +37,15 @@ const AuthPage = () => {
           </Button>
         </div>
 
-        {error && (
-          <div className="mb-4 text-red-600 bg-red-100 border border-red-400 px-4 py-2 rounded">
-            {error}
-          </div>
-        )}
-
         {mode === "login" ? (
           <LoginForm
-            onError={setError}
+            onError={handleError}
             loading={loading}
             setLoading={setLoading}
           />
         ) : (
           <RegisterForm
-            onError={setError}
+            onError={handleError}
             loading={loading}
             setLoading={setLoading}
           />

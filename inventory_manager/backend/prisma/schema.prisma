@@ -68,6 +68,8 @@ model Inventory {
   owner     User              @relation(fields: [ownerId], references: [id])
   createdAt DateTime          @default(now())
   updatedAt DateTime          @updatedAt
+  deleted   Boolean           @default(false)
+  deletedAt DateTime?
   members   InventoryMember[]
   fields    Field[]
   items     Item[]
@@ -78,6 +80,8 @@ model InventoryMember {
   inventoryId Int
   userId      Int
   role        InventoryRole
+  deleted     Boolean       @default(false)
+  deletedAt   DateTime?
   inventory   Inventory     @relation(fields: [inventoryId], references: [id])
   user        User          @relation(fields: [userId], references: [id])
 
@@ -91,6 +95,8 @@ model Field {
   type         String
   order        Int
   showInTable  Boolean           @default(false)
+  deleted      Boolean           @default(false)
+  deletedAt    DateTime?
   inventory    Inventory         @relation(fields: [inventoryId], references: [id])
   values       ItemFieldValue[]
 }
@@ -103,6 +109,8 @@ model Item {
   version       Int               @default(0)
   createdAt     DateTime          @default(now())
   updatedAt     DateTime          @updatedAt
+  deleted       Boolean           @default(false)
+  deletedAt     DateTime?
   inventory     Inventory         @relation(fields: [inventoryId], references: [id])
   createdBy     User              @relation(fields: [createdById], references: [id])
   fieldValues   ItemFieldValue[]
@@ -113,12 +121,14 @@ model Item {
 }
 
 model ItemFieldValue {
-  id       Int     @id @default(autoincrement())
-  itemId   Int
-  fieldId  Int
-  value    String?
-  item     Item    @relation(fields: [itemId], references: [id])
-  field    Field   @relation(fields: [fieldId], references: [id])
+  id        Int     @id @default(autoincrement())
+  itemId    Int
+  fieldId   Int
+  value     String?
+  deleted   Boolean @default(false)
+  deletedAt DateTime?
+  item      Item    @relation(fields: [itemId], references: [id])
+  field     Field   @relation(fields: [fieldId], references: [id])
 }
 
 model Comment {
@@ -127,6 +137,8 @@ model Comment {
   userId    Int
   content   String
   createdAt DateTime @default(now())
+  deleted   Boolean  @default(false)
+  deletedAt DateTime?
   item      Item     @relation(fields: [itemId], references: [id])
   user      User     @relation(fields: [userId], references: [id])
 }
@@ -136,6 +148,8 @@ model Like {
   itemId    Int
   userId    Int
   createdAt DateTime @default(now())
+  deleted   Boolean  @default(false)
+  deletedAt DateTime?
   item      Item     @relation(fields: [itemId], references: [id])
   user      User     @relation(fields: [userId], references: [id])
 

@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { useAuth } from "../../hooks/useAuth";
 import Input from "../common/Input";
 import Button from "../common/Button";
-import { isEmpty } from "../../utils/validators";
+import { isEmpty, isNullOrEmpty } from "../../utils/validators";
 
 interface LoginFormProps {
   onError: (msg: string) => void;
@@ -23,7 +23,7 @@ const LoginForm: React.FC<LoginFormProps> = ({
     e.preventDefault();
     onError("");
 
-    if (isEmpty(email) || isEmpty(password)) {
+    if (isNullOrEmpty(email) || isEmpty(password)) {
       onError("Please fill in both email and password.");
       return;
     }

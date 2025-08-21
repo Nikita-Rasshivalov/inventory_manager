@@ -25,14 +25,14 @@ export class InventoryController extends BaseController {
   getById = (req: Request, res: Response) =>
     this.handle(res, async () => {
       const user = (req as any).user;
-      const id = parseInt(req.params.id);
+      const id = parseInt(req.params.inventoryId);
       return await inventoryService.getById(id, user.userId);
     });
 
   update = (req: Request, res: Response) =>
     this.handle(res, async () => {
       const user = (req as any).user;
-      const id = parseInt(req.params.id);
+      const id = parseInt(req.params.inventoryId);
       const data = req.body;
       return await inventoryService.update(id, data, user.userId);
     });
@@ -40,7 +40,7 @@ export class InventoryController extends BaseController {
   delete = (req: Request, res: Response) =>
     this.handle(res, async () => {
       const user = (req as any).user;
-      const id = parseInt(req.params.id);
-      return await inventoryService.delete(id, user.userId);
+      const ids: number[] = req.body.ids;
+      return await inventoryService.delete(ids, user.userId);
     });
 }

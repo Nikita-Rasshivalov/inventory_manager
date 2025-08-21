@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { useAuth } from "../../hooks/useAuth";
-import { isValidEmail } from "../../utils/validators";
+import { isNullOrEmpty, isValidEmail } from "../../utils/validators";
 import Button from "../common/Button";
 import Input from "../common/Input";
 
@@ -24,6 +24,12 @@ const RegisterForm: React.FC<RegisterFormProps> = ({
     e.preventDefault();
     onError("");
     setLoading(true);
+
+    if (isNullOrEmpty(name)) {
+      onError("Please fill name.");
+      setLoading(false);
+      return;
+    }
 
     if (!isValidEmail(email)) {
       onError("Email must contain '@' and a domain like user@example.com");
