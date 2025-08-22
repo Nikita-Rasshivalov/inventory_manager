@@ -29,14 +29,6 @@ export type AuthPayload = {
   role: SystemRole;
 };
 
-export interface InventoryMember {
-  id: number;
-  inventoryId: number;
-  userId: number;
-  role: InventoryRole;
-  user?: User;
-}
-
 export interface Field {
   id: number;
   inventoryId: number;
@@ -95,6 +87,14 @@ export interface Inventory {
   members: InventoryMember[];
   fields: Field[];
   items: Item[];
+}
+
+export interface InventoryMember {
+  id: number;
+  inventoryId: number;
+  userId: number;
+  role: InventoryRole;
+  user?: User;
 }
 
 export type InventoryPayload = {

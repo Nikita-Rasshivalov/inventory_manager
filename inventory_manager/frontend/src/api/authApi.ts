@@ -7,6 +7,9 @@ export interface AuthResponse {
   user: User;
   error?: string;
 }
+type GetCurrentUserResponse = {
+  user: User;
+};
 
 export class AuthApi {
   static async register(data: {
@@ -45,8 +48,10 @@ export class AuthApi {
   }
 
   static async getCurrentUser(): Promise<User> {
-    const response = await axiosInstance.get<User>("/auth/me");
-    return response.data;
+    const response = await axiosInstance.get<GetCurrentUserResponse>(
+      "/auth/me"
+    );
+    return response.data.user;
   }
 
   static loginWithGoogle() {

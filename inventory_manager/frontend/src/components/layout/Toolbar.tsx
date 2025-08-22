@@ -1,35 +1,32 @@
 import React from "react";
 import Button from "../common/Button";
+import Input from "../common/Input";
 
 interface ToolbarProps {
   selectedCount: number;
   totalCount: number;
-  onSelectAll: (checked: boolean) => void;
   onCreate: () => void;
   onDelete: () => void;
+  tabs?: string[];
+  activeTab?: string;
+  onChangeTab?: (tab: string) => void;
+  filterText: string;
+  onFilterChange: (value: string) => void;
 }
-
 const Toolbar: React.FC<ToolbarProps> = ({
   selectedCount,
-  totalCount,
-  onSelectAll,
   onCreate,
   onDelete,
+  tabs = [],
+  activeTab,
+  onChangeTab,
+  filterText,
+  onFilterChange,
 }) => {
-  const allSelected = selectedCount === totalCount && totalCount > 0;
   const disabledDelete = selectedCount === 0;
 
   return (
     <div className="flex flex-col sm:flex-row items-center sm:space-x-3 space-y-2 sm:space-y-0 mb-4 p-3 bg-gray-50 rounded-lg shadow-sm border border-gray-200">
-      <label className="flex items-center space-x-2">
-        <input
-          type="checkbox"
-          checked={allSelected}
-          onChange={(e) => onSelectAll(e.target.checked)}
-          className="w-8 h-8 text-blue-600 rounded"
-        />
-      </label>
-
       <div className="flex space-x-2">
         <Button
           onClick={onCreate}
@@ -55,7 +52,7 @@ const Toolbar: React.FC<ToolbarProps> = ({
         <Button
           disabled={disabledDelete}
           onClick={onDelete}
-          className=" flex items-center justify-center bg-gray-600 hover:bg-gray-700 disabled:bg-gray-300 text-white rounded-lg"
+          className="flex items-center justify-center bg-gray-600 hover:bg-gray-700 disabled:bg-gray-300 text-white rounded-lg"
           aria-label="Delete"
         >
           <svg
@@ -74,8 +71,29 @@ const Toolbar: React.FC<ToolbarProps> = ({
         </Button>
       </div>
 
-      <div className="ml-auto text-sm font-medium text-gray-600 select-none">
-        {selectedCount} selected
+      {tabs.length > 0 && onChangeTab && (
+        <div className="flex space-x-2 ml-4">
+          {tabs.map((tab) => (
+            <Button
+              key={tab}
+              onClick={() => onChangeTab(tab)}
+              active={activeTab === tab}
+              className="px-3 py-1 rounded-lg font-medium transition-all duration-200"
+            >
+              {tab}
+            </Button>
+          ))}
+        </div>
+      )}
+
+      <div className="flex-1">
+        <Input
+          type="text"
+          value={filterText}
+          onChange={(e) => onFilterChange(e.target.value)}
+          placeholder="Search by title..."
+          className="border rounded px-2 py-1 w-full"
+        />
       </div>
     </div>
   );
