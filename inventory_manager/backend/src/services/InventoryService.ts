@@ -5,21 +5,34 @@ import {
   splitAllowedAndSkipped,
   softDeleteTransaction,
   buildBulkResponse,
+  checkPermission,
+  buildWhere,
+  buildOrderBy,
+  countItems,
+  fetchItems,
+  getSkip,
 } from "../utils/inventoryUtils.ts";
+import { InventoryQueryParams } from "../models/queries.ts";
 
 export class InventoryService {
-  private async checkPermission(
-    inventoryId: number,
-    userId: number,
-    allowedRoles: InventoryRole[]
-  ) {
-    const member = await prisma.inventoryMember.findUnique({
-      where: { inventoryId_userId: { inventoryId, userId } },
-    });
-    if (!member || !allowedRoles.includes(member.role)) {
-      throw new Error("Access denied");
-    }
-    return member;
+  async getAll(userId: number, query: InventoryQueryParams) {
+    const { page, limit, search, sortBy, sortOrder } = query;
+
+    const skip = getSkip(page, limit);
+    const where = buildWhere(userId, search);
+    const orderBy = buildOrderBy(sortBy, sortOrder);
+
+    const [items, total] = await Promise.all([
+      fetchItems(where, skip, limit, orderBy),
+      countItems(where),
+    ]);
+
+    return {
+      items,
+      total,
+      page,
+      totalPages: Math.ceil(total / limit),
+    };
   }
 
   async create(title: string, ownerId: number) {
@@ -33,28 +46,6 @@ export class InventoryService {
     });
   }
 
-  async getAll(userId: number) {
-    return prisma.inventory.findMany({
-      where: {
-        deleted: false,
-        members: { some: { userId, deleted: false } },
-      },
-      include: {
-        owner: true,
-        members: { where: { deleted: false } },
-        fields: { where: { deleted: false } },
-        items: {
-          where: { deleted: false },
-          include: {
-            fieldValues: { where: { deleted: false } },
-            comments: { where: { deleted: false } },
-            likes: { where: { deleted: false } },
-          },
-        },
-      },
-    });
-  }
-
   async getById(id: number, userId: number) {
     const inventory = await prisma.inventory.findFirst({
       where: { id, members: { some: { userId } } },
@@ -65,7 +56,7 @@ export class InventoryService {
   }
 
   async update(id: number, data: Partial<{ title: string }>, userId: number) {
-    await this.checkPermission(id, userId, [
+    await checkPermission(id, userId, [
       InventoryRole.OWNER,
       InventoryRole.WRITER,
     ]);

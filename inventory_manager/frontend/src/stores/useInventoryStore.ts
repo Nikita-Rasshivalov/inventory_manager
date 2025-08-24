@@ -4,9 +4,18 @@ import { InventoryService } from "../services/inventoryService";
 
 interface InventoryStore {
   inventories: Inventory[];
+  total: number;
+  page: number;
+  totalPages: number;
+  limit: number;
+  search: string;
   loading: boolean;
   error: string | null;
-  getAll: () => Promise<void>;
+
+  getAll: (page?: number) => Promise<void>;
+  setPage: (page: number) => void;
+  setSearch: (search: string) => void;
+
   create: (data: InventoryPayload) => Promise<void>;
   update: (id: number, data: Partial<InventoryPayload>) => Promise<void>;
   delete: (ids: number[]) => Promise<string>;
@@ -14,19 +23,38 @@ interface InventoryStore {
 
 export const useInventoryStore = create<InventoryStore>((set, get) => ({
   inventories: [],
+  total: 0,
+  page: 1,
+  totalPages: 1,
+  limit: 12,
+  search: "",
   loading: false,
   error: null,
 
-  getAll: async () => {
+  getAll: async (page = get().page) => {
+    const { limit, search } = get();
     set({ loading: true, error: null });
     try {
-      const data = await InventoryService.getAll();
-      set({ inventories: data });
+      const data = await InventoryService.getAll(page, limit, search);
+      set({
+        inventories: data.items,
+        total: data.total,
+        page: data.page,
+        totalPages: data.totalPages,
+      });
     } catch (err: any) {
       set({ error: err.message || "Failed to fetch inventories" });
     } finally {
       set({ loading: false });
     }
+  },
+
+  setPage: (page: number) => {
+    set({ page });
+  },
+
+  setSearch: (search: string) => {
+    set({ search, page: 1 });
   },
 
   create: async (data: InventoryPayload) => {

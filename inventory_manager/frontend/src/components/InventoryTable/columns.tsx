@@ -9,23 +9,28 @@ export const getInventoryColumns = (
 ): ColumnDef<Inventory>[] => [
   {
     id: "select",
-    header: () => (
-      <SelectCell
-        checked={
-          selectedIds.length === inventories.length && inventories.length > 0
+    header: () => {
+      const pageIds = inventories.map((inv) => inv.id);
+      const allSelected = pageIds.every((id) => selectedIds.includes(id));
+
+      const handleChange = () => {
+        if (allSelected) {
+          pageIds.forEach((id) => toggleSelect(id));
+        } else {
+          pageIds.forEach((id) => {
+            if (!selectedIds.includes(id)) toggleSelect(id);
+          });
         }
-        count={selectedIds.length}
-        onChange={() => {
-          if (selectedIds.length !== inventories.length) {
-            inventories.forEach((inv) => {
-              if (!selectedIds.includes(inv.id)) toggleSelect(inv.id);
-            });
-          } else {
-            selectedIds.forEach((id) => toggleSelect(id));
-          }
-        }}
-      />
-    ),
+      };
+
+      return (
+        <SelectCell
+          checked={allSelected}
+          count={selectedIds.length}
+          onChange={handleChange}
+        />
+      );
+    },
     cell: ({ row }) => (
       <input
         type="checkbox"
@@ -44,7 +49,6 @@ export const getInventoryColumns = (
   {
     accessorKey: "title",
     header: "Title",
-    enableSorting: true,
   },
   {
     accessorFn: (row) => row.owner?.name,
@@ -56,7 +60,6 @@ export const getInventoryColumns = (
     accessorFn: (row) => row.members.length,
     id: "members",
     header: "Members",
-    enableSorting: true,
   },
   {
     accessorFn: (row) => new Date(row.createdAt),

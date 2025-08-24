@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../hooks/useAuth";
 import { SystemRole } from "../models/models";
-import Loader from "../components/common/Loader";
+import { Loader } from "lucide-react";
 
 const AuthSuccess = () => {
   const navigate = useNavigate();

@@ -1,9 +1,21 @@
-import { InventoryApi } from "../api/inventoryApi";
+import { InventoryApi, PaginatedInventoryResponse } from "../api/inventoryApi";
 import { Inventory, InventoryPayload } from "../models/models";
 
 export const InventoryService = {
-  getAll: async (): Promise<Inventory[]> => {
-    return await InventoryApi.getAll();
+  getAll: async (
+    page: number,
+    limit: number,
+    search: string,
+    sortBy?: string,
+    sortOrder?: "asc" | "desc"
+  ): Promise<PaginatedInventoryResponse> => {
+    return await InventoryApi.getAll(
+      page,
+      limit,
+      search,
+      sortBy || "",
+      sortOrder || "asc"
+    );
   },
 
   getById: async (id: number): Promise<Inventory> => {

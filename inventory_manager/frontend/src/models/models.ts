@@ -99,5 +99,4 @@ export interface InventoryMember {
 
 export type InventoryPayload = {
   title: string;
-  ownerId: number;
 };

@@ -1,6 +1,73 @@
 import { PrismaClient, InventoryRole } from "@prisma/client";
+import { isNonEmptyString } from "./validation.ts";
 
 const prisma = new PrismaClient();
+
+export async function checkPermission(
+  inventoryId: number,
+  userId: number,
+  allowedRoles: InventoryRole[]
+) {
+  const member = await prisma.inventoryMember.findUnique({
+    where: { inventoryId_userId: { inventoryId, userId } },
+  });
+  if (!member || !allowedRoles.includes(member.role)) {
+    throw new Error("Access denied");
+  }
+  return member;
+}
+
+export function getSkip(page: number, limit: number) {
+  return (page - 1) * limit;
+}
+
+export function buildOrderBy(sortBy?: string, sortOrder?: "asc" | "desc") {
+  if (!sortBy) return undefined;
+
+  switch (sortBy) {
+    case "owner":
+      return { owner: { name: sortOrder || "asc" } };
+    case "created":
+      return { createdAt: sortOrder || "asc" };
+    default:
+      return undefined;
+  }
+}
+
+export function buildWhere(userId: number, search?: string) {
+  const where: any = {
+    deleted: false,
+    members: { some: { userId, deleted: false } },
+  };
+
+  if (isNonEmptyString(search)) {
+    where.title = { contains: search };
+  }
+
+  return where;
+}
+
+export async function fetchItems(
+  where: any,
+  skip: number,
+  limit: number,
+  orderBy?: any
+) {
+  return prisma.inventory.findMany({
+    where,
+    skip,
+    take: limit,
+    orderBy,
+    include: {
+      owner: true,
+      members: { where: { deleted: false } },
+    },
+  });
+}
+
+export async function countItems(where: any) {
+  return prisma.inventory.count({ where });
+}
 
 export async function getUserMemberships(
   userId: number,

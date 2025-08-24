@@ -7,19 +7,22 @@ export const useInventoryActions = () => {
   const { inventories, getAll, create, delete: remove } = useInventoryStore();
   const { user } = useAuthProvider();
 
-  const loadInventories = useCallback(async () => {
-    try {
-      await getAll();
-    } catch {
-      toast.error("Failed to load inventories");
-    }
-  }, [getAll]);
+  const loadInventories = useCallback(
+    async (page = 1, limit = 10, search = "") => {
+      try {
+        await getAll(page, limit, search);
+      } catch {
+        toast.error("Failed to load inventories");
+      }
+    },
+    [getAll]
+  );
 
   const createInventory = useCallback(
     async (title: string) => {
       if (!user) return;
       try {
-        await create({ title, ownerId: user.id });
+        await create({ title });
         toast.success("Inventory created successfully");
       } catch (err: any) {
         toast.error(err.message || "Failed to create inventory");
@@ -44,7 +47,7 @@ export const useInventoryActions = () => {
     inventories,
     loadInventories,
     createInventory,
-    deleteInventories,
+    deleteInventories: deleteInventories,
     user,
   };
 };

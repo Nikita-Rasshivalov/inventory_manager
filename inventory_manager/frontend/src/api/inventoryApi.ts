@@ -1,9 +1,27 @@
 import { Inventory, InventoryPayload } from "../models/models";
 import axiosInstance from "../services/axiosInstance";
 
+export interface PaginatedInventoryResponse {
+  items: Inventory[];
+  total: number;
+  page: number;
+  totalPages: number;
+}
+
 export class InventoryApi {
-  static async getAll(): Promise<Inventory[]> {
-    const res = await axiosInstance.get<Inventory[]>("/inventory");
+  static async getAll(
+    page = 1,
+    limit = 10,
+    search = "",
+    sortBy: string,
+    sortOrder: "asc" | "desc"
+  ): Promise<PaginatedInventoryResponse> {
+    const res = await axiosInstance.get<PaginatedInventoryResponse>(
+      "/inventory",
+      {
+        params: { page, limit, search, sortBy, sortOrder },
+      }
+    );
     return res.data;
   }
 

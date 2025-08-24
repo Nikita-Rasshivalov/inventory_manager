@@ -1,39 +1,53 @@
-import { useState, useEffect } from "react";
+import { useEffect, useState, useCallback } from "react";
 import Toolbar from "../../components/layout/Toolbar";
 import GenericModal from "../../components/layout/Modal";
 import { useSelection } from "../../hooks/useSelection";
 import { useInventoryActions } from "./hooks/useInventoryActions";
-import { useInventoryFilter } from "./hooks/useInventoryFilter";
+import InventoryTableWrapper from "../../components/InventoryTable/InventoryTableWrapper";
 import { InventoryRole } from "../../models/models";
-import InventoryTable from "../../components/InventoryTable/InventoryTable";
+import { useInventoryStore } from "../../stores/useInventoryStore";
 
 const tabs = [InventoryRole.OWNER, InventoryRole.WRITER, InventoryRole.READER];
 
 const InventoryPage = () => {
-  const {
-    inventories,
-    loadInventories,
-    createInventory,
-    deleteInventories,
-    user,
-  } = useInventoryActions();
+  const { createInventory, deleteInventories, user } = useInventoryActions();
+  const { inventories, page, totalPages, loading, getAll, setPage, setSearch } =
+    useInventoryStore();
 
-  const [activeTab, setActiveTab] = useState(InventoryRole.OWNER);
+  const [activeTab, setActiveTab] = useState<InventoryRole>(
+    InventoryRole.OWNER
+  );
+
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [filterText, setFilterText] = useState("");
 
-  const filteredInventories = useInventoryFilter(
-    inventories,
-    activeTab,
-    user
-  ).filter((inv) => inv.title.toLowerCase().includes(filterText.toLowerCase()));
-
   const { selectedIds, toggleSelect, clearSelection } =
-    useSelection(filteredInventories);
+    useSelection(inventories);
 
   useEffect(() => {
-    loadInventories();
-  }, [loadInventories]);
+    getAll();
+  }, [page, activeTab, filterText, getAll]);
+
+  const handleFilterChange = useCallback(
+    (text: string) => {
+      setFilterText(text);
+      setSearch(text);
+    },
+    [setSearch]
+  );
+
+  const handleTabChange = useCallback(
+    (tab: InventoryRole) => {
+      setActiveTab(tab);
+      clearSelection();
+      setPage(1);
+    },
+    [clearSelection, setPage]
+  );
+
+  const handlePageChange = (p: number) => {
+    setPage(p);
+  };
 
   const handleDelete = async () => {
     if (!selectedIds.length) return;
@@ -46,33 +60,31 @@ const InventoryPage = () => {
     if (!title || !user) return;
     await createInventory(title);
     setIsModalOpen(false);
+    getAll();
   };
 
   return (
-    <main className="max-w-5xl mx-auto p-6 bg-white rounded-lg shadow-md mt-8">
-      <h1 className="text-3xl font-semibold mb-6 text-gray-900">
-        User Dashboard
-      </h1>
-
+    <div className="max-w-5xl mx-auto p-6 bg-white rounded-lg shadow-md mt-8">
       <Toolbar
         selectedCount={selectedIds.length}
-        totalCount={filteredInventories.length}
+        totalCount={inventories.length}
         onDelete={handleDelete}
         onCreate={() => setIsModalOpen(true)}
         tabs={tabs}
         activeTab={activeTab}
-        onChangeTab={(tab) => {
-          setActiveTab(tab as InventoryRole);
-          clearSelection();
-        }}
+        onChangeTab={(tab) => handleTabChange(tab as InventoryRole)}
         filterText={filterText}
-        onFilterChange={setFilterText}
+        onFilterChange={handleFilterChange}
       />
 
-      <InventoryTable
-        inventories={filteredInventories}
+      <InventoryTableWrapper
+        inventories={inventories}
         selectedIds={selectedIds}
         toggleSelect={toggleSelect}
+        page={page}
+        totalPages={totalPages}
+        onPageChange={handlePageChange}
+        loading={loading}
       />
 
       {isModalOpen && (
@@ -84,7 +96,7 @@ const InventoryPage = () => {
           onSubmit={handleCreate}
         />
       )}
-    </main>
+    </div>
   );
 };
 
