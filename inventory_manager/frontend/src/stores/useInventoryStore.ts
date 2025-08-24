@@ -74,10 +74,13 @@ export const useInventoryStore = create<InventoryStore>((set, get) => ({
   create: async (data: InventoryPayload) => {
     set({ loading: true, error: null });
     try {
-      const newInventory = await InventoryService.create(data);
-      set({ inventories: [...get().inventories, newInventory] });
+      await InventoryService.create(data);
+      await get().getAll();
     } catch (err: any) {
-      set({ error: err.message || "Failed to create inventory" });
+      const message =
+        err instanceof Error ? err.message : "Failed to create inventory";
+      set({ error: message });
+      throw err;
     } finally {
       set({ loading: false });
     }
