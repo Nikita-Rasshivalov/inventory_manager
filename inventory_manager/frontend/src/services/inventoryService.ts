@@ -1,5 +1,5 @@
 import { InventoryApi, PaginatedInventoryResponse } from "../api/inventoryApi";
-import { Inventory, InventoryPayload } from "../models/models";
+import { Inventory, InventoryPayload, InventoryRole } from "../models/models";
 
 export const InventoryService = {
   getAll: async (
@@ -7,14 +7,16 @@ export const InventoryService = {
     limit: number,
     search: string,
     sortBy?: string,
-    sortOrder?: "asc" | "desc"
+    sortOrder?: "asc" | "desc",
+    role?: InventoryRole
   ): Promise<PaginatedInventoryResponse> => {
     return await InventoryApi.getAll(
       page,
       limit,
       search,
-      sortBy || "",
-      sortOrder || "asc"
+      sortBy,
+      sortOrder,
+      role
     );
   },
 

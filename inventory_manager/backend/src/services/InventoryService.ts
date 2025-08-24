@@ -16,10 +16,10 @@ import { InventoryQueryParams } from "../models/queries.ts";
 
 export class InventoryService {
   async getAll(userId: number, query: InventoryQueryParams) {
-    const { page, limit, search, sortBy, sortOrder } = query;
+    const { page, limit, search, sortBy, sortOrder, role } = query;
 
     const skip = getSkip(page, limit);
-    const where = buildWhere(userId, search);
+    const where = buildWhere(userId, search, role);
     const orderBy = buildOrderBy(sortBy, sortOrder);
 
     const [items, total] = await Promise.all([
@@ -34,7 +34,6 @@ export class InventoryService {
       totalPages: Math.ceil(total / limit),
     };
   }
-
   async create(title: string, ownerId: number) {
     return prisma.inventory.create({
       data: {

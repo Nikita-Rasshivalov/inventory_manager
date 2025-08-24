@@ -39,16 +39,19 @@ export const getInventoryColumns = (
       />
     ),
     size: 50,
+    enableSorting: false,
   },
   {
     accessorFn: (_, index) => index + 1,
     id: "number",
     header: "#",
     size: 30,
+    enableSorting: false,
   },
   {
     accessorKey: "title",
     header: "Title",
+    enableSorting: false,
   },
   {
     accessorFn: (row) => row.owner?.name,
@@ -60,6 +63,7 @@ export const getInventoryColumns = (
     accessorFn: (row) => row.members.length,
     id: "members",
     header: "Members",
+    enableSorting: false,
   },
   {
     accessorFn: (row) => new Date(row.createdAt),

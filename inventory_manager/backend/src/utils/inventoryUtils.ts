@@ -34,11 +34,24 @@ export function buildOrderBy(sortBy?: string, sortOrder?: "asc" | "desc") {
   }
 }
 
-export function buildWhere(userId: number, search?: string) {
-  const where: any = {
-    deleted: false,
-    members: { some: { userId, deleted: false } },
-  };
+export function buildWhere(
+  userId: number,
+  search?: string,
+  role?: InventoryRole
+) {
+  const where: any = { deleted: false };
+
+  if (role === InventoryRole.OWNER) {
+    where.OR = [{ ownerId: userId }];
+  } else {
+    where.members = {
+      some: {
+        userId,
+        deleted: false,
+        ...(role ? { role } : {}),
+      },
+    };
+  }
 
   if (isNonEmptyString(search)) {
     where.title = { contains: search };

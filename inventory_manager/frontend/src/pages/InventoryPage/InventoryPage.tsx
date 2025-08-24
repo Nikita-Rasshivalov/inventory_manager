@@ -1,4 +1,4 @@
-import { useEffect, useState, useCallback } from "react";
+import { useEffect, useCallback, useState } from "react";
 import Toolbar from "../../components/layout/Toolbar";
 import GenericModal from "../../components/layout/Modal";
 import { useSelection } from "../../hooks/useSelection";
@@ -7,38 +7,43 @@ import InventoryTableWrapper from "../../components/InventoryTable/InventoryTabl
 import { InventoryRole } from "../../models/models";
 import { useInventoryStore } from "../../stores/useInventoryStore";
 
-const tabs = [InventoryRole.OWNER, InventoryRole.WRITER, InventoryRole.READER];
+const tabs: InventoryRole[] = [
+  InventoryRole.OWNER,
+  InventoryRole.WRITER,
+  InventoryRole.READER,
+];
 
 const InventoryPage = () => {
-  const { inventories, page, totalPages, loading, getAll, setPage, setSearch } =
-    useInventoryStore();
-
   const { createInventory, deleteInventories, user } = useInventoryActions();
+
+  const {
+    inventories,
+    page,
+    totalPages,
+    loading,
+    getAll,
+    setPage,
+    setSearch,
+    search,
+    activeTab,
+    setActiveTab,
+  } = useInventoryStore();
 
   const [sorting, setSorting] = useState<{
     sortBy?: string;
     sortOrder?: "asc" | "desc";
   }>({});
-
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [filterText, setFilterText] = useState("");
 
   const { selectedIds, toggleSelect, clearSelection } =
     useSelection(inventories);
 
-  const [activeTab, setActiveTab] = useState<InventoryRole>(
-    InventoryRole.OWNER
-  );
-
   useEffect(() => {
-    getAll(page, sorting.sortBy, sorting.sortOrder);
-  }, [page, activeTab, filterText, sorting, getAll]);
+    getAll(page, sorting.sortBy, sorting.sortOrder, activeTab, search);
+  }, [page, sorting, activeTab, search, getAll]);
 
   const handleFilterChange = useCallback(
-    (text: string) => {
-      setFilterText(text);
-      setSearch(text);
-    },
+    (text: string) => setSearch(text),
     [setSearch]
   );
 
@@ -48,12 +53,10 @@ const InventoryPage = () => {
       clearSelection();
       setPage(1);
     },
-    [clearSelection, setPage]
+    [setActiveTab, clearSelection, setPage]
   );
 
-  const handlePageChange = (p: number) => {
-    setPage(p);
-  };
+  const handlePageChange = (p: number) => setPage(p);
 
   const handleDelete = async () => {
     if (!selectedIds.length) return;
@@ -66,7 +69,6 @@ const InventoryPage = () => {
     if (!title || !user) return;
     await createInventory(title);
     setIsModalOpen(false);
-    getAll();
   };
 
   return (
@@ -79,7 +81,7 @@ const InventoryPage = () => {
         tabs={tabs}
         activeTab={activeTab}
         onChangeTab={(tab) => handleTabChange(tab as InventoryRole)}
-        filterText={filterText}
+        filterText={search}
         onFilterChange={handleFilterChange}
       />
 

@@ -1,4 +1,4 @@
-import { Inventory, InventoryPayload } from "../models/models";
+import { Inventory, InventoryPayload, InventoryRole } from "../models/models";
 import axiosInstance from "../services/axiosInstance";
 
 export interface PaginatedInventoryResponse {
@@ -13,18 +13,18 @@ export class InventoryApi {
     page = 1,
     limit = 10,
     search = "",
-    sortBy: string,
-    sortOrder: "asc" | "desc"
+    sortBy: string = "",
+    sortOrder: "asc" | "desc" = "asc",
+    role?: InventoryRole
   ): Promise<PaginatedInventoryResponse> {
     const res = await axiosInstance.get<PaginatedInventoryResponse>(
       "/inventory",
       {
-        params: { page, limit, search, sortBy, sortOrder },
+        params: { page, limit, search, sortBy, sortOrder, role },
       }
     );
     return res.data;
   }
-
   static async getById(inventoryId: number): Promise<Inventory> {
     const res = await axiosInstance.get<Inventory>(`/inventory/${inventoryId}`);
     return res.data;

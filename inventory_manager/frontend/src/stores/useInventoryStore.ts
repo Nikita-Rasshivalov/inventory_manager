@@ -1,5 +1,5 @@
 import { create } from "zustand";
-import { Inventory, InventoryPayload } from "../models/models";
+import { Inventory, InventoryPayload, InventoryRole } from "../models/models";
 import { InventoryService } from "../services/inventoryService";
 
 interface InventoryStore {
@@ -9,16 +9,20 @@ interface InventoryStore {
   totalPages: number;
   limit: number;
   search: string;
+  activeTab: InventoryRole;
   loading: boolean;
   error: string | null;
 
   getAll: (
     page?: number,
     sortBy?: string,
-    sortOrder?: "asc" | "desc"
+    sortOrder?: "asc" | "desc",
+    tab?: InventoryRole,
+    search?: string
   ) => Promise<void>;
   setPage: (page: number) => void;
   setSearch: (search: string) => void;
+  setActiveTab: (tab: InventoryRole) => void;
 
   create: (data: InventoryPayload) => Promise<void>;
   update: (id: number, data: Partial<InventoryPayload>) => Promise<void>;
@@ -32,15 +36,18 @@ export const useInventoryStore = create<InventoryStore>((set, get) => ({
   totalPages: 1,
   limit: 12,
   search: "",
+  activeTab: InventoryRole.OWNER,
   loading: false,
   error: null,
 
   getAll: async (
     page = get().page,
-    sortBy?: string,
-    sortOrder?: "asc" | "desc"
+    sortBy,
+    sortOrder,
+    tab = get().activeTab,
+    search = get().search
   ) => {
-    const { limit, search } = get();
+    const { limit } = get();
     set({ loading: true, error: null });
     try {
       const data = await InventoryService.getAll(
@@ -48,7 +55,8 @@ export const useInventoryStore = create<InventoryStore>((set, get) => ({
         limit,
         search,
         sortBy,
-        sortOrder
+        sortOrder,
+        tab
       );
       set({
         inventories: data.items,
@@ -56,27 +64,25 @@ export const useInventoryStore = create<InventoryStore>((set, get) => ({
         page: data.page,
         totalPages: data.totalPages,
       });
-    } catch (err: any) {
-      set({ error: err.message || "Failed to fetch inventories" });
+    } catch (err: unknown) {
+      const message =
+        err instanceof Error ? err.message : "Failed to fetch inventories";
+      set({ error: message });
     } finally {
       set({ loading: false });
     }
   },
 
-  setPage: (page: number) => {
-    set({ page });
-  },
-
-  setSearch: (search: string) => {
-    set({ search, page: 1 });
-  },
+  setPage: (page: number) => set({ page }),
+  setSearch: (search: string) => set({ search, page: 1 }),
+  setActiveTab: (tab: InventoryRole) => set({ activeTab: tab, page: 1 }),
 
   create: async (data: InventoryPayload) => {
     set({ loading: true, error: null });
     try {
       await InventoryService.create(data);
       await get().getAll();
-    } catch (err: any) {
+    } catch (err: unknown) {
       const message =
         err instanceof Error ? err.message : "Failed to create inventory";
       set({ error: message });
@@ -89,14 +95,13 @@ export const useInventoryStore = create<InventoryStore>((set, get) => ({
   update: async (id: number, data: Partial<InventoryPayload>) => {
     set({ loading: true, error: null });
     try {
-      const updated = await InventoryService.update(id, data);
-      set({
-        inventories: get().inventories.map((inv) =>
-          inv.id === id ? updated : inv
-        ),
-      });
-    } catch (err: any) {
-      set({ error: err.message || "Failed to update inventory" });
+      await InventoryService.update(id, data);
+      await get().getAll();
+    } catch (err: unknown) {
+      const message =
+        err instanceof Error ? err.message : "Failed to update inventory";
+      set({ error: message });
+      throw err;
     } finally {
       set({ loading: false });
     }
@@ -106,12 +111,12 @@ export const useInventoryStore = create<InventoryStore>((set, get) => ({
     set({ loading: true, error: null });
     try {
       const res = await InventoryService.delete(ids);
-      set({
-        inventories: get().inventories.filter((inv) => !ids.includes(inv.id)),
-      });
+      await get().getAll();
       return res.message;
-    } catch (err: any) {
-      set({ error: err.message || "Failed to delete inventories" });
+    } catch (err: unknown) {
+      const message =
+        err instanceof Error ? err.message : "Failed to delete inventories";
+      set({ error: message });
       throw err;
     } finally {
       set({ loading: false });

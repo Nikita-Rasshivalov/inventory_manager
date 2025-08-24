@@ -2,9 +2,25 @@ import { Request, Response } from "express";
 import { InventoryService } from "../services/InventoryService.ts";
 import { BaseController } from "./BaseController.ts";
 import { InventoryQueryParams } from "../models/queries.ts";
+import { InventoryRole } from "@prisma/client";
 
 const inventoryService = new InventoryService();
 export class InventoryController extends BaseController {
+  getAll = (req: Request, res: Response) =>
+    this.handle(res, async () => {
+      const user = (req as any).user;
+      const query: InventoryQueryParams = {
+        page: parseInt((req.query.page as string) ?? "1", 10),
+        limit: parseInt((req.query.limit as string) ?? "10", 10),
+        search: (req.query.search as string) ?? "",
+        sortBy: req.query.sortBy as string,
+        sortOrder: req.query.sortOrder as "asc" | "desc",
+        role: req.query.role as InventoryRole,
+      };
+
+      return await inventoryService.getAll(user.userId, query);
+    });
+
   create = (req: Request, res: Response) =>
     this.handle(
       res,
@@ -15,20 +31,6 @@ export class InventoryController extends BaseController {
       },
       201
     );
-
-  getAll = (req: Request, res: Response) =>
-    this.handle(res, async () => {
-      const user = (req as any).user;
-      const query: InventoryQueryParams = {
-        page: parseInt((req.query.page as string) ?? "1", 10),
-        limit: parseInt((req.query.limit as string) ?? "10", 10),
-        search: (req.query.search as string) ?? "",
-        sortBy: req.query.sortBy as string,
-        sortOrder: req.query.sortOrder as "asc" | "desc",
-      };
-
-      return await inventoryService.getAll(user.userId, query);
-    });
 
   getById = (req: Request, res: Response) =>
     this.handle(res, async () => {
