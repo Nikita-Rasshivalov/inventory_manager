@@ -12,7 +12,11 @@ interface InventoryStore {
   loading: boolean;
   error: string | null;
 
-  getAll: (page?: number) => Promise<void>;
+  getAll: (
+    page?: number,
+    sortBy?: string,
+    sortOrder?: "asc" | "desc"
+  ) => Promise<void>;
   setPage: (page: number) => void;
   setSearch: (search: string) => void;
 
@@ -31,11 +35,21 @@ export const useInventoryStore = create<InventoryStore>((set, get) => ({
   loading: false,
   error: null,
 
-  getAll: async (page = get().page) => {
+  getAll: async (
+    page = get().page,
+    sortBy?: string,
+    sortOrder?: "asc" | "desc"
+  ) => {
     const { limit, search } = get();
     set({ loading: true, error: null });
     try {
-      const data = await InventoryService.getAll(page, limit, search);
+      const data = await InventoryService.getAll(
+        page,
+        limit,
+        search,
+        sortBy,
+        sortOrder
+      );
       set({
         inventories: data.items,
         total: data.total,

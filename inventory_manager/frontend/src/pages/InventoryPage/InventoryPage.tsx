@@ -10,13 +10,15 @@ import { useInventoryStore } from "../../stores/useInventoryStore";
 const tabs = [InventoryRole.OWNER, InventoryRole.WRITER, InventoryRole.READER];
 
 const InventoryPage = () => {
-  const { createInventory, deleteInventories, user } = useInventoryActions();
   const { inventories, page, totalPages, loading, getAll, setPage, setSearch } =
     useInventoryStore();
 
-  const [activeTab, setActiveTab] = useState<InventoryRole>(
-    InventoryRole.OWNER
-  );
+  const { createInventory, deleteInventories, user } = useInventoryActions();
+
+  const [sorting, setSorting] = useState<{
+    sortBy?: string;
+    sortOrder?: "asc" | "desc";
+  }>({});
 
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [filterText, setFilterText] = useState("");
@@ -24,9 +26,13 @@ const InventoryPage = () => {
   const { selectedIds, toggleSelect, clearSelection } =
     useSelection(inventories);
 
+  const [activeTab, setActiveTab] = useState<InventoryRole>(
+    InventoryRole.OWNER
+  );
+
   useEffect(() => {
-    getAll();
-  }, [page, activeTab, filterText, getAll]);
+    getAll(page, sorting.sortBy, sorting.sortOrder);
+  }, [page, activeTab, filterText, sorting, getAll]);
 
   const handleFilterChange = useCallback(
     (text: string) => {
@@ -85,6 +91,7 @@ const InventoryPage = () => {
         totalPages={totalPages}
         onPageChange={handlePageChange}
         loading={loading}
+        onSortChange={(sortBy, sortOrder) => setSorting({ sortBy, sortOrder })}
       />
 
       {isModalOpen && (

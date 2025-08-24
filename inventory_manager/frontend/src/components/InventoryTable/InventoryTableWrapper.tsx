@@ -13,6 +13,7 @@ interface InventoryTableWrapperProps {
   totalPages: number;
   onPageChange: (p: number) => void;
   loading: boolean;
+  onSortChange?: (sortBy: string, sortOrder: "asc" | "desc") => void;
 }
 
 const InventoryTableWrapper: React.FC<InventoryTableWrapperProps> = ({
@@ -23,6 +24,7 @@ const InventoryTableWrapper: React.FC<InventoryTableWrapperProps> = ({
   totalPages,
   onPageChange,
   loading,
+  onSortChange,
 }) => {
   return (
     <div className="space-y-4">
@@ -31,6 +33,7 @@ const InventoryTableWrapper: React.FC<InventoryTableWrapperProps> = ({
           inventories={inventories}
           selectedIds={selectedIds}
           toggleSelect={toggleSelect}
+          onSortChange={onSortChange}
         />
 
         {loading && (

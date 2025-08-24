@@ -2,7 +2,6 @@ import React, { useMemo, useState } from "react";
 import {
   useReactTable,
   getCoreRowModel,
-  getSortedRowModel,
   SortingState,
 } from "@tanstack/react-table";
 import { Inventory } from "../../models/models";
@@ -14,12 +13,14 @@ interface InventoryTableProps {
   inventories: Inventory[];
   selectedIds: number[];
   toggleSelect: (id: number) => void;
+  onSortChange?: (sortBy: string, sortOrder: "asc" | "desc") => void;
 }
 
 const InventoryTable: React.FC<InventoryTableProps> = ({
   inventories,
   selectedIds,
   toggleSelect,
+  onSortChange,
 }) => {
   const [sorting, setSorting] = useState<SortingState>([]);
 
@@ -32,9 +33,20 @@ const InventoryTable: React.FC<InventoryTableProps> = ({
     data: inventories,
     columns,
     state: { sorting },
-    onSortingChange: setSorting,
+    onSortingChange: (updaterOrValue) => {
+      const newSorting =
+        typeof updaterOrValue === "function"
+          ? updaterOrValue(sorting)
+          : updaterOrValue;
+
+      setSorting(newSorting);
+
+      const sort = newSorting?.[0];
+      if (sort && onSortChange) {
+        onSortChange(sort.id, sort.desc ? "desc" : "asc");
+      }
+    },
     getCoreRowModel: getCoreRowModel(),
-    getSortedRowModel: getSortedRowModel(),
   });
 
   if (!inventories.length)

@@ -4,19 +4,8 @@ import { useAuthProvider } from "../../../hooks/useAuthProvider";
 import { useInventoryStore } from "../../../stores/useInventoryStore";
 
 export const useInventoryActions = () => {
-  const { inventories, getAll, create, delete: remove } = useInventoryStore();
+  const { inventories, create, delete: remove } = useInventoryStore();
   const { user } = useAuthProvider();
-
-  const loadInventories = useCallback(
-    async (page = 1, limit = 10, search = "") => {
-      try {
-        await getAll(page, limit, search);
-      } catch {
-        toast.error("Failed to load inventories");
-      }
-    },
-    [getAll]
-  );
 
   const createInventory = useCallback(
     async (title: string) => {
@@ -45,9 +34,8 @@ export const useInventoryActions = () => {
 
   return {
     inventories,
-    loadInventories,
     createInventory,
-    deleteInventories: deleteInventories,
+    deleteInventories,
     user,
   };
 };
