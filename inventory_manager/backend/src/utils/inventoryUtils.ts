@@ -26,9 +26,9 @@ export function buildOrderBy(sortBy?: string, sortOrder?: "asc" | "desc") {
 
   switch (sortBy) {
     case "owner":
-      return { owner: { name: sortOrder || "asc" } };
+      return [{ owner: { name: sortOrder || "asc" } }, { createdAt: "asc" }];
     case "created":
-      return { createdAt: sortOrder || "asc" };
+      return [{ createdAt: sortOrder || "asc" }, { owner: { name: "asc" } }];
     default:
       return undefined;
   }
