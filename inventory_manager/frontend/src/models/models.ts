@@ -38,14 +38,6 @@ export interface Field {
   showInTable: boolean;
 }
 
-export interface ItemFieldValue {
-  id: number;
-  itemId: number;
-  fieldId: number;
-  value?: string;
-  field?: Field;
-}
-
 export interface Comment {
   id: number;
   itemId: number;
@@ -100,3 +92,32 @@ export interface InventoryMember {
 export type InventoryPayload = {
   title: string;
 };
+
+export interface ItemFieldValue {
+  id?: number;
+  fieldId: number;
+  value: string | number | boolean | null;
+}
+
+export interface ItemPayload {
+  customId?: string;
+  customIdFormat?: CustomIdPart[];
+  fieldValues?: ItemFieldValue[];
+}
+
+export interface Item extends ItemPayload {
+  id: number;
+  inventoryId: number;
+  createdById: number;
+  version: number;
+  createdAt: string;
+  updatedAt: string;
+  deleted: boolean;
+}
+
+export type CustomIdPart =
+  | { type: "text"; value: string }
+  | { type: "random"; bits?: 20 | 32; digits?: 6 | 9 }
+  | { type: "guid" }
+  | { type: "datetime"; format?: string }
+  | { type: "sequence" };

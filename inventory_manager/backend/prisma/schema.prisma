@@ -129,6 +129,7 @@ model ItemFieldValue {
   deletedAt DateTime?
   item      Item    @relation(fields: [itemId], references: [id])
   field     Field   @relation(fields: [fieldId], references: [id])
+  @@unique([itemId, fieldId])
 }
 
 model Comment {
