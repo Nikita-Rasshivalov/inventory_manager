@@ -2,13 +2,11 @@ import React from "react";
 import { flexRender } from "@tanstack/react-table";
 import { ChevronUp, ChevronDown } from "lucide-react";
 
-interface InventoryTableHeaderProps {
+interface TableHeaderProps {
   headerGroups: any[];
 }
 
-const InventoryTableHeader: React.FC<InventoryTableHeaderProps> = ({
-  headerGroups,
-}) => (
+const TableHeader: React.FC<TableHeaderProps> = ({ headerGroups }) => (
   <thead className="bg-gray-50">
     {headerGroups.map((headerGroup) => (
       <tr key={headerGroup.id}>
@@ -43,4 +41,4 @@ const InventoryTableHeader: React.FC<InventoryTableHeaderProps> = ({
   </thead>
 );
 
-export default InventoryTableHeader;
+export default TableHeader;

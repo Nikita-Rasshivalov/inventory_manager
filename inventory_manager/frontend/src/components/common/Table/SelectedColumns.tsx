@@ -6,7 +6,7 @@ interface SelectCellProps {
   onChange: () => void;
 }
 
-const SelectCell: React.FC<SelectCellProps> = ({
+const SelectedColumns: React.FC<SelectCellProps> = ({
   checked,
   count,
   onChange,
@@ -19,4 +19,4 @@ const SelectCell: React.FC<SelectCellProps> = ({
   </div>
 );
 
-export default SelectCell;
+export default SelectedColumns;

@@ -1,6 +1,6 @@
 import { ColumnDef } from "@tanstack/react-table";
 import { Inventory } from "../../models/models";
-import SelectCell from "./SelectCell";
+import SelectedColumns from "../common/Table/SelectedColumns";
 
 export const getInventoryColumns = (
   inventories: Inventory[],
@@ -24,7 +24,7 @@ export const getInventoryColumns = (
       };
 
       return (
-        <SelectCell
+        <SelectedColumns
           checked={allSelected}
           count={selectedIds.length}
           onChange={handleChange}

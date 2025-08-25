@@ -3,9 +3,9 @@ import Toolbar from "../../components/layout/Toolbar";
 import GenericModal from "../../components/layout/Modal";
 import { useSelection } from "../../hooks/useSelection";
 import { useInventoryActions } from "./hooks/useInventoryActions";
-import InventoryTableWrapper from "../../components/InventoryTable/InventoryTableWrapper";
 import { InventoryRole } from "../../models/models";
 import { useInventoryStore } from "../../stores/useInventoryStore";
+import InventoryTable from "../../components/InventoryTable/InventoryTable";
 
 const tabs: InventoryRole[] = [
   InventoryRole.OWNER,
@@ -85,7 +85,7 @@ const InventoryPage = () => {
         onFilterChange={handleFilterChange}
       />
 
-      <InventoryTableWrapper
+      <InventoryTable
         inventories={inventories}
         selectedIds={selectedIds}
         toggleSelect={toggleSelect}
@@ -93,9 +93,8 @@ const InventoryPage = () => {
         totalPages={totalPages}
         onPageChange={handlePageChange}
         loading={loading}
-        onSortChange={(sortBy, sortOrder) => setSorting({ sortBy, sortOrder })}
+        setSorting={setSorting}
       />
-
       {isModalOpen && (
         <GenericModal
           title="Create Inventory"
