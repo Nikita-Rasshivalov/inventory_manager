@@ -11,6 +11,8 @@ interface InventoryTableRowProps {
   startEdit: (id: number, current: string) => void;
   save: (row: any) => void;
   toggleExpanded: () => void;
+  page: number;
+  limit: number;
 }
 
 export const InventoryTableRow: React.FC<InventoryTableRowProps> = ({
@@ -22,6 +24,8 @@ export const InventoryTableRow: React.FC<InventoryTableRowProps> = ({
   startEdit,
   save,
   toggleExpanded,
+  page,
+  limit,
 }) => {
   return (
     <tr className="hover:bg-gray-50 cursor-pointer" onClick={toggleExpanded}>
@@ -38,6 +42,8 @@ export const InventoryTableRow: React.FC<InventoryTableRowProps> = ({
             setTitleDraft,
             save,
             startEdit,
+            page,
+            limit,
           })}
         </td>
       ))}

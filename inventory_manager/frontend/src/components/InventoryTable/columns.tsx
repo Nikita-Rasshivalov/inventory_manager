@@ -11,7 +11,8 @@ export const getInventoryColumns = (
     id: "select",
     header: () => {
       const pageIds = inventories.map((inv) => inv.id);
-      const allSelected = pageIds.every((id) => selectedIds.includes(id));
+      const allSelected =
+        pageIds.length > 0 && pageIds.every((id) => selectedIds.includes(id));
 
       const handleChange = () => {
         if (allSelected) {
@@ -42,7 +43,6 @@ export const getInventoryColumns = (
     enableSorting: false,
   },
   {
-    accessorFn: (_, index) => index + 1,
     id: "number",
     header: "#",
     size: 30,

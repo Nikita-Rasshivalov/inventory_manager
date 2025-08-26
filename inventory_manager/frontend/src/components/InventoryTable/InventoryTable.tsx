@@ -11,6 +11,7 @@ interface InventoryTableProps {
   selectedIds: number[];
   toggleSelect: (id: number) => void;
   page: number;
+  limit: number;
   totalPages: number;
   onPageChange: (p: number) => void;
   loading: boolean;
@@ -25,6 +26,7 @@ const InventoryTable: React.FC<InventoryTableProps> = ({
   selectedIds,
   toggleSelect,
   page,
+  limit,
   totalPages,
   onPageChange,
   loading,
@@ -45,7 +47,12 @@ const InventoryTable: React.FC<InventoryTableProps> = ({
           <TableHeader headerGroups={table.getHeaderGroups()} />
         )}
         renderRow={(row, idx) => (
-          <InventoryTableRowWrapper key={row.id ?? idx} rows={[row]} />
+          <InventoryTableRowWrapper
+            key={row.id ?? idx}
+            rows={[row]}
+            page={page}
+            limit={limit}
+          />
         )}
       />
     </TableWrapper>

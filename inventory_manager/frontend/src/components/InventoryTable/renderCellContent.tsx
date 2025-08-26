@@ -12,11 +12,13 @@ export const renderCellContent = (
     setTitleDraft: (v: string) => void;
     save: (row: any) => void;
     startEdit: (id: number, current: string) => void;
+    page: number;
+    limit: number;
   }
 ) => {
   switch (cell.column.id) {
     case "number":
-      return idx + 1;
+      return (props.page - 1) * props.limit + idx + 1;
     case "title":
       return (
         <TitleCell

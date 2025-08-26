@@ -5,10 +5,14 @@ import { InventoryTableRow } from "./InventoryTableRow";
 
 interface InventoryTableRowWrapperProps {
   rows: any[];
+  page: number;
+  limit: number;
 }
 
 const InventoryTableRowWrapper: React.FC<InventoryTableRowWrapperProps> = ({
   rows,
+  page,
+  limit,
 }) => {
   const [expandedRow, setExpandedRow] = useState<number | null>(null);
   const [editingRow, setEditingRow] = useState<number | null>(null);
@@ -50,6 +54,8 @@ const InventoryTableRowWrapper: React.FC<InventoryTableRowWrapperProps> = ({
               startEdit={startEdit}
               save={save}
               toggleExpanded={() => toggleExpanded(row.id)}
+              page={page}
+              limit={limit}
             />
             {isExpanded && (
               <InventoryRowDetails colSpan={row.getVisibleCells().length} />

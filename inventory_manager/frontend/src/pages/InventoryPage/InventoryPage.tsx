@@ -30,6 +30,7 @@ const InventoryPage = () => {
     search,
     activeTab,
     setActiveTab,
+    limit,
   } = useInventoryStore();
 
   const debouncedSearch = useDebounce(search, debouce);
@@ -95,6 +96,7 @@ const InventoryPage = () => {
         selectedIds={selectedIds}
         toggleSelect={toggleSelect}
         page={page}
+        limit={limit}
         totalPages={totalPages}
         onPageChange={handlePageChange}
         loading={loading}
