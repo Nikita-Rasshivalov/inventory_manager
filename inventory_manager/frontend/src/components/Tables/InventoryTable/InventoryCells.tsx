@@ -1,5 +1,6 @@
 import React from "react";
 import { renderCellContent } from "./renderCellContent";
+import { useNavigate } from "react-router-dom";
 
 interface InventoryTableRowProps {
   row: any;
@@ -13,6 +14,12 @@ export const InventoryCells: React.FC<InventoryTableRowProps> = ({
   page,
   limit,
 }) => {
+  const navigate = useNavigate();
+  const handleRowClick = () => {
+    navigate(`/inventory/${row.original.id}/items`, {
+      state: { inventoryTitle: row.original.title },
+    });
+  };
   return (
     <tr className="hover:bg-gray-50 cursor-pointer">
       {row.getVisibleCells().map((cell: any) => (
@@ -20,6 +27,7 @@ export const InventoryCells: React.FC<InventoryTableRowProps> = ({
           key={cell.id}
           style={{ width: cell.column.columnDef.size }}
           className="px-4 py-2 text-sm text-gray-700"
+          onClick={handleRowClick}
         >
           {renderCellContent(cell, row, row.index, {
             page,

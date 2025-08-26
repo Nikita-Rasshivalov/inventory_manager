@@ -4,7 +4,7 @@ import { ItemController } from "../controllers/ItemController.ts";
 import { authMiddleware } from "../middleware/authMiddleware.ts";
 import { authorizeInventoryRole } from "../middleware/inventoryRoles.ts";
 
-const router = Router();
+const router = Router({ mergeParams: true });
 const controller = new ItemController();
 
 router.post(

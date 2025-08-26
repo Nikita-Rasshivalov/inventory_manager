@@ -50,9 +50,9 @@ const ItemTable: React.FC<ItemTableProps> = ({
         renderHeader={(table: { getHeaderGroups: () => any[] }) => (
           <TableHeader headerGroups={table.getHeaderGroups()} />
         )}
-        renderRow={(row: { id: any }, idx: any) => (
+        renderRow={(row, idx) => (
           <ItemTableRow
-            key={row.id ?? idx}
+            key={row.original.id ?? idx}
             rows={[row]}
             page={page}
             limit={limit}

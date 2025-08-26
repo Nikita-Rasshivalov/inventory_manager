@@ -12,12 +12,12 @@ export class ItemApi {
   static async getAll(
     inventoryId: number,
     page = 1,
-    limit = 12,
+    limit = 10,
     sortBy?: string,
     sortOrder?: "asc" | "desc"
   ): Promise<PaginatedItemResponse> {
     const res = await axiosInstance.get<PaginatedItemResponse>(
-      `/inventory/items/${inventoryId}`,
+      `/inventory/${inventoryId}/items`,
       { params: { page, limit, sortBy, sortOrder } }
     );
     return res.data;
@@ -25,14 +25,14 @@ export class ItemApi {
 
   static async getById(inventoryId: number, itemId: number): Promise<Item> {
     const res = await axiosInstance.get<Item>(
-      `/inventory/items/${inventoryId}/${itemId}`
+      `/inventory/${inventoryId}/items/${itemId}`
     );
     return res.data;
   }
 
   static async create(inventoryId: number, data: ItemPayload): Promise<Item> {
     const res = await axiosInstance.post<Item>(
-      `/inventory/items/${inventoryId}`,
+      `/inventory/${inventoryId}/items`,
       data
     );
     return res.data;
@@ -44,7 +44,7 @@ export class ItemApi {
     data: Partial<ItemPayload>
   ): Promise<Item> {
     const res = await axiosInstance.put<Item>(
-      `/inventory/items/${inventoryId}/${itemId}`,
+      `/inventory/${inventoryId}/items/${itemId}`,
       data
     );
     return res.data;
@@ -55,7 +55,7 @@ export class ItemApi {
     itemId: number
   ): Promise<{ message: string }> {
     const res = await axiosInstance.delete<{ message: string }>(
-      `/inventory/items/${inventoryId}/${itemId}`
+      `/inventory/${inventoryId}/items/${itemId}`
     );
     return res.data;
   }
