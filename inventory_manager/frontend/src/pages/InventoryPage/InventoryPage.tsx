@@ -6,12 +6,15 @@ import { useInventoryActions } from "./hooks/useInventoryActions";
 import { InventoryRole } from "../../models/models";
 import { useInventoryStore } from "../../stores/useInventoryStore";
 import InventoryTable from "../../components/InventoryTable/InventoryTable";
+import { useDebounce } from "../../hooks/useDebounce";
 
 const tabs: InventoryRole[] = [
   InventoryRole.OWNER,
   InventoryRole.WRITER,
   InventoryRole.READER,
 ];
+
+const debouce = 400;
 
 const InventoryPage = () => {
   const { createInventory, deleteInventories, user } = useInventoryActions();
@@ -29,6 +32,8 @@ const InventoryPage = () => {
     setActiveTab,
   } = useInventoryStore();
 
+  const debouncedSearch = useDebounce(search, debouce);
+
   const [sorting, setSorting] = useState<{
     sortBy?: string;
     sortOrder?: "asc" | "desc";
@@ -39,8 +44,8 @@ const InventoryPage = () => {
     useSelection(inventories);
 
   useEffect(() => {
-    getAll(page, sorting.sortBy, sorting.sortOrder, activeTab, search);
-  }, [page, sorting, activeTab, search, getAll]);
+    getAll(page, sorting.sortBy, sorting.sortOrder, activeTab, debouncedSearch);
+  }, [page, sorting, activeTab, debouncedSearch, getAll]);
 
   const handleFilterChange = useCallback(
     (text: string) => setSearch(text),

@@ -2,6 +2,7 @@ import React from "react";
 import { ChevronLeft, ChevronRight, Loader } from "lucide-react";
 import { Button } from "@headlessui/react";
 import { getPageNumbers } from "../../../utils/pagination";
+import { PageItem } from "./PageItem";
 
 interface TableWrapperProps {
   page: number;
@@ -19,15 +20,16 @@ export const TableWrapper: React.FC<TableWrapperProps> = ({
   children,
 }) => {
   return (
-    <div className="space-y-4 relative">
-      {children}
+    <>
+      <div className="relative overflow-x-auto border rounded-lg">
+        {children}
 
-      {loading && (
-        <div className="absolute inset-0 flex items-center justify-center bg-white bg-opacity-60 z-10">
-          <Loader />
-        </div>
-      )}
-
+        {loading && (
+          <div className="absolute inset-0 flex items-center justify-center bg-white bg-opacity-60 z-10">
+            <Loader />
+          </div>
+        )}
+      </div>
       {totalPages > 1 && (
         <div className="flex justify-center space-x-2 mt-2">
           <Button
@@ -38,23 +40,9 @@ export const TableWrapper: React.FC<TableWrapperProps> = ({
             <ChevronLeft size={18} />
           </Button>
 
-          {getPageNumbers(page, totalPages).map((p, idx) =>
-            typeof p === "number" ? (
-              <Button
-                key={idx}
-                onClick={() => onPageChange(p)}
-                className={`px-3 py-1 rounded ${
-                  p === page ? "bg-gray-500 text-white" : "bg-gray-200"
-                }`}
-              >
-                {p}
-              </Button>
-            ) : (
-              <span key={idx} className="px-3 py-1">
-                {p}
-              </span>
-            )
-          )}
+          {getPageNumbers(page, totalPages).map((p, idx) => (
+            <PageItem key={idx} p={p} page={page} onPageChange={onPageChange} />
+          ))}
 
           <Button
             onClick={() => onPageChange(page + 1)}
@@ -65,6 +53,6 @@ export const TableWrapper: React.FC<TableWrapperProps> = ({
           </Button>
         </div>
       )}
-    </div>
+    </>
   );
 };
