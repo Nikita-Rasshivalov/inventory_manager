@@ -14,25 +14,15 @@ export async function generateCustomId(
   inventoryId: number,
   formatParts: CustomIdPart[]
 ): Promise<string> {
-  return await buildId(inventoryId, formatParts);
-}
-
-async function buildId(
-  inventoryId: number,
-  parts: CustomIdPart[]
-): Promise<string> {
   const values: string[] = [];
-
-  for (const part of parts) {
+  for (const part of formatParts) {
     switch (part.type) {
       case "text":
         values.push(part.value);
         break;
       case "random":
-        if (part.bits) {
-          const max = 2 ** part.bits - 1;
-          values.push(randomInt(0, max + 1).toString());
-        } else if (part.digits) {
+        if (part.bits) values.push(randomInt(0, 2 ** part.bits).toString());
+        else if (part.digits) {
           const min = 10 ** (part.digits - 1);
           const max = 10 ** part.digits - 1;
           values.push(randomInt(min, max + 1).toString());
@@ -42,11 +32,7 @@ async function buildId(
         values.push(uuidv4());
         break;
       case "datetime":
-        values.push(
-          part.format
-            ? formatDateFn(new Date(), part.format)
-            : formatDateFn(new Date(), "yyyyMMddHHmmss")
-        );
+        values.push(formatDateFn(new Date(), part.format || "yyyyMMddHHmmss"));
         break;
       case "sequence":
         const count = await prisma.item.count({ where: { inventoryId } });
@@ -54,6 +40,5 @@ async function buildId(
         break;
     }
   }
-
   return values.join("-");
 }

@@ -26,9 +26,19 @@ export class ItemController extends BaseController {
   getAll = (req: Request, res: Response) =>
     this.handle(res, async () => {
       const inventoryId = parseInt(req.params.inventoryId);
-      return await itemService.getAll(inventoryId);
-    });
+      const page = parseInt(req.query.page as string);
+      const limit = parseInt(req.query.limit as string);
+      const sortBy = req.query.sortBy as string;
+      const sortOrder = req.query.sortOrder as "asc" | "desc";
 
+      return await itemService.getAll(
+        inventoryId,
+        page,
+        limit,
+        sortBy,
+        sortOrder
+      );
+    });
   getById = (req: Request, res: Response) =>
     this.handle(res, async () => {
       const inventoryId = parseInt(req.params.inventoryId);
