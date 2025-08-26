@@ -1,10 +1,10 @@
 import React from "react";
-import { Inventory } from "../../models/models";
-import { TableWrapper } from "../common/Table/TableWrapper";
-import { Table } from "../common/Table/Table";
+import { Inventory } from "../../../models/models";
+import { TableWrapper } from "../../common/Table/TableWrapper";
+import { Table } from "../../common/Table/Table";
 import { getInventoryColumns } from "./columns";
-import InventoryTableRowWrapper from "./InventoryTableRowWrapper";
-import TableHeader from "../common/Table/TableHeader";
+import TableHeader from "../../common/Table/TableHeader";
+import InventoryTableRow from "./InventoryTableRow";
 
 interface InventoryTableProps {
   inventories: Inventory[];
@@ -47,7 +47,7 @@ const InventoryTable: React.FC<InventoryTableProps> = ({
           <TableHeader headerGroups={table.getHeaderGroups()} />
         )}
         renderRow={(row, idx) => (
-          <InventoryTableRowWrapper
+          <InventoryTableRow
             key={row.id ?? idx}
             rows={[row]}
             page={page}

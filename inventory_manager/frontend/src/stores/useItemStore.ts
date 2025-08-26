@@ -8,18 +8,30 @@ interface ItemStore {
   page: number;
   totalPages: number;
   limit: number;
+  search: string;
   loading: boolean;
   error: string | null;
+  sortBy?: string;
+  sortOrder?: "asc" | "desc";
 
-  getAll: (inventoryId: number, page?: number) => Promise<void>;
+  getAll: (
+    inventoryId: number,
+    page?: number,
+    sortBy?: string,
+    sortOrder?: "asc" | "desc",
+    search?: string
+  ) => Promise<void>;
+  setPage: (page: number) => void;
+  setSorting: (sortBy?: string, sortOrder?: "asc" | "desc") => void;
+  setSearch: (search: string) => void;
+
   create: (inventoryId: number, data: ItemPayload) => Promise<void>;
   update: (
     inventoryId: number,
     itemId: number,
-    data: Partial<ItemPayload>
+    data: ItemPayload
   ) => Promise<void>;
   delete: (inventoryId: number, itemId: number) => Promise<string>;
-  setPage: (page: number) => void;
 }
 
 export const useItemStore = create<ItemStore>((set, get) => ({
@@ -27,39 +39,54 @@ export const useItemStore = create<ItemStore>((set, get) => ({
   total: 0,
   page: 1,
   totalPages: 1,
-  limit: 12,
+  limit: 8,
+  search: "",
   loading: false,
   error: null,
+  sortBy: undefined,
+  sortOrder: undefined,
 
-  getAll: async (inventoryId, page = get().page) => {
+  getAll: async (
+    inventoryId,
+    page = get().page,
+    sortBy = get().sortBy,
+    sortOrder = get().sortOrder
+  ) => {
     const { limit } = get();
     set({ loading: true, error: null });
     try {
-      const data = await ItemService.getAll(inventoryId, page, limit);
+      const data = await ItemService.getAll(
+        inventoryId,
+        page,
+        limit,
+        sortBy,
+        sortOrder
+      );
       set({
         items: data.items,
         total: data.total,
         page: data.page,
         totalPages: data.totalPages,
       });
-    } catch (err: unknown) {
-      const message =
-        err instanceof Error ? err.message : "Failed to fetch items";
-      set({ error: message });
+    } catch (err: any) {
+      set({ error: err.message || "Failed to fetch items" });
     } finally {
       set({ loading: false });
     }
   },
+
+  setPage: (page: number) => set({ page }),
+  setSorting: (sortBy?: string, sortOrder?: "asc" | "desc") =>
+    set({ sortBy, sortOrder, page: 1 }),
+  setSearch: (search: string) => set({ search, page: 1 }),
 
   create: async (inventoryId, data) => {
     set({ loading: true, error: null });
     try {
       await ItemService.create(inventoryId, data);
       await get().getAll(inventoryId);
-    } catch (err: unknown) {
-      const message =
-        err instanceof Error ? err.message : "Failed to create item";
-      set({ error: message });
+    } catch (err: any) {
+      set({ error: err.message || "Failed to create item" });
       throw err;
     } finally {
       set({ loading: false });
@@ -71,10 +98,8 @@ export const useItemStore = create<ItemStore>((set, get) => ({
     try {
       await ItemService.update(inventoryId, itemId, data);
       await get().getAll(inventoryId);
-    } catch (err: unknown) {
-      const message =
-        err instanceof Error ? err.message : "Failed to update item";
-      set({ error: message });
+    } catch (err: any) {
+      set({ error: err.message || "Failed to update item" });
       throw err;
     } finally {
       set({ loading: false });
@@ -87,15 +112,11 @@ export const useItemStore = create<ItemStore>((set, get) => ({
       const res = await ItemService.delete(inventoryId, itemId);
       await get().getAll(inventoryId);
       return res.message;
-    } catch (err: unknown) {
-      const message =
-        err instanceof Error ? err.message : "Failed to delete item";
-      set({ error: message });
+    } catch (err: any) {
+      set({ error: err.message || "Failed to delete item" });
       throw err;
     } finally {
       set({ loading: false });
     }
   },
-
-  setPage: (page) => set({ page }),
 }));

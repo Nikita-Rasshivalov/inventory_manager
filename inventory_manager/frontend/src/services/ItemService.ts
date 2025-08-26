@@ -5,9 +5,11 @@ export const ItemService = {
   getAll: async (
     inventoryId: number,
     page: number,
-    limit: number
+    limit: number,
+    sortBy?: string,
+    sortOrder?: "asc" | "desc"
   ): Promise<PaginatedItemResponse> => {
-    return await ItemApi.getAll(inventoryId, page, limit);
+    return await ItemApi.getAll(inventoryId, page, limit, sortBy, sortOrder);
   },
 
   getById: async (inventoryId: number, itemId: number): Promise<Item> => {

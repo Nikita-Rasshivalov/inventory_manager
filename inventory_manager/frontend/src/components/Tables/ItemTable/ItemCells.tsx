@@ -1,26 +1,25 @@
 import React from "react";
 import { renderCellContent } from "./renderCellContent";
 
-interface InventoryTableRowProps {
+interface ItemCellsProps {
   row: any;
-  idx: number;
   isExpanded: boolean;
   isEditing: boolean;
-  titleDraft: string;
-  setTitleDraft: (value: string) => void;
-  startEdit: (id: number, current: string) => void;
-  save: (row: any) => void;
+  fieldDrafts: Record<number, any>;
+  setFieldDrafts: (drafts: Record<number, any>) => void;
+  startEdit: () => void;
+  save: () => void;
   toggleExpanded: () => void;
   page: number;
   limit: number;
 }
 
-export const InventoryTableRow: React.FC<InventoryTableRowProps> = ({
+export const ItemCells: React.FC<ItemCellsProps> = ({
   row,
   isExpanded,
   isEditing,
-  titleDraft,
-  setTitleDraft,
+  fieldDrafts,
+  setFieldDrafts,
   startEdit,
   save,
   toggleExpanded,
@@ -38,8 +37,8 @@ export const InventoryTableRow: React.FC<InventoryTableRowProps> = ({
           {renderCellContent(cell, row, row.index, {
             isEditing,
             isExpanded,
-            titleDraft,
-            setTitleDraft,
+            fieldDrafts,
+            setFieldDrafts,
             save,
             startEdit,
             page,

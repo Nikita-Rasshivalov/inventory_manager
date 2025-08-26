@@ -64,10 +64,8 @@ export const useInventoryStore = create<InventoryStore>((set, get) => ({
         page: data.page,
         totalPages: data.totalPages,
       });
-    } catch (err: unknown) {
-      const message =
-        err instanceof Error ? err.message : "Failed to fetch inventories";
-      set({ error: message });
+    } catch (err: any) {
+      set({ error: err.message || "Failed to fetch inventories" });
     } finally {
       set({ loading: false });
     }
@@ -82,10 +80,8 @@ export const useInventoryStore = create<InventoryStore>((set, get) => ({
     try {
       await InventoryService.create(data);
       await get().getAll();
-    } catch (err: unknown) {
-      const message =
-        err instanceof Error ? err.message : "Failed to create inventory";
-      set({ error: message });
+    } catch (err: any) {
+      set({ error: err.message || "Failed to create inventory" });
       throw err;
     } finally {
       set({ loading: false });
@@ -97,10 +93,8 @@ export const useInventoryStore = create<InventoryStore>((set, get) => ({
     try {
       await InventoryService.update(id, data);
       await get().getAll();
-    } catch (err: unknown) {
-      const message =
-        err instanceof Error ? err.message : "Failed to update inventory";
-      set({ error: message });
+    } catch (err: any) {
+      set({ error: err.message || "Failed to update inventory" });
       throw err;
     } finally {
       set({ loading: false });
@@ -113,10 +107,8 @@ export const useInventoryStore = create<InventoryStore>((set, get) => ({
       const res = await InventoryService.delete(ids);
       await get().getAll();
       return res.message;
-    } catch (err: unknown) {
-      const message =
-        err instanceof Error ? err.message : "Failed to delete inventories";
-      set({ error: message });
+    } catch (err: any) {
+      set({ error: err.message || "Failed to delete inventories" });
       throw err;
     } finally {
       set({ loading: false });

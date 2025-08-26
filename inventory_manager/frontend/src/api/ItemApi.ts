@@ -12,11 +12,13 @@ export class ItemApi {
   static async getAll(
     inventoryId: number,
     page = 1,
-    limit = 12
+    limit = 12,
+    sortBy?: string,
+    sortOrder?: "asc" | "desc"
   ): Promise<PaginatedItemResponse> {
     const res = await axiosInstance.get<PaginatedItemResponse>(
       `/inventory/items/${inventoryId}`,
-      { params: { page, limit } }
+      { params: { page, limit, sortBy, sortOrder } }
     );
     return res.data;
   }

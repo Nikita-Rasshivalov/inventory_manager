@@ -29,6 +29,33 @@ export type AuthPayload = {
   role: SystemRole;
 };
 
+export interface Inventory {
+  id: number;
+  title: string;
+  ownerId: number;
+  owner?: User;
+  createdAt: string;
+  updatedAt: string;
+  members: InventoryMember[];
+  fields: Field[];
+  items: Item[];
+}
+
+export interface Item {
+  id: number;
+  inventoryId: number;
+  createdById: number;
+  customId?: string;
+  version: number;
+  createdAt: string;
+  updatedAt: string;
+  deleted: boolean;
+  createdBy?: User;
+  fieldValues: ItemFieldValue[];
+  comments: Comment[];
+  likes: Like[];
+}
+
 export interface Field {
   id: number;
   inventoryId: number;
@@ -55,32 +82,6 @@ export interface Like {
   user?: User;
 }
 
-export interface Item {
-  id: number;
-  inventoryId: number;
-  createdById: number;
-  customId?: string;
-  version: number;
-  createdAt: string;
-  updatedAt: string;
-  createdBy?: User;
-  fieldValues: ItemFieldValue[];
-  comments: Comment[];
-  likes: Like[];
-}
-
-export interface Inventory {
-  id: number;
-  title: string;
-  ownerId: number;
-  owner?: User;
-  createdAt: string;
-  updatedAt: string;
-  members: InventoryMember[];
-  fields: Field[];
-  items: Item[];
-}
-
 export interface InventoryMember {
   id: number;
   inventoryId: number;
@@ -103,16 +104,7 @@ export interface ItemPayload {
   customId?: string;
   customIdFormat?: CustomIdPart[];
   fieldValues?: ItemFieldValue[];
-}
-
-export interface Item extends ItemPayload {
-  id: number;
-  inventoryId: number;
-  createdById: number;
-  version: number;
-  createdAt: string;
-  updatedAt: string;
-  deleted: boolean;
+  version?: number;
 }
 
 export type CustomIdPart =

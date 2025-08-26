@@ -1,6 +1,6 @@
 import { ColumnDef } from "@tanstack/react-table";
-import { Inventory } from "../../models/models";
-import SelectedColumns from "../common/Table/SelectedColumns";
+import { Inventory } from "../../../models/models";
+import SelectedColumns from "../../common/Table/SelectedColumns";
 
 export const getInventoryColumns = (
   inventories: Inventory[],

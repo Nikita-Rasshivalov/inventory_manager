@@ -5,7 +5,7 @@ import { useSelection } from "../../hooks/useSelection";
 import { useInventoryActions } from "./hooks/useInventoryActions";
 import { InventoryRole } from "../../models/models";
 import { useInventoryStore } from "../../stores/useInventoryStore";
-import InventoryTable from "../../components/InventoryTable/InventoryTable";
+import InventoryTable from "../../components/Tables/InventoryTable/InventoryTable";
 import { useDebounce } from "../../hooks/useDebounce";
 
 const tabs: InventoryRole[] = [

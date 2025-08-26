@@ -1,37 +1,36 @@
 import React, { useState } from "react";
-import { InventoryRowDetails } from "../InventoryRowDetails/InventoryRowDetails";
-import { useInventoryStore } from "../../stores/useInventoryStore";
-import { InventoryTableRow } from "./InventoryTableRow";
+import { ItemCells } from "./ItemCells";
 
-interface InventoryTableRowWrapperProps {
+interface ItemTableRowProps {
   rows: any[];
   page: number;
   limit: number;
+  onUpdate: (itemId: number, values: Record<string, any>) => void;
 }
 
-const InventoryTableRowWrapper: React.FC<InventoryTableRowWrapperProps> = ({
+const ItemTableRowWrapper: React.FC<ItemTableRowProps> = ({
   rows,
   page,
   limit,
+  onUpdate,
 }) => {
   const [expandedRow, setExpandedRow] = useState<number | null>(null);
   const [editingRow, setEditingRow] = useState<number | null>(null);
-  const [titleDraft, setTitleDraft] = useState("");
-  const { update } = useInventoryStore();
+  const [fieldDrafts, setFieldDrafts] = useState<Record<number, any>>({});
 
   const toggleExpanded = (id: number) => {
     setExpandedRow((prev) => (prev === id ? null : id));
     setEditingRow(null);
   };
 
-  const startEdit = (id: number, current: string) => {
+  const startEdit = (id: number, initialFields: Record<number, any>) => {
     setEditingRow(id);
-    setTitleDraft(current);
+    setFieldDrafts(initialFields);
   };
 
   const save = (row: any) => {
-    if (titleDraft.trim() && titleDraft !== row.original.title) {
-      update(row.original.id, { title: titleDraft });
+    if (editingRow !== null) {
+      onUpdate(row.id, fieldDrafts);
     }
     setEditingRow(null);
   };
@@ -41,25 +40,25 @@ const InventoryTableRowWrapper: React.FC<InventoryTableRowWrapperProps> = ({
       {rows.map((row, idx) => {
         const isExpanded = expandedRow === row.id;
         const isEditing = editingRow === row.id;
+        const initialFields = Object.fromEntries(
+          row.fieldValues.map((fv: any) => [fv.fieldId, fv.value])
+        );
 
         return (
           <React.Fragment key={row.id ?? idx}>
-            <InventoryTableRow
+            <ItemCells
               row={row}
-              idx={idx}
               isExpanded={isExpanded}
               isEditing={isEditing}
-              titleDraft={titleDraft}
-              setTitleDraft={setTitleDraft}
-              startEdit={startEdit}
-              save={save}
+              fieldDrafts={fieldDrafts}
+              setFieldDrafts={setFieldDrafts}
+              startEdit={() => startEdit(row.id, initialFields)}
+              save={() => save(row)}
               toggleExpanded={() => toggleExpanded(row.id)}
               page={page}
               limit={limit}
             />
-            {isExpanded && (
-              <InventoryRowDetails colSpan={row.getVisibleCells().length} />
-            )}
+            {/* Можно добавить RowDetails для комментариев/лайков */}
           </React.Fragment>
         );
       })}
@@ -67,4 +66,4 @@ const InventoryTableRowWrapper: React.FC<InventoryTableRowWrapperProps> = ({
   );
 };
 
-export default InventoryTableRowWrapper;
+export default ItemTableRowWrapper;
