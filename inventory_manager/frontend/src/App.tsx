@@ -6,8 +6,6 @@ import AuthSuccess from "./pages/AuthSuccess";
 import AuthPage from "./pages/AuthPage";
 import { ToastContainer } from "react-toastify";
 import InventoryItemPage from "./pages/InventoryItemPage";
-import Header from "./components/layout/Header";
-
 function App() {
   return (
     <BrowserRouter>
@@ -23,7 +21,6 @@ function App() {
           draggable
           pauseOnHover
         />
-        <Header />
         <Routes>
           <Route path="/login" element={<AuthPage />} />
           <Route path="/success" element={<AuthSuccess />} />
