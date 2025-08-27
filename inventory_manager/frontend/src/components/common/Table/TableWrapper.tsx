@@ -21,7 +21,7 @@ export const TableWrapper: React.FC<TableWrapperProps> = ({
 }) => {
   return (
     <>
-      <div className="relative overflow-x-auto border rounded-lg">
+      <div className="relative overflow-x-auto border border-gray-300/70 rounded-lg">
         {children}
 
         {loading && (

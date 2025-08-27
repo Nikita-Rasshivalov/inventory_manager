@@ -13,7 +13,7 @@ const InventoryTableRow: React.FC<InventoryTableRowProps> = ({
   limit,
 }) => {
   return (
-    <tbody className="divide-y divide-gray-200 bg-white">
+    <>
       {rows.map((row, idx) => {
         return (
           <InventoryCells
@@ -25,7 +25,7 @@ const InventoryTableRow: React.FC<InventoryTableRowProps> = ({
           />
         );
       })}
-    </tbody>
+    </>
   );
 };
 

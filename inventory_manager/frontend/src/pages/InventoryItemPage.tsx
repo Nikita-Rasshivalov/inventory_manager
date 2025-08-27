@@ -36,7 +36,6 @@ const InventoryItemPage = () => {
         ) : (
           <>
             <h1 className="text-2xl font-bold flex-1">{titleDraft}</h1>
-            <h1 className="text-2xl font-bold flex-1">{inventoryId}</h1>
             <Pencil
               size={20}
               className="text-gray-400 hover:text-gray-600 cursor-pointer"

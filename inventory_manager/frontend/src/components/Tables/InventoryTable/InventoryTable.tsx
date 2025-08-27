@@ -54,6 +54,7 @@ const InventoryTable: React.FC<InventoryTableProps> = ({
             limit={limit}
           />
         )}
+        limit={limit}
       />
     </TableWrapper>
   );

@@ -21,12 +21,12 @@ export const InventoryCells: React.FC<InventoryTableRowProps> = ({
     });
   };
   return (
-    <tr className="hover:bg-gray-50 cursor-pointer">
+    <tr className="hover:bg-gray-50 cursor-pointer h-9">
       {row.getVisibleCells().map((cell: any) => (
         <td
           key={cell.id}
           style={{ width: cell.column.columnDef.size }}
-          className="px-4 py-2 text-sm text-gray-700"
+          className="px-4 py-0 text-sm text-gray-700"
           onClick={handleRowClick}
         >
           {renderCellContent(cell, row, row.index, {

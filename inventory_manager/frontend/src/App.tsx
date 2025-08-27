@@ -4,9 +4,9 @@ import DashboardPage from "./pages/DashboardPage";
 import PrivateRoute from "./components/common/PrivateRoute";
 import AuthSuccess from "./pages/AuthSuccess";
 import AuthPage from "./pages/AuthPage";
-import InventoryPage from "./pages/InventoryPage/InventoryPage";
 import { ToastContainer } from "react-toastify";
 import InventoryItemPage from "./pages/InventoryItemPage";
+import Header from "./components/layout/Header";
 
 function App() {
   return (
@@ -23,12 +23,12 @@ function App() {
           draggable
           pauseOnHover
         />
+        <Header />
         <Routes>
           <Route path="/login" element={<AuthPage />} />
           <Route path="/success" element={<AuthSuccess />} />
           <Route element={<PrivateRoute />}>
             <Route path="/dashboard" element={<DashboardPage />} />
-            <Route path="/inventory" element={<InventoryPage />} />
             <Route
               path="/inventory/:inventoryId/items"
               element={<InventoryItemPage />}
