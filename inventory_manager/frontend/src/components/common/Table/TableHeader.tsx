@@ -13,7 +13,11 @@ const TableHeader: React.FC<TableHeaderProps> = ({ headerGroups }) => (
         {headerGroup.headers.map((header: any) => (
           <th
             key={header.id}
-            style={{ width: header.column.columnDef.size }}
+            style={{
+              width: header.column.columnDef.size ?? "auto",
+              maxWidth: header.column.columnDef.maxSize ?? "300px",
+              minWidth: header.column.columnDef.minSize ?? "50px",
+            }}
             className={`px-4 py-2 text-left text-sm font-medium text-gray-700 select-none ${
               header.id !== "select" ? "cursor-pointer" : ""
             }`}

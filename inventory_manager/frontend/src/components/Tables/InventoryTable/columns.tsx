@@ -39,13 +39,17 @@ export const getInventoryColumns = (
         onChange={() => toggleSelect(row.original.id)}
       />
     ),
-    size: 50,
+    size: 40,
+    minSize: 40,
+    maxSize: 40,
     enableSorting: false,
   },
   {
     id: "number",
     header: "#",
-    size: 30,
+    size: 40,
+    minSize: 40,
+    maxSize: 40,
     enableSorting: false,
   },
   {
@@ -63,6 +67,9 @@ export const getInventoryColumns = (
     accessorFn: (row) => row.members.length,
     id: "members",
     header: "Members",
+    size: 50,
+    minSize: 40,
+    maxSize: 80,
     enableSorting: false,
   },
   {
