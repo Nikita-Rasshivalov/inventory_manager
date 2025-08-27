@@ -8,7 +8,7 @@ interface ItemTableRowProps {
   onUpdate: (itemId: number, values: Record<string, any>) => void;
 }
 
-const ItemTableRowWrapper: React.FC<ItemTableRowProps> = ({
+const ItemTableRow: React.FC<ItemTableRowProps> = ({
   rows,
   page,
   limit,
@@ -36,14 +36,13 @@ const ItemTableRowWrapper: React.FC<ItemTableRowProps> = ({
   };
 
   return (
-    <tbody className="divide-y divide-gray-200 bg-white">
+    <>
       {rows.map((row, idx) => {
         const isExpanded = expandedRow === row.id;
         const isEditing = editingRow === row.id;
         const initialFields = Object.fromEntries(
-          row.fieldValues.map((fv: any) => [fv.fieldId, fv.value])
+          (row.fieldValues ?? []).map((fv: any) => [fv.fieldId, fv.value])
         );
-
         return (
           <React.Fragment key={row.id ?? idx}>
             <ItemCells
@@ -58,12 +57,11 @@ const ItemTableRowWrapper: React.FC<ItemTableRowProps> = ({
               page={page}
               limit={limit}
             />
-            {/* Можно добавить RowDetails для комментариев/лайков */}
           </React.Fragment>
         );
       })}
-    </tbody>
+    </>
   );
 };
 
-export default ItemTableRowWrapper;
+export default ItemTableRow;

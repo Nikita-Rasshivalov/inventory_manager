@@ -59,6 +59,7 @@ const ItemTable: React.FC<ItemTableProps> = ({
             onUpdate={onUpdate}
           />
         )}
+        limit={limit}
       />
     </TableWrapper>
   );
