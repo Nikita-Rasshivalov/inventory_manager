@@ -29,8 +29,7 @@ export const updateMemberRole = async (
 };
 
 export const removeMember = async (inventoryId: number, userId: number) => {
-  return prisma.inventoryMember.update({
+  return prisma.inventoryMember.delete({
     where: { inventoryId_userId: { inventoryId, userId } },
-    data: { deleted: true, deletedAt: new Date() },
   });
 };

@@ -1,22 +1,20 @@
 import { useEffect, useState, useCallback } from "react";
 import Toolbar from "../../components/layout/Toolbar";
-import GenericModal from "../../components/layout/Modal";
-import ItemTable from "../../components/Tables/ItemTable/ItemTable";
 import { useItemStore } from "../../stores/useItemStore";
 import { useInventoryStore } from "../../stores/useInventoryStore";
 import { useSelection } from "../../hooks/useSelection";
-import { AccessTab } from "./AccessTab/AccessTab";
-import { InventoryMember } from "../../models/models";
+import { MemberAction } from "../../models/models";
+import { AccessView } from "../Views/AccessView/AccessView";
+import { ItemsView } from "../Views/ItemsView/ItemsView";
 
-const TABS = [
-  { id: "Items", label: "Items" },
-  { id: "Access", label: "Access" },
-];
+enum TabId {
+  Items = "Items",
+  Access = "Access",
+}
 
-type TabId = (typeof TABS)[number]["id"];
+const TABS: TabId[] = [TabId.Items, TabId.Access];
 
 const ItemPage = ({ inventoryId }: { inventoryId: number }) => {
-  const { getById } = useInventoryStore();
   const {
     items,
     page,
@@ -30,51 +28,48 @@ const ItemPage = ({ inventoryId }: { inventoryId: number }) => {
     loading,
   } = useItemStore();
 
-  const { selectedIds, toggleSelect, clearSelection } = useSelection(items);
-  const [filterText, setFilterText] = useState("");
+  const { inventoryMembers, updateMembers, getById } = useInventoryStore();
 
+  const itemsSelection = useSelection(items);
+  const membersSelection = useSelection(inventoryMembers);
+
+  const [filterText, setFilterText] = useState("");
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [activeTab, setActiveTab] = useState<TabId>("Items");
+  const [activeTab, setActiveTab] = useState<TabId>(TabId.Items);
   const [sorting, setSorting] = useState<{
     sortBy?: string;
     sortOrder?: "asc" | "desc";
   }>({});
-  const [inventoryMembers, setInventoryMembers] = useState<InventoryMember[]>(
-    []
+
+  const loadItems = useCallback(
+    () => getAll(inventoryId, page, sorting.sortBy, sorting.sortOrder),
+    [inventoryId, page, sorting, getAll]
   );
 
-  const loadItems = useCallback(() => {
-    getAll(inventoryId, page, sorting.sortBy, sorting.sortOrder);
-  }, [inventoryId, page, sorting, getAll]);
-
-  const reloadMembers = useCallback(async () => {
-    const inventory = await getById(inventoryId);
-    setInventoryMembers(inventory.members);
-  }, [inventoryId, getById]);
-
   useEffect(() => {
-    switch (activeTab) {
-      case "Items":
-        loadItems();
-        setFilterText("");
-        break;
-      case "Access":
-        reloadMembers();
-        setFilterText("");
-        break;
-      default:
-        break;
+    if (activeTab === TabId.Items) {
+      loadItems();
     }
-  }, [activeTab, loadItems, reloadMembers]);
-
-  const handlePageChange = (p: number) => setPage(p);
+    if (activeTab === TabId.Access) {
+      getById(inventoryId);
+    }
+    setFilterText("");
+  }, [activeTab, loadItems, getById, inventoryId]);
 
   const handleDelete = async () => {
-    if (!selectedIds.length) return;
-    for (const id of selectedIds) {
-      await deleteItem(inventoryId, id);
+    if (activeTab === TabId.Items) {
+      for (const id of itemsSelection.selectedIds)
+        await deleteItem(inventoryId, id);
+      itemsSelection.clearSelection();
     }
-    clearSelection();
+    if (activeTab === TabId.Access) {
+      const updates = membersSelection.selectedIds.map((userId) => ({
+        userId,
+        action: MemberAction.Remove,
+      }));
+      await updateMembers(inventoryId, updates);
+      membersSelection.clearSelection();
+    }
   };
 
   const handleCreate = async (values: Record<string, any>) => {
@@ -96,52 +91,56 @@ const ItemPage = ({ inventoryId }: { inventoryId: number }) => {
     });
   };
 
+  const selectedCount =
+    activeTab === TabId.Items
+      ? itemsSelection.selectedIds.length
+      : membersSelection.selectedIds.length;
+
+  const totalCount =
+    activeTab === TabId.Items ? items.length : inventoryMembers.length;
+
   return (
     <div className="max-w-6xl mx-auto p-6 bg-white rounded-lg shadow-md mt-8">
       <Toolbar
-        selectedCount={selectedIds.length}
-        totalCount={items.length}
+        selectedCount={selectedCount}
+        totalCount={totalCount}
         onDelete={handleDelete}
-        onCreate={() => setIsModalOpen(true)}
-        tabs={TABS.map((t) => t.label)}
+        onCreate={
+          activeTab === TabId.Items ? () => setIsModalOpen(true) : undefined
+        }
+        tabs={TABS}
         activeTab={activeTab}
         onChangeTab={(tab) => setActiveTab(tab as TabId)}
         filterText={filterText}
-        onFilterChange={(text) => setFilterText(text)}
+        onFilterChange={setFilterText}
       />
 
-      {activeTab === "Items" && (
-        <>
-          <ItemTable
-            items={items}
-            selectedIds={selectedIds}
-            toggleSelect={toggleSelect}
-            page={page}
-            limit={limit}
-            totalPages={totalPages}
-            onPageChange={handlePageChange}
-            loading={loading}
-            setSorting={setSorting}
-            onUpdate={handleUpdate}
-          />
-
-          {isModalOpen && (
-            <GenericModal
-              title="Create Item"
-              fields={[]} // позже сюда динамически передадим поля
-              isOpen={isModalOpen}
-              onClose={() => setIsModalOpen(false)}
-              onSubmit={handleCreate}
-            />
-          )}
-        </>
+      {activeTab === TabId.Items && (
+        <ItemsView
+          items={items}
+          selectedIds={itemsSelection.selectedIds}
+          toggleSelect={itemsSelection.toggleSelect}
+          page={page}
+          limit={limit}
+          totalPages={totalPages}
+          setPage={setPage}
+          loading={loading}
+          setSorting={setSorting}
+          onUpdate={handleUpdate}
+          isModalOpen={isModalOpen}
+          onCreate={handleCreate}
+          onCloseModal={() => setIsModalOpen(false)}
+        />
       )}
-      {activeTab === "Access" && (
-        <AccessTab
+
+      {activeTab === TabId.Access && (
+        <AccessView
           inventoryId={inventoryId}
           members={inventoryMembers}
-          reloadMembers={reloadMembers}
           search={filterText}
+          updateMembers={updateMembers}
+          selectedIds={membersSelection.selectedIds}
+          toggleSelect={membersSelection.toggleSelect}
         />
       )}
     </div>

@@ -1,5 +1,11 @@
 import React, { useState, useRef, useEffect } from "react";
-import { InventoryMember, User, InventoryRole } from "../../../models/models";
+import {
+  InventoryMember,
+  InventoryRole,
+  MemberAction,
+  User,
+} from "../../../../models/models";
+import { useDebounce } from "../../../../hooks/useDebounce";
 
 interface MemberFormProps {
   members: InventoryMember[];
@@ -10,33 +16,36 @@ interface MemberFormProps {
     updates: {
       userId: number;
       role?: InventoryRole;
-      action: "add" | "update" | "remove";
+      action: MemberAction;
     }[]
   ) => Promise<void>;
   reloadMembers?: () => Promise<void>;
 }
+
+const debounce: number = 300;
 
 export const MemberForm: React.FC<MemberFormProps> = ({
   members,
   search,
   getAll,
   updateInventory,
-  reloadMembers,
 }) => {
   const [availableUsers, setAvailableUsers] = useState<User[]>([]);
   const [showDropdown, setShowDropdown] = useState(false);
 
   const containerRef = useRef<HTMLDivElement>(null);
 
+  const debouncedSearch = useDebounce(search, debounce);
+
   useEffect(() => {
-    if (!search.trim()) {
+    if (!debouncedSearch.trim()) {
       setAvailableUsers([]);
       setShowDropdown(false);
       return;
     }
 
     const fetchUsers = async () => {
-      const fetchedUsers = await getAll(search);
+      const fetchedUsers = await getAll(debouncedSearch);
       const filteredUsers = fetchedUsers.filter(
         (u) => !members.some((m) => m.userId === u.id)
       );
@@ -45,19 +54,18 @@ export const MemberForm: React.FC<MemberFormProps> = ({
     };
 
     fetchUsers();
-  }, [search, members, getAll]);
+  }, [debouncedSearch, members, getAll]);
 
   const handleAddMember = async (user: User) => {
     await updateInventory([
       {
         userId: user.id,
         role: InventoryRole.READER,
-        action: "add",
+        action: MemberAction.Add,
       },
     ]);
     setAvailableUsers([]);
     setShowDropdown(false);
-    if (reloadMembers) await reloadMembers();
   };
 
   useEffect(() => {

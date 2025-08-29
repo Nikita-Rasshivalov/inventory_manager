@@ -6,7 +6,7 @@ import { Search } from "lucide-react";
 interface ToolbarProps {
   selectedCount: number;
   totalCount: number;
-  onCreate: () => void;
+  onCreate?: () => void;
   onDelete: () => void;
   tabs?: string[];
   activeTab?: string;
@@ -32,26 +32,28 @@ const Toolbar: React.FC<ToolbarProps> = ({
     <div className="flex flex-col sm:flex-row gap-2 mb-4 p-2 sm:p-3 bg-gray-50 rounded-lg shadow-sm border border-gray-200">
       <div className="flex flex-row gap-2 items-center w-full sm:w-auto sm:flex-1 sm:justify-start relative">
         <div className="flex gap-2">
-          <Button
-            onClick={onCreate}
-            className="flex items-center justify-center text-white rounded-lg p-1 sm:p-2"
-            aria-label="Create Inventory"
-          >
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              className="w-4 h-4 sm:w-5 sm:h-5"
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke="currentColor"
-              strokeWidth={2}
+          {onCreate && (
+            <Button
+              onClick={onCreate}
+              className="flex items-center justify-center text-white rounded-lg p-1 sm:p-2"
+              aria-label="Create Inventory"
             >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                d="M12 4v16m8-8H4"
-              />
-            </svg>
-          </Button>
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                className="w-4 h-4 sm:w-5 sm:h-5"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+                strokeWidth={2}
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  d="M12 4v16m8-8H4"
+                />
+              </svg>
+            </Button>
+          )}
 
           <Button
             disabled={disabledDelete}
@@ -86,7 +88,7 @@ const Toolbar: React.FC<ToolbarProps> = ({
         </div>
 
         {showSearch && (
-          <div className="absolute z-50 top-0 w-full left-0  sm:left-22 sm:w-60">
+          <div className="absolute z-50 top-0 w-full left-0 sm:left-22 sm:w-60">
             <Input
               type="text"
               value={filterText}
@@ -98,6 +100,7 @@ const Toolbar: React.FC<ToolbarProps> = ({
           </div>
         )}
       </div>
+
       {tabs.length > 0 && onChangeTab && (
         <div className="flex w-full gap-2 sm:flex-wrap sm:w-auto sm:flex-row sm:justify-end">
           {tabs.map((tab) => (

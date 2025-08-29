@@ -1,9 +1,15 @@
 import { create } from "zustand";
-import { Inventory, InventoryPayload, InventoryRole } from "../models/models";
+import {
+  Inventory,
+  InventoryPayload,
+  InventoryMember,
+  InventoryRole,
+} from "../models/models";
 import { InventoryService } from "../services/inventoryService";
 
 interface InventoryStore {
   inventories: Inventory[];
+  inventoryMembers: InventoryMember[];
   total: number;
   page: number;
   totalPages: number;
@@ -39,6 +45,7 @@ interface InventoryStore {
 
 export const useInventoryStore = create<InventoryStore>((set, get) => ({
   inventories: [],
+  inventoryMembers: [],
   total: 0,
   page: 1,
   totalPages: 1,
@@ -124,9 +131,10 @@ export const useInventoryStore = create<InventoryStore>((set, get) => ({
   },
 
   getById: async (id: number) => {
-    set({ loading: true, error: null });
+    set({ loading: true, error: null, inventoryMembers: [] });
     try {
       const inventory = await InventoryService.getById(id);
+      set({ inventoryMembers: inventory.members });
       return inventory;
     } catch (err: any) {
       set({ error: err.message || "Failed to fetch inventory" });
@@ -140,7 +148,8 @@ export const useInventoryStore = create<InventoryStore>((set, get) => ({
     set({ loading: true, error: null });
     try {
       await InventoryService.updateMembers(inventoryId, updates);
-      await get().getById(inventoryId);
+      const inventory = await get().getById(inventoryId);
+      set({ inventoryMembers: inventory.members });
     } catch (err: any) {
       set({ error: err.message || "Failed to update members" });
       throw err;

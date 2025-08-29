@@ -107,6 +107,11 @@ export interface ItemPayload {
   fieldValues?: ItemFieldValue[];
   version?: number;
 }
+export enum MemberAction {
+  Add = "add",
+  Update = "update",
+  Remove = "remove",
+}
 
 export type CustomIdPart =
   | { type: "text"; value: string }
