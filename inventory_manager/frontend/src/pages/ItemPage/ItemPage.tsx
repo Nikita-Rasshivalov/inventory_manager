@@ -1,4 +1,5 @@
 import { useEffect, useState, useCallback } from "react";
+import { toast } from "react-toastify";
 import Toolbar from "../../components/layout/Toolbar";
 import { useItemStore } from "../../stores/useItemStore";
 import { useInventoryStore } from "../../stores/useInventoryStore";
@@ -57,38 +58,51 @@ const ItemPage = ({ inventoryId }: { inventoryId: number }) => {
   }, [activeTab, loadItems, getById, inventoryId]);
 
   const handleDelete = async () => {
-    if (activeTab === TabId.Items) {
-      for (const id of itemsSelection.selectedIds)
-        await deleteItem(inventoryId, id);
-      itemsSelection.clearSelection();
-    }
-    if (activeTab === TabId.Access) {
-      const updates = membersSelection.selectedIds.map((userId) => ({
-        userId,
-        action: MemberAction.Remove,
-      }));
-      await updateMembers(inventoryId, updates);
-      membersSelection.clearSelection();
+    try {
+      if (activeTab === TabId.Items) {
+        for (const id of itemsSelection.selectedIds) {
+          await deleteItem(inventoryId, id);
+        }
+        itemsSelection.clearSelection();
+      }
+      if (activeTab === TabId.Access) {
+        const updates = membersSelection.selectedIds.map((userId) => ({
+          userId,
+          action: MemberAction.Remove,
+        }));
+        await updateMembers(inventoryId, updates);
+        membersSelection.clearSelection();
+      }
+    } catch (err: any) {
+      toast.error(err.response?.data?.message || "Failed to delete");
     }
   };
 
   const handleCreate = async (values: Record<string, any>) => {
-    await create(inventoryId, {
-      fieldValues: Object.entries(values).map(([fieldId, value]) => ({
-        fieldId: Number(fieldId),
-        value,
-      })),
-    });
-    setIsModalOpen(false);
+    try {
+      await create(inventoryId, {
+        fieldValues: Object.entries(values).map(([fieldId, value]) => ({
+          fieldId: Number(fieldId),
+          value,
+        })),
+      });
+      setIsModalOpen(false);
+    } catch (err: any) {
+      toast.error(err?.message || "Failed to create item");
+    }
   };
 
   const handleUpdate = async (itemId: number, values: Record<string, any>) => {
-    await update(inventoryId, itemId, {
-      fieldValues: Object.entries(values).map(([fieldId, value]) => ({
-        fieldId: Number(fieldId),
-        value,
-      })),
-    });
+    try {
+      await update(inventoryId, itemId, {
+        fieldValues: Object.entries(values).map(([fieldId, value]) => ({
+          fieldId: Number(fieldId),
+          value,
+        })),
+      });
+    } catch (err: any) {
+      toast.error(err.response?.data?.message || "Failed to update item");
+    }
   };
 
   const selectedCount =

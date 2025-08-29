@@ -18,6 +18,7 @@ import {
   updateMemberRole,
   removeMember,
 } from "../utils/inventoryMembers.ts";
+import { MemberAction } from "../models/types.ts";
 
 export class InventoryService {
   async getAll(userId: number, query: InventoryQueryParams) {
@@ -112,19 +113,19 @@ export class InventoryService {
     updates: Array<{
       userId: number;
       role?: InventoryRole;
-      action: "add" | "update" | "remove";
+      action: MemberAction;
     }>
   ) {
     await checkPermission(inventoryId, currentUserId, [InventoryRole.OWNER]);
 
     const promises = updates.map(({ userId, role, action }) => {
       switch (action) {
-        case "add":
+        case MemberAction.Add:
           return addMember(inventoryId, userId, role);
-        case "update":
+        case MemberAction.Update:
           if (!role) throw new Error("Role is required for update");
           return updateMemberRole(inventoryId, userId, role);
-        case "remove":
+        case MemberAction.Remove:
           return removeMember(inventoryId, userId);
         default:
           throw new Error(`Unknown action: ${action}`);

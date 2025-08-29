@@ -27,3 +27,9 @@ export type AuthPayload = {
   email: string;
   role: SystemRole;
 };
+
+export enum MemberAction {
+  Add = "add",
+  Update = "update",
+  Remove = "remove",
+}

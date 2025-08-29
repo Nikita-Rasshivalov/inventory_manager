@@ -1,4 +1,5 @@
 import React, { useState, useRef, useEffect } from "react";
+import { toast } from "react-toastify";
 import {
   InventoryMember,
   InventoryRole,
@@ -19,7 +20,6 @@ interface MemberFormProps {
       action: MemberAction;
     }[]
   ) => Promise<void>;
-  reloadMembers?: () => Promise<void>;
 }
 
 const debounce: number = 300;
@@ -32,7 +32,6 @@ export const MemberForm: React.FC<MemberFormProps> = ({
 }) => {
   const [availableUsers, setAvailableUsers] = useState<User[]>([]);
   const [showDropdown, setShowDropdown] = useState(false);
-
   const containerRef = useRef<HTMLDivElement>(null);
 
   const debouncedSearch = useDebounce(search, debounce);
@@ -45,27 +44,36 @@ export const MemberForm: React.FC<MemberFormProps> = ({
     }
 
     const fetchUsers = async () => {
-      const fetchedUsers = await getAll(debouncedSearch);
-      const filteredUsers = fetchedUsers.filter(
-        (u) => !members.some((m) => m.userId === u.id)
-      );
-      setAvailableUsers(filteredUsers);
-      setShowDropdown(filteredUsers.length > 0);
+      try {
+        const fetchedUsers = await getAll(debouncedSearch);
+        const filteredUsers = fetchedUsers.filter(
+          (u) => !members.some((m) => m.userId === u.id)
+        );
+        setAvailableUsers(filteredUsers);
+        setShowDropdown(filteredUsers.length > 0);
+      } catch (err: any) {
+        toast.error(err.response?.data?.message || "Failed to fetch users");
+      }
     };
 
     fetchUsers();
   }, [debouncedSearch, members, getAll]);
 
   const handleAddMember = async (user: User) => {
-    await updateInventory([
-      {
-        userId: user.id,
-        role: InventoryRole.READER,
-        action: MemberAction.Add,
-      },
-    ]);
-    setAvailableUsers([]);
-    setShowDropdown(false);
+    try {
+      await updateInventory([
+        {
+          userId: user.id,
+          role: InventoryRole.READER,
+          action: MemberAction.Add,
+        },
+      ]);
+      setAvailableUsers([]);
+      setShowDropdown(false);
+      toast.success(`${user.name} added successfully`);
+    } catch (err: any) {
+      toast.error(err.response?.data?.message || `Failed to add ${user.name}`);
+    }
   };
 
   useEffect(() => {
@@ -85,19 +93,17 @@ export const MemberForm: React.FC<MemberFormProps> = ({
 
   return (
     <div className="relative w-full" ref={containerRef}>
-      {showDropdown && (
-        <div className="absolute -top-20 sm:-top-7 left-0 mt-1 w-full max-w-sm sm:max-w-md max-h-60 overflow-auto border border-gray-300 bg-white shadow-lg rounded z-60">
-          {availableUsers.map((user) => (
-            <div
-              key={user.id}
-              className="p-2 hover:bg-blue-100 cursor-pointer break-words"
-              onClick={() => handleAddMember(user)}
-            >
-              {user.name} ({user.email})
-            </div>
-          ))}
-        </div>
-      )}
+      <div className="absolute -top-20 sm:-top-7 left-0 mt-1 w-full max-w-sm sm:max-w-md max-h-60 overflow-auto border border-gray-300 bg-white shadow-lg rounded z-60">
+        {availableUsers.map((user) => (
+          <div
+            key={user.id}
+            className="p-2 hover:bg-blue-100 cursor-pointer break-words"
+            onClick={() => handleAddMember(user)}
+          >
+            {user.name} ({user.email})
+          </div>
+        ))}
+      </div>
     </div>
   );
 };
