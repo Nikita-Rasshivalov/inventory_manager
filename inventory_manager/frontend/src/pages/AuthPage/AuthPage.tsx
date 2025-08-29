@@ -1,10 +1,10 @@
 import { useState } from "react";
 import { toast } from "react-toastify";
-import Socials from "../components/common/Socials";
-import RegisterForm from "../components/Froms/RegisterForm";
-import LoginForm from "../components/Froms/LoginForm";
-import Button from "../components/common/Button";
-import Header from "../components/layout/Header";
+import Header from "../../components/layout/Header";
+import Socials from "../../components/common/Socials";
+import LoginForm from "../../components/Froms/LoginForm";
+import RegisterForm from "../../components/Froms/RegisterForm";
+import Button from "../../components/common/Button";
 
 const AuthPage = () => {
   const [mode, setMode] = useState<"login" | "register">("login");

@@ -1,40 +1,71 @@
 import { useEffect, useState, useCallback } from "react";
 import Toolbar from "../../components/layout/Toolbar";
 import GenericModal from "../../components/layout/Modal";
-import { useSelection } from "../../hooks/useSelection";
-import { useItemStore } from "../../stores/useItemStore";
 import ItemTable from "../../components/Tables/ItemTable/ItemTable";
+import { useItemStore } from "../../stores/useItemStore";
+import { useInventoryStore } from "../../stores/useInventoryStore";
+import { useSelection } from "../../hooks/useSelection";
+import { AccessTab } from "./AccessTab/AccessTab";
+import { InventoryMember } from "../../models/models";
+
+const TABS = [
+  { id: "Items", label: "Items" },
+  { id: "Access", label: "Access" },
+];
+
+type TabId = (typeof TABS)[number]["id"];
 
 const ItemPage = ({ inventoryId }: { inventoryId: number }) => {
+  const { getById } = useInventoryStore();
   const {
     items,
     page,
     totalPages,
-    loading,
+    limit,
     getAll,
     setPage,
-    limit,
     create,
     update,
     delete: deleteItem,
+    loading,
   } = useItemStore();
 
+  const { selectedIds, toggleSelect, clearSelection } = useSelection(items);
+  const [filterText, setFilterText] = useState("");
+
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [activeTab, setActiveTab] = useState<TabId>("Items");
   const [sorting, setSorting] = useState<{
     sortBy?: string;
     sortOrder?: "asc" | "desc";
   }>({});
-
-  const [isModalOpen, setIsModalOpen] = useState(false);
-
-  const { selectedIds, toggleSelect, clearSelection } = useSelection(items);
+  const [inventoryMembers, setInventoryMembers] = useState<InventoryMember[]>(
+    []
+  );
 
   const loadItems = useCallback(() => {
     getAll(inventoryId, page, sorting.sortBy, sorting.sortOrder);
   }, [inventoryId, page, sorting, getAll]);
 
+  const reloadMembers = useCallback(async () => {
+    const inventory = await getById(inventoryId);
+    setInventoryMembers(inventory.members);
+  }, [inventoryId, getById]);
+
   useEffect(() => {
-    loadItems();
-  }, [loadItems]);
+    switch (activeTab) {
+      case "Items":
+        loadItems();
+        setFilterText("");
+        break;
+      case "Access":
+        reloadMembers();
+        setFilterText("");
+        break;
+      default:
+        break;
+    }
+  }, [activeTab, loadItems, reloadMembers]);
 
   const handlePageChange = (p: number) => setPage(p);
 
@@ -66,36 +97,51 @@ const ItemPage = ({ inventoryId }: { inventoryId: number }) => {
   };
 
   return (
-    <div className="max-w-5xl mx-auto p-6 bg-white rounded-lg shadow-md mt-8">
+    <div className="max-w-6xl mx-auto p-6 bg-white rounded-lg shadow-md mt-8">
       <Toolbar
         selectedCount={selectedIds.length}
         totalCount={items.length}
         onDelete={handleDelete}
         onCreate={() => setIsModalOpen(true)}
-        filterText=""
-        onFilterChange={() => {}}
+        tabs={TABS.map((t) => t.label)}
+        activeTab={activeTab}
+        onChangeTab={(tab) => setActiveTab(tab as TabId)}
+        filterText={filterText}
+        onFilterChange={(text) => setFilterText(text)}
       />
 
-      <ItemTable
-        items={items}
-        selectedIds={selectedIds}
-        toggleSelect={toggleSelect}
-        page={page}
-        limit={limit}
-        totalPages={totalPages}
-        onPageChange={handlePageChange}
-        loading={loading}
-        setSorting={setSorting}
-        onUpdate={handleUpdate}
-      />
+      {activeTab === "Items" && (
+        <>
+          <ItemTable
+            items={items}
+            selectedIds={selectedIds}
+            toggleSelect={toggleSelect}
+            page={page}
+            limit={limit}
+            totalPages={totalPages}
+            onPageChange={handlePageChange}
+            loading={loading}
+            setSorting={setSorting}
+            onUpdate={handleUpdate}
+          />
 
-      {isModalOpen && (
-        <GenericModal
-          title="Create Item"
-          fields={[]} // сюда позже передадим поля инвентаря
-          isOpen={isModalOpen}
-          onClose={() => setIsModalOpen(false)}
-          onSubmit={handleCreate}
+          {isModalOpen && (
+            <GenericModal
+              title="Create Item"
+              fields={[]} // позже сюда динамически передадим поля
+              isOpen={isModalOpen}
+              onClose={() => setIsModalOpen(false)}
+              onSubmit={handleCreate}
+            />
+          )}
+        </>
+      )}
+      {activeTab === "Access" && (
+        <AccessTab
+          inventoryId={inventoryId}
+          members={inventoryMembers}
+          reloadMembers={reloadMembers}
+          search={filterText}
         />
       )}
     </div>

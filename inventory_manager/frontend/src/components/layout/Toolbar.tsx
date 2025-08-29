@@ -34,7 +34,7 @@ const Toolbar: React.FC<ToolbarProps> = ({
         <div className="flex gap-2">
           <Button
             onClick={onCreate}
-            className="flex items-center justify-center bg-blue-600 hover:bg-blue-700 text-white rounded-lg p-1 sm:p-2"
+            className="flex items-center justify-center text-white rounded-lg p-1 sm:p-2"
             aria-label="Create Inventory"
           >
             <svg

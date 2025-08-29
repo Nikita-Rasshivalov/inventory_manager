@@ -36,4 +36,11 @@ router.put(
   controller.update
 );
 
+router.patch(
+  "/:inventoryId/members",
+  authMiddleware,
+  authorizeInventoryRole(InventoryRole.OWNER),
+  controller.updateMembers
+);
+
 export default router;

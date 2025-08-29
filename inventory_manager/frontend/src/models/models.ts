@@ -92,6 +92,7 @@ export interface InventoryMember {
 
 export type InventoryPayload = {
   title: string;
+  members?: InventoryMember[];
 };
 
 export interface ItemFieldValue {

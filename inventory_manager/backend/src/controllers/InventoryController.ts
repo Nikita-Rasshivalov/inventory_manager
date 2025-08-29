@@ -53,4 +53,16 @@ export class InventoryController extends BaseController {
       const ids: number[] = req.body.ids;
       return await inventoryService.delete(ids, user.userId);
     });
+
+  updateMembers = (req: Request, res: Response) =>
+    this.handle(res, async () => {
+      const currentUser = (req as any).user;
+      const inventoryId = parseInt(req.params.inventoryId);
+      const updates = req.body.updates;
+      return await inventoryService.updateMembers(
+        inventoryId,
+        currentUser.userId,
+        updates
+      );
+    });
 }

@@ -13,6 +13,11 @@ import {
   getSkip,
 } from "../utils/inventoryUtils.ts";
 import { InventoryQueryParams } from "../models/queries.ts";
+import {
+  addMember,
+  updateMemberRole,
+  removeMember,
+} from "../utils/inventoryMembers.ts";
 
 export class InventoryService {
   async getAll(userId: number, query: InventoryQueryParams) {
@@ -48,7 +53,16 @@ export class InventoryService {
   async getById(id: number, userId: number) {
     const inventory = await prisma.inventory.findFirst({
       where: { id, members: { some: { userId } } },
-      include: { owner: true, members: true, fields: true, items: true },
+      include: {
+        owner: true,
+        members: {
+          include: {
+            user: true,
+          },
+        },
+        fields: true,
+        items: true,
+      },
     });
     if (!inventory) throw new Error("Inventory not found or access denied");
     return inventory;
@@ -90,5 +104,33 @@ export class InventoryService {
       select: { role: true },
     });
     return record?.role ?? null;
+  }
+
+  async updateMembers(
+    inventoryId: number,
+    currentUserId: number,
+    updates: Array<{
+      userId: number;
+      role?: InventoryRole;
+      action: "add" | "update" | "remove";
+    }>
+  ) {
+    await checkPermission(inventoryId, currentUserId, [InventoryRole.OWNER]);
+
+    const promises = updates.map(({ userId, role, action }) => {
+      switch (action) {
+        case "add":
+          return addMember(inventoryId, userId, role);
+        case "update":
+          if (!role) throw new Error("Role is required for update");
+          return updateMemberRole(inventoryId, userId, role);
+        case "remove":
+          return removeMember(inventoryId, userId);
+        default:
+          throw new Error(`Unknown action: ${action}`);
+      }
+    });
+
+    return Promise.all(promises);
   }
 }

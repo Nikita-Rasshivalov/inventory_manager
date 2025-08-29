@@ -2,10 +2,10 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { AuthProvider } from "./contexts/AuthProvider";
 import DashboardPage from "./pages/DashboardPage";
 import PrivateRoute from "./components/common/PrivateRoute";
-import AuthSuccess from "./pages/AuthSuccess";
-import AuthPage from "./pages/AuthPage";
+import AuthSuccess from "./pages/AuthPage/AuthSuccess";
 import { ToastContainer } from "react-toastify";
 import InventoryItemPage from "./pages/InventoryItemPage";
+import AuthPage from "./pages/AuthPage/AuthPage";
 function App() {
   return (
     <BrowserRouter>

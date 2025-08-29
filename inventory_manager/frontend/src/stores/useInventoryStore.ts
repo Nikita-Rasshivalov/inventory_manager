@@ -23,10 +23,18 @@ interface InventoryStore {
   setPage: (page: number) => void;
   setSearch: (search: string) => void;
   setActiveTab: (tab: InventoryRole) => void;
-
   create: (data: InventoryPayload) => Promise<void>;
   update: (id: number, data: Partial<InventoryPayload>) => Promise<void>;
   delete: (ids: number[]) => Promise<string>;
+  getById: (id: number) => Promise<Inventory>;
+  updateMembers: (
+    inventoryId: number,
+    updates: {
+      userId: number;
+      role?: InventoryRole;
+      action: "add" | "update" | "remove";
+    }[]
+  ) => Promise<void>;
 }
 
 export const useInventoryStore = create<InventoryStore>((set, get) => ({
@@ -109,6 +117,32 @@ export const useInventoryStore = create<InventoryStore>((set, get) => ({
       return res.message;
     } catch (err: any) {
       set({ error: err.message || "Failed to delete inventories" });
+      throw err;
+    } finally {
+      set({ loading: false });
+    }
+  },
+
+  getById: async (id: number) => {
+    set({ loading: true, error: null });
+    try {
+      const inventory = await InventoryService.getById(id);
+      return inventory;
+    } catch (err: any) {
+      set({ error: err.message || "Failed to fetch inventory" });
+      throw err;
+    } finally {
+      set({ loading: false });
+    }
+  },
+
+  updateMembers: async (inventoryId, updates) => {
+    set({ loading: true, error: null });
+    try {
+      await InventoryService.updateMembers(inventoryId, updates);
+      await get().getById(inventoryId);
+    } catch (err: any) {
+      set({ error: err.message || "Failed to update members" });
       throw err;
     } finally {
       set({ loading: false });

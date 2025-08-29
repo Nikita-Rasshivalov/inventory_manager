@@ -44,7 +44,7 @@ const ItemTableRow: React.FC<ItemTableRowProps> = ({
           (row.fieldValues ?? []).map((fv: any) => [fv.fieldId, fv.value])
         );
         return (
-          <React.Fragment key={row.id ?? idx}>
+          <React.Fragment key={row.original?.id ?? idx}>
             <ItemCells
               row={row}
               isExpanded={isExpanded}

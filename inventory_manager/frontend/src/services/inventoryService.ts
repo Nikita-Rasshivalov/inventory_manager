@@ -38,4 +38,14 @@ export const InventoryService = {
   delete: async (ids: number[]): Promise<{ message: string }> => {
     return await InventoryApi.delete(ids);
   },
+  updateMembers: async (
+    inventoryId: number,
+    updates: {
+      userId: number;
+      role?: InventoryRole;
+      action: "add" | "update" | "remove";
+    }[]
+  ): Promise<any> => {
+    return await InventoryApi.updateMembers(inventoryId, updates);
+  },
 };

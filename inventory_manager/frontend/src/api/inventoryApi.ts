@@ -8,6 +8,11 @@ export interface PaginatedInventoryResponse {
   totalPages: number;
 }
 
+export interface InventoryMemberUpdate {
+  userId: number;
+  role?: InventoryRole;
+  action: "add" | "update" | "remove";
+}
 export class InventoryApi {
   static async getAll(
     page = 1,
@@ -52,6 +57,16 @@ export class InventoryApi {
       url: `/inventory`,
       headers: { "Content-Type": "application/json" },
       data: { ids: inventoryIds } as any,
+    });
+    return res.data;
+  }
+
+  static async updateMembers(
+    inventoryId: number,
+    updates: InventoryMemberUpdate[]
+  ): Promise<any> {
+    const res = await axiosInstance.patch(`/inventory/${inventoryId}/members`, {
+      updates,
     });
     return res.data;
   }
