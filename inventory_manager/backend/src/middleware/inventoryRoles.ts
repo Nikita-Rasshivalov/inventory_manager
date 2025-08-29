@@ -8,7 +8,7 @@ const inventoryService = new InventoryService();
 export function authorizeInventoryRole(...allowedRoles: InventoryRole[]) {
   return async (req: Request, res: Response, next: NextFunction) => {
     const user = (req as any).user;
-    if (!user) return res.status(401).json({ message: "Unauthorized" });
+    if (!user) return res.status(401).json({ error: "Unauthorized" });
 
     const { inventoryId } = req.params;
     const role = await inventoryService.getUserRole(
@@ -17,7 +17,7 @@ export function authorizeInventoryRole(...allowedRoles: InventoryRole[]) {
     );
 
     if (!role || !allowedRoles.includes(role)) {
-      return res.status(403).json({ message: "Forbidden" });
+      return res.status(403).json({ error: "Forbidden" });
     }
     next();
   };

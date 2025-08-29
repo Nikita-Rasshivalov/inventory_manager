@@ -52,7 +52,7 @@ export const MemberForm: React.FC<MemberFormProps> = ({
         setAvailableUsers(filteredUsers);
         setShowDropdown(filteredUsers.length > 0);
       } catch (err: any) {
-        toast.error(err.response?.data?.message || "Failed to fetch users");
+        toast.error(err.response?.data?.error || "Failed to fetch users");
       }
     };
 
@@ -72,7 +72,7 @@ export const MemberForm: React.FC<MemberFormProps> = ({
       setShowDropdown(false);
       toast.success(`${user.name} added successfully`);
     } catch (err: any) {
-      toast.error(err.response?.data?.message || `Failed to add ${user.name}`);
+      toast.error(err.response?.data?.error || `Failed to add ${user.name}`);
     }
   };
 

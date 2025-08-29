@@ -10,11 +10,11 @@ export async function authorizeInventoryBulkRole(
   next: NextFunction
 ) {
   const user = (req as any).user;
-  if (!user) return res.status(401).json({ message: "Unauthorized" });
+  if (!user) return res.status(401).json({ error: "Unauthorized" });
 
   const ids: number[] = req.body.ids;
   if (!ids || !Array.isArray(ids) || ids.length === 0) {
-    return res.status(400).json({ message: "No inventories provided" });
+    return res.status(400).json({ error: "No inventories provided" });
   }
 
   const roles = await Promise.all(
@@ -24,9 +24,7 @@ export async function authorizeInventoryBulkRole(
   const allowedIds = ids.filter((_, idx) => roles[idx] === InventoryRole.OWNER);
 
   if (!allowedIds.length) {
-    return res
-      .status(403)
-      .json({ message: "Access denied for all inventories" });
+    return res.status(403).json({ error: "Access denied for all inventories" });
   }
 
   (req as any).allowedIds = allowedIds;

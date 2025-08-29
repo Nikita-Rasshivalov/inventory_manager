@@ -74,7 +74,7 @@ const ItemPage = ({ inventoryId }: { inventoryId: number }) => {
         membersSelection.clearSelection();
       }
     } catch (err: any) {
-      toast.error(err.response?.data?.message || "Failed to delete");
+      toast.error(err.response?.data?.error || "Failed to delete");
     }
   };
 
@@ -88,7 +88,7 @@ const ItemPage = ({ inventoryId }: { inventoryId: number }) => {
       });
       setIsModalOpen(false);
     } catch (err: any) {
-      toast.error(err?.message || "Failed to create item");
+      toast.error(err.response?.data?.error || "Failed to create item");
     }
   };
 
@@ -101,7 +101,7 @@ const ItemPage = ({ inventoryId }: { inventoryId: number }) => {
         })),
       });
     } catch (err: any) {
-      toast.error(err.response?.data?.message || "Failed to update item");
+      toast.error(err.response?.data?.error || "Failed to update item");
     }
   };
 
