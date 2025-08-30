@@ -89,11 +89,13 @@ export const MemberForm: React.FC<MemberFormProps> = ({
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
-  if (!showDropdown) return null;
-
   return (
     <div className="relative w-full" ref={containerRef}>
-      <div className="absolute -top-20 sm:-top-7 left-0 mt-1 w-full max-w-sm sm:max-w-md max-h-60 overflow-auto border border-gray-300 bg-white shadow-lg rounded z-60">
+      <div
+        className={`absolute -top-17 sm:-top-7 left-0 mt-1 w-full max-w-sm sm:max-w-md max-h-60 overflow-auto border border-gray-300 bg-white shadow-lg rounded z-60 ${
+          showDropdown ? "block" : "hidden"
+        }`}
+      >
         {availableUsers.map((user) => (
           <div
             key={user.id}
