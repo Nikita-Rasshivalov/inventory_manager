@@ -31,7 +31,7 @@ const Toolbar: React.FC<ToolbarProps> = ({
   return (
     <div className="flex flex-col sm:flex-row gap-2 mb-4 p-2 sm:p-3 bg-gray-50 rounded-lg shadow-sm border border-gray-200">
       <div className="flex flex-row gap-2 items-center w-full sm:w-auto sm:flex-1 sm:justify-start relative">
-        <div className="flex gap-2">
+        <div className="flex gap-2 items-center">
           {onCreate && (
             <Button
               onClick={onCreate}
@@ -85,20 +85,21 @@ const Toolbar: React.FC<ToolbarProps> = ({
               <Search className="w-4 h-4 sm:w-5 sm:h-5" />
             </Button>
           )}
-        </div>
 
-        {showSearch && (
-          <div className="absolute z-50 top-0 w-full left-0 sm:left-22 sm:w-60">
-            <Input
-              type="text"
-              value={filterText}
-              onChange={(e) => onFilterChange(e.target.value)}
-              placeholder="Search..."
-              autoFocus
-              onBlur={() => setShowSearch(false)}
-            />
-          </div>
-        )}
+          {showSearch && (
+            <div className="absolute top-0 left-0 w-full sm:static sm:flex sm:ml-2 sm:flex-shrink-0">
+              <Input
+                type="text"
+                value={filterText}
+                onChange={(e) => onFilterChange(e.target.value)}
+                placeholder="Search..."
+                autoFocus
+                onBlur={() => setShowSearch(false)}
+                className="w-full sm:w-60 h-8 sm:h-10 px-2 sm:px-3 text-sm sm:text-sm"
+              />
+            </div>
+          )}
+        </div>
       </div>
 
       {tabs.length > 0 && onChangeTab && (
