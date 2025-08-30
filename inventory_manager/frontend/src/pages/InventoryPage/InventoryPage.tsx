@@ -84,6 +84,7 @@ const InventoryPage = () => {
       <Toolbar
         selectedCount={selectedIds.length}
         totalCount={inventories.length}
+        hiddenTabs={[InventoryRole.READER, InventoryRole.WRITER]}
         onDelete={handleDelete}
         onCreate={() => setIsModalOpen(true)}
         tabs={tabs}

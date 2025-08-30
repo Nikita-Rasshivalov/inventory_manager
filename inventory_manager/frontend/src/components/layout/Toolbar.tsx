@@ -7,32 +7,38 @@ interface ToolbarProps {
   selectedCount: number;
   totalCount: number;
   onCreate?: () => void;
-  onDelete: () => void;
-  tabs?: string[];
-  activeTab?: string;
-  onChangeTab?: (tab: string) => void;
+  onDelete?: () => void;
+  tabs: string[];
+  activeTab: string;
+  onChangeTab: (tab: string) => void;
   filterText: string;
   onFilterChange: (value: string) => void;
+  hiddenTabs: string[]; // Вкладки, на которых будут скрываться кнопки
+  partialHiddenTabs?: string[]; // Вкладки, на которых скрывается только кнопка "Create"
 }
 
 const Toolbar: React.FC<ToolbarProps> = ({
   selectedCount,
   onCreate,
   onDelete,
-  tabs = [],
+  tabs,
   activeTab,
   onChangeTab,
   filterText,
   onFilterChange,
+  hiddenTabs = [],
+  partialHiddenTabs = [],
 }) => {
   const disabledDelete = selectedCount === 0;
   const [showSearch, setShowSearch] = useState(false);
+  const shouldHideAllButtons = hiddenTabs.includes(activeTab);
+  const shouldHideCreateButton = partialHiddenTabs.includes(activeTab);
 
   return (
     <div className="flex flex-col sm:flex-row gap-2 mb-4 p-2 sm:p-3 bg-gray-50 rounded-lg shadow-sm border border-gray-200">
       <div className="flex flex-row gap-2 items-center w-full sm:w-auto sm:flex-1 sm:justify-start relative">
         <div className="flex gap-2 items-center">
-          {onCreate && (
+          {!shouldHideAllButtons && !shouldHideCreateButton && onCreate && (
             <Button
               onClick={onCreate}
               className="flex items-center justify-center text-white rounded-lg p-1 sm:p-2"
@@ -55,28 +61,32 @@ const Toolbar: React.FC<ToolbarProps> = ({
             </Button>
           )}
 
-          <Button
-            disabled={disabledDelete}
-            onClick={onDelete}
-            className="flex items-center justify-center bg-gray-600 hover:bg-gray-700 disabled:bg-gray-300 text-white rounded-lg p-1 sm:p-2"
-            aria-label="Delete"
-          >
-            <svg
-              className="w-4 h-4 sm:w-5 sm:h-5"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="2"
-              viewBox="0 0 24 24"
+          {/* Если вкладка не в hiddenTabs, показываем кнопку Delete */}
+          {!shouldHideAllButtons && onDelete && (
+            <Button
+              disabled={disabledDelete}
+              onClick={onDelete}
+              className="flex items-center justify-center bg-gray-600 hover:bg-gray-700 disabled:bg-gray-300 text-white rounded-lg p-1 sm:p-2"
+              aria-label="Delete"
             >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                d="M19 7l-1 12a2 2 0 01-2 2H8a2 2 0 01-2-2L5 7m5-4h4m-6 4v12m4-12v12"
-              />
-            </svg>
-          </Button>
+              <svg
+                className="w-4 h-4 sm:w-5 sm:h-5"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  d="M19 7l-1 12a2 2 0 01-2 2H8a2 2 0 01-2-2L5 7m5-4h4m-6 4v12m4-12v12"
+                />
+              </svg>
+            </Button>
+          )}
 
-          {!showSearch && (
+          {/* Если вкладка не в hiddenTabs, показываем кнопку поиска */}
+          {!shouldHideAllButtons && !showSearch && (
             <Button
               onClick={() => setShowSearch(true)}
               className="flex items-center justify-center bg-gray-600 hover:bg-gray-700 disabled:bg-gray-300 text-white rounded-lg p-1 sm:p-2"

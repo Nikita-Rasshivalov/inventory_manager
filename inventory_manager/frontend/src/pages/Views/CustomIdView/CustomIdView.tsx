@@ -21,7 +21,14 @@ const CustomIdView = () => {
   const handleDragEnd = (result: any) => {
     const { source, destination } = result;
 
-    if (!destination) return;
+    if (!destination) {
+      handleRemoveElement(source.index);
+      return;
+    }
+
+    if (destination.index === source.index) {
+      return;
+    }
 
     const reorderedItems = Array.from(idElements);
     const [removed] = reorderedItems.splice(source.index, 1);
@@ -29,6 +36,14 @@ const CustomIdView = () => {
 
     setIdElements(reorderedItems);
     generateLiveExample(reorderedItems);
+  };
+
+  const handleDragUpdate = (update: any) => {
+    const { destination } = update;
+
+    if (!destination) {
+      return;
+    }
   };
 
   const generateLiveExample = (elements: any[]) => {
@@ -92,7 +107,10 @@ const CustomIdView = () => {
         <div className="text-xl text-gray-700">{liveExample}</div>
       </div>
 
-      <DragDropContext onDragEnd={handleDragEnd}>
+      <DragDropContext
+        onDragEnd={handleDragEnd}
+        onDragUpdate={handleDragUpdate}
+      >
         <Droppable droppableId="droppable">
           {(provided) => (
             <div
@@ -127,8 +145,8 @@ const CustomIdView = () => {
           onChange={(e) => setNewElementType(e.target.value)}
           options={elementOptions}
         />
-        <Button onClick={handleAddElement} className="w-30 h-6 text-sm ">
-          Add
+        <Button onClick={handleAddElement} className="w-30 h-6 text-sm">
+          Add Element
         </Button>
       </div>
     </div>

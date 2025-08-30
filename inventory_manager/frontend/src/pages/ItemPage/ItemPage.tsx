@@ -121,10 +121,10 @@ const ItemPage = ({ inventoryId }: { inventoryId: number }) => {
         selectedCount={selectedCount}
         totalCount={totalCount}
         onDelete={handleDelete}
-        onCreate={
-          activeTab === TabId.Items ? () => setIsModalOpen(true) : undefined
-        }
+        onCreate={() => setIsModalOpen(true)}
         tabs={TABS}
+        hiddenTabs={[TabId.CustomId]}
+        partialHiddenTabs={[TabId.Access]}
         activeTab={activeTab}
         onChangeTab={(tab) => setActiveTab(tab as TabId)}
         filterText={filterText}
