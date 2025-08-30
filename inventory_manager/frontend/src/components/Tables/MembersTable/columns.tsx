@@ -1,11 +1,13 @@
 import { ColumnDef } from "@tanstack/react-table";
 import { InventoryMember } from "../../../models/models";
 import SelectedColumns from "../../common/Table/SelectedColumns";
+import { RoleCell } from "./RoleCell";
 
 export const getMemberColumns = (
-  members: InventoryMember[],
+  inventoryId: number,
   selectedIds: number[],
-  toggleSelect: (userId: number) => void
+  toggleSelect: (userId: number) => void,
+  members: InventoryMember[]
 ): ColumnDef<InventoryMember>[] => [
   {
     id: "select",
@@ -58,9 +60,10 @@ export const getMemberColumns = (
     enableSorting: true,
   },
   {
-    accessorFn: (row) => row.role,
     id: "role",
     header: "Role",
-    enableSorting: true,
+    cell: ({ row }) => (
+      <RoleCell member={row.original} inventoryId={inventoryId} />
+    ),
   },
 ];

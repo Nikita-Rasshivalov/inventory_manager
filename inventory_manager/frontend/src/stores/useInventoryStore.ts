@@ -4,6 +4,7 @@ import {
   InventoryPayload,
   InventoryMember,
   InventoryRole,
+  MemberAction,
 } from "../models/models";
 import { InventoryService } from "../services/inventoryService";
 
@@ -18,6 +19,13 @@ interface InventoryStore {
   activeTab: InventoryRole;
   loading: boolean;
   error: string | null;
+
+  editingRoleUserId: number | null;
+  editingRoleValue: InventoryRole | null;
+  startEditRole: (userId: number, currentRole: InventoryRole) => void;
+  setEditingRoleValue: (role: InventoryRole) => void;
+  saveEditRole: (inventoryId: number) => Promise<void>;
+  cancelEditRole: () => void;
 
   getAll: (
     page?: number,
@@ -38,7 +46,7 @@ interface InventoryStore {
     updates: {
       userId: number;
       role?: InventoryRole;
-      action: "add" | "update" | "remove";
+      action: MemberAction;
     }[]
   ) => Promise<void>;
 }
@@ -54,6 +62,30 @@ export const useInventoryStore = create<InventoryStore>((set, get) => ({
   activeTab: InventoryRole.OWNER,
   loading: false,
   error: null,
+
+  editingRoleUserId: null,
+  editingRoleValue: null,
+
+  startEditRole: (userId, currentRole) =>
+    set({ editingRoleUserId: userId, editingRoleValue: currentRole }),
+  setEditingRoleValue: (role) => set({ editingRoleValue: role }),
+  saveEditRole: async (inventoryId) => {
+    const { editingRoleUserId, editingRoleValue } = get();
+    if (!editingRoleUserId || !editingRoleValue) return;
+    try {
+      await get().updateMembers(inventoryId, [
+        {
+          userId: editingRoleUserId,
+          role: editingRoleValue,
+          action: MemberAction.Update,
+        },
+      ]);
+    } finally {
+      set({ editingRoleUserId: null, editingRoleValue: null });
+    }
+  },
+  cancelEditRole: () =>
+    set({ editingRoleUserId: null, editingRoleValue: null }),
 
   getAll: async (
     page = get().page,

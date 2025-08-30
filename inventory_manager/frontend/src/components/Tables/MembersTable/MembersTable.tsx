@@ -6,17 +6,24 @@ import { Table } from "../../common/Table/Table";
 import { getMemberColumns } from "./columns";
 
 interface MembersTableProps {
+  inventoryId: number;
   members: InventoryMember[];
   selectedIds: number[];
   toggleSelect: (userId: number) => void;
 }
 
 export const MembersTable: React.FC<MembersTableProps> = ({
+  inventoryId,
   members,
   selectedIds,
   toggleSelect,
 }) => {
-  const columns = getMemberColumns(members, selectedIds, toggleSelect);
+  const columns = getMemberColumns(
+    inventoryId,
+    selectedIds,
+    toggleSelect,
+    members
+  );
 
   return (
     <div className="border border-gray-200 rounded bg-white w-full overflow-auto">

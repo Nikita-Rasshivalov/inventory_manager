@@ -55,6 +55,7 @@ export const AccessTab: React.FC<AccessTabProps> = ({
       />
       <div className="border border-gray-200 rounded bg-white w-full overflow-auto">
         <MembersTable
+          inventoryId={inventoryId}
           members={members}
           selectedIds={selectedIds}
           toggleSelect={toggleSelect}
