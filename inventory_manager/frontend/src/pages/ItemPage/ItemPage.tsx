@@ -7,13 +7,15 @@ import { useSelection } from "../../hooks/useSelection";
 import { MemberAction } from "../../models/models";
 import { AccessView } from "../Views/AccessView/AccessView";
 import { ItemsView } from "../Views/ItemsView/ItemsView";
+import CustomIdView from "../Views/CustomIdView/CustomIdView";
 
 enum TabId {
   Items = "Items",
   Access = "Access",
+  CustomId = "CustomId",
 }
 
-const TABS: TabId[] = [TabId.Items, TabId.Access];
+const TABS: TabId[] = [TabId.Items, TabId.Access, TabId.CustomId];
 
 const ItemPage = ({ inventoryId }: { inventoryId: number }) => {
   const {
@@ -157,6 +159,8 @@ const ItemPage = ({ inventoryId }: { inventoryId: number }) => {
           toggleSelect={membersSelection.toggleSelect}
         />
       )}
+
+      {activeTab === TabId.CustomId && <CustomIdView />}
     </div>
   );
 };

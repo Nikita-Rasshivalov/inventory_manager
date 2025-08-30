@@ -1,6 +1,7 @@
 import { Request, Response } from "express";
 import { ItemService } from "../services/ItemService.ts";
 import { BaseController } from "./BaseController.ts";
+import { generateUniqueCustomId } from "../utils/itemUtils.ts";
 
 const itemService = new ItemService();
 
@@ -39,6 +40,7 @@ export class ItemController extends BaseController {
         sortOrder
       );
     });
+
   getById = (req: Request, res: Response) =>
     this.handle(res, async () => {
       const inventoryId = parseInt(req.params.inventoryId);
@@ -51,6 +53,14 @@ export class ItemController extends BaseController {
       const inventoryId = parseInt(req.params.inventoryId);
       const itemId = parseInt(req.params.itemId);
       const data = req.body;
+
+      if (data.customIdFormat) {
+        data.customId = await generateUniqueCustomId(
+          inventoryId,
+          data.customIdFormat
+        );
+      }
+
       return await itemService.update(inventoryId, itemId, data);
     });
 

@@ -109,7 +109,7 @@ const Toolbar: React.FC<ToolbarProps> = ({
               key={tab}
               onClick={() => onChangeTab(tab)}
               active={activeTab === tab}
-              className="flex-1 px-2 py-1 rounded-lg text-sm sm:text-base font-medium truncate"
+              className="flex-1 px-2 py-1 rounded-lg text-xs sm:text-sm md:text-base font-medium truncate"
             >
               {tab}
             </Button>

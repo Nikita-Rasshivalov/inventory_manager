@@ -15,6 +15,7 @@ export async function generateCustomId(
   formatParts: CustomIdPart[]
 ): Promise<string> {
   const values: string[] = [];
+
   for (const part of formatParts) {
     switch (part.type) {
       case "text":
@@ -40,5 +41,16 @@ export async function generateCustomId(
         break;
     }
   }
-  return values.join("-");
+
+  const customId = values.join("-");
+
+  const existingItem = await prisma.item.findFirst({
+    where: { inventoryId, customId },
+  });
+
+  if (existingItem) {
+    return generateCustomId(inventoryId, formatParts);
+  }
+
+  return customId;
 }

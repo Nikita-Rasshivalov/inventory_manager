@@ -69,7 +69,9 @@ export class ItemService {
       validIdsSet.has(fv.fieldId)
     );
 
-    const customId = await generateUniqueCustomId(inventoryId, customIdFormat);
+    const customId = customIdFormat
+      ? await generateUniqueCustomId(inventoryId, customIdFormat)
+      : undefined;
 
     const item = await prisma.item.create({
       data: {
