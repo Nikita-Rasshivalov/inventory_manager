@@ -1,5 +1,10 @@
 import { InventoryApi, PaginatedInventoryResponse } from "../api/inventoryApi";
-import { Inventory, InventoryPayload, InventoryRole } from "../models/models";
+import {
+  Inventory,
+  InventoryPayload,
+  InventoryRole,
+  MemberAction,
+} from "../models/models";
 
 export const InventoryService = {
   getAll: async (
@@ -43,7 +48,7 @@ export const InventoryService = {
     updates: {
       userId: number;
       role?: InventoryRole;
-      action: "add" | "update" | "remove";
+      action: MemberAction;
     }[]
   ): Promise<any> => {
     return await InventoryApi.updateMembers(inventoryId, updates);

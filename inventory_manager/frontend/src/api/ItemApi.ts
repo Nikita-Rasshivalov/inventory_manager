@@ -11,8 +11,8 @@ export interface PaginatedItemResponse {
 export class ItemApi {
   static async getAll(
     inventoryId: number,
-    page = 1,
-    limit = 10,
+    page: number,
+    limit: number,
     sortBy?: string,
     sortOrder?: "asc" | "desc"
   ): Promise<PaginatedItemResponse> {

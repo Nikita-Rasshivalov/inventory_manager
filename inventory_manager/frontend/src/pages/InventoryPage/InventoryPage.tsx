@@ -34,11 +34,13 @@ const InventoryPage = () => {
   } = useInventoryStore();
 
   const debouncedSearch = useDebounce(search, debouce);
-
   const [sorting, setSorting] = useState<{
     sortBy?: string;
     sortOrder?: "asc" | "desc";
-  }>({});
+  }>({
+    sortBy: "created",
+    sortOrder: "desc",
+  });
   const [isModalOpen, setIsModalOpen] = useState(false);
 
   const { selectedIds, toggleSelect, clearSelection } =

@@ -1,4 +1,9 @@
-import { Inventory, InventoryPayload, InventoryRole } from "../models/models";
+import {
+  Inventory,
+  InventoryPayload,
+  InventoryRole,
+  MemberAction,
+} from "../models/models";
 import axiosInstance from "../services/axiosInstance";
 
 export interface PaginatedInventoryResponse {
@@ -11,13 +16,13 @@ export interface PaginatedInventoryResponse {
 export interface InventoryMemberUpdate {
   userId: number;
   role?: InventoryRole;
-  action: "add" | "update" | "remove";
+  action: MemberAction;
 }
 export class InventoryApi {
   static async getAll(
-    page = 1,
-    limit = 10,
-    search = "",
+    page: number,
+    limit: number,
+    search: string,
     sortBy: string = "",
     sortOrder: "asc" | "desc" = "asc",
     role?: InventoryRole
