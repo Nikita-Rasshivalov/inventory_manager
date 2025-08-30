@@ -37,6 +37,7 @@ export const getInventoryColumns = (
         type="checkbox"
         checked={selectedIds.includes(row.original.id)}
         onChange={() => toggleSelect(row.original.id)}
+        onClick={(e) => e.stopPropagation()}
       />
     ),
     size: 40,
