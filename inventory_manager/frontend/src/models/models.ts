@@ -39,6 +39,7 @@ export interface Inventory {
   members: InventoryMember[];
   fields: Field[];
   items: Item[];
+  customIdFormat?: string;
 }
 
 export interface Item {
@@ -93,6 +94,7 @@ export interface InventoryMember {
 export type InventoryPayload = {
   title: string;
   members?: InventoryMember[];
+  customIdFormat?: CustomIdPart[];
 };
 
 export interface ItemFieldValue {

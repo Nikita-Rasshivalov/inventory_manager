@@ -1,73 +1,55 @@
 import { Request, Response } from "express";
 import { ItemService } from "../services/ItemService.ts";
-import { BaseController } from "./BaseController.ts";
-import { generateUniqueCustomId } from "../utils/itemUtils.ts";
 
 const itemService = new ItemService();
 
-export class ItemController extends BaseController {
-  create = (req: Request, res: Response) =>
-    this.handle(
-      res,
-      async () => {
-        const inventoryId = parseInt(req.params.inventoryId);
-        const userId = (req as any).user.userId;
-        const data = req.body;
-        const customIdFormat = data.customIdFormat;
-        return await itemService.create(
-          inventoryId,
-          userId,
-          data,
-          customIdFormat
-        );
-      },
-      201
+export class ItemController {
+  create = async (req: Request, res: Response) => {
+    const inventoryId = parseInt(req.params.inventoryId);
+    const userId = (req as any).user.userId;
+    const data = req.body;
+
+    const item = await itemService.create(inventoryId, userId, data);
+    res.status(201).json(item);
+  };
+
+  getAll = async (req: Request, res: Response) => {
+    const inventoryId = parseInt(req.params.inventoryId);
+    const page = parseInt(req.query.page as string) || 1;
+    const limit = parseInt(req.query.limit as string) || 8;
+    const sortBy = req.query.sortBy as string;
+    const sortOrder = (req.query.sortOrder as "asc" | "desc") || "asc";
+
+    const result = await itemService.getAll(
+      inventoryId,
+      page,
+      limit,
+      sortBy,
+      sortOrder
     );
+    res.json(result);
+  };
 
-  getAll = (req: Request, res: Response) =>
-    this.handle(res, async () => {
-      const inventoryId = parseInt(req.params.inventoryId);
-      const page = parseInt(req.query.page as string);
-      const limit = parseInt(req.query.limit as string);
-      const sortBy = req.query.sortBy as string;
-      const sortOrder = req.query.sortOrder as "asc" | "desc";
+  getById = async (req: Request, res: Response) => {
+    const inventoryId = parseInt(req.params.inventoryId);
+    const itemId = parseInt(req.params.itemId);
+    const item = await itemService.getById(inventoryId, itemId);
+    res.json(item);
+  };
 
-      return await itemService.getAll(
-        inventoryId,
-        page,
-        limit,
-        sortBy,
-        sortOrder
-      );
-    });
+  update = async (req: Request, res: Response) => {
+    const inventoryId = parseInt(req.params.inventoryId);
+    const itemId = parseInt(req.params.itemId);
+    const data = req.body;
 
-  getById = (req: Request, res: Response) =>
-    this.handle(res, async () => {
-      const inventoryId = parseInt(req.params.inventoryId);
-      const itemId = parseInt(req.params.itemId);
-      return await itemService.getById(inventoryId, itemId);
-    });
+    const item = await itemService.update(inventoryId, itemId, data);
+    res.json(item);
+  };
 
-  update = (req: Request, res: Response) =>
-    this.handle(res, async () => {
-      const inventoryId = parseInt(req.params.inventoryId);
-      const itemId = parseInt(req.params.itemId);
-      const data = req.body;
-
-      if (data.customIdFormat) {
-        data.customId = await generateUniqueCustomId(
-          inventoryId,
-          data.customIdFormat
-        );
-      }
-
-      return await itemService.update(inventoryId, itemId, data);
-    });
-
-  delete = (req: Request, res: Response) =>
-    this.handle(res, async () => {
-      const inventoryId = parseInt(req.params.inventoryId);
-      const itemId = parseInt(req.params.itemId);
-      return await itemService.delete(inventoryId, itemId);
-    });
+  delete = async (req: Request, res: Response) => {
+    const inventoryId = parseInt(req.params.inventoryId);
+    const itemId = parseInt(req.params.itemId);
+    const item = await itemService.delete(inventoryId, itemId);
+    res.json(item);
+  };
 }

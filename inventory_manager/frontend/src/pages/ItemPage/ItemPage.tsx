@@ -116,7 +116,7 @@ const ItemPage = ({ inventoryId }: { inventoryId: number }) => {
     activeTab === TabId.Items ? items.length : inventoryMembers.length;
 
   return (
-    <div className="max-w-6xl mx-auto p-6 bg-white rounded-lg shadow-md mt-8">
+    <div className="max-w-6xl mx-auto p-6 bg-white rounded-lg shadow-md mt-1">
       <Toolbar
         selectedCount={selectedCount}
         totalCount={totalCount}
@@ -160,7 +160,9 @@ const ItemPage = ({ inventoryId }: { inventoryId: number }) => {
         />
       )}
 
-      {activeTab === TabId.CustomId && <CustomIdView />}
+      {activeTab === TabId.CustomId && (
+        <CustomIdView inventoryId={inventoryId} />
+      )}
     </div>
   );
 };

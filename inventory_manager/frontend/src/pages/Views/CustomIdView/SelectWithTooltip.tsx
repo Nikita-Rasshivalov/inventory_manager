@@ -3,7 +3,7 @@ import Select from "../../../components/common/Select";
 
 interface Option {
   label: string;
-  value: string;
+  type: string;
   tooltip: string;
 }
 
@@ -20,10 +20,14 @@ const SelectWithTooltip: React.FC<SelectWithTooltipProps> = ({
 }) => {
   return (
     <div>
-      <Select value={value} onChange={onChange}>
+      <Select
+        value={value}
+        onChange={onChange}
+        className="min-[425px]:w-64 min-[425px]:h-8"
+      >
         <option value="">Select an element</option>
         {options.map((option) => (
-          <option key={option.value} value={option.value}>
+          <option key={option.type} value={option.type}>
             {option.label}
           </option>
         ))}

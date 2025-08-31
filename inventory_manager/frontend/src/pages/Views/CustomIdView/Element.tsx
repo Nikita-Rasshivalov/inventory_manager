@@ -8,7 +8,7 @@ interface IdElementProps {
   onRemove: () => void;
 }
 
-const IdElement: React.FC<IdElementProps> = ({ item, provided, onRemove }) => {
+const Element: React.FC<IdElementProps> = ({ item, provided, onRemove }) => {
   return (
     <div
       className="flex items-center justify-between p-3 bg-white rounded-md shadow-sm"
@@ -18,7 +18,10 @@ const IdElement: React.FC<IdElementProps> = ({ item, provided, onRemove }) => {
     >
       <div className="flex items-center space-x-4">
         <Tooltip title={item.tooltip} placement="top">
-          <span className="text-lg">{item.label}</span>
+          <span className="text-lg">
+            {item.label}
+            {item.type === "fixedText" && item.value ? `: ${item.value}` : ""}
+          </span>
         </Tooltip>
       </div>
       <div className="space-x-4">
@@ -30,4 +33,4 @@ const IdElement: React.FC<IdElementProps> = ({ item, provided, onRemove }) => {
   );
 };
 
-export default IdElement;
+export default Element;

@@ -69,15 +69,24 @@ export class InventoryService {
     return inventory;
   }
 
-  async update(id: number, data: Partial<{ title: string }>, userId: number) {
+  async update(
+    id: number,
+    data: Partial<{ title: string; customIdFormat?: any[] }>,
+    userId: number
+  ) {
     await checkPermission(id, userId, [
       InventoryRole.OWNER,
       InventoryRole.WRITER,
     ]);
+    const updateData: any = { ...data };
+
+    if (data.customIdFormat) {
+      updateData.customIdFormat = JSON.stringify(data.customIdFormat);
+    }
 
     return prisma.inventory.update({
       where: { id },
-      data,
+      data: updateData,
       include: { members: true, owner: true },
     });
   }

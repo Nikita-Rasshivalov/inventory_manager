@@ -26,7 +26,7 @@ const InventoryItemPage = () => {
   return (
     <>
       <Header />
-      <div className="max-w-5xl mx-auto p-6 mt-8 bg-white rounded-lg shadow-md">
+      <div className="max-w-5xl mx-auto p-6 mt-1 bg-white rounded-lg shadow-md">
         <div className="flex items-center gap-2 mb-6">
           <ArrowLeft
             size={20}

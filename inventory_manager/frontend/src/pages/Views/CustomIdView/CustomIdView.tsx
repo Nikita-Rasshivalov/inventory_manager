@@ -1,154 +1,68 @@
-import { useState } from "react";
-import { DragDropContext, Droppable, Draggable } from "@hello-pangea/dnd";
-import { format as formatDateFn } from "date-fns";
-import { v4 as uuidv4 } from "uuid";
-import IdElement from "./IdElement";
+import { useEffect, useState } from "react";
 import {
-  generateRandom32,
-  generateRandom20,
-  generateRandom6,
-  generateRandom9,
-} from "./randomGenerators";
-import SelectWithTooltip from "./SelectWithTooltip";
-import Button from "../../../components/common/Button";
-import { elementOptions } from "./elementOptions";
+  generateLiveExample,
+  generateTemplate,
+} from "../../../utils/customIdUtils";
+import { useInventoryStore } from "../../../stores/useInventoryStore";
+import { toast } from "react-toastify";
+import { elementMapper } from "./elementMapper";
+import { ElementsList } from "./ElementsList";
+import { CustomIdControls } from "./CustomIdControls";
 
-const CustomIdView = () => {
+const CustomIdView = ({ inventoryId }: { inventoryId: number }) => {
   const [idElements, setIdElements] = useState<any[]>([]);
   const [liveExample, setLiveExample] = useState<string>("");
   const [newElementType, setNewElementType] = useState<string>("");
+  const [fixedTextValue, setFixedTextValue] = useState<string>("");
 
-  const handleDragEnd = (result: any) => {
-    const { source, destination } = result;
+  const { customIdTemplate, loadCustomIdTemplate, update } =
+    useInventoryStore();
 
-    if (!destination) {
-      handleRemoveElement(source.index);
-      return;
+  useEffect(() => {
+    const fetchTemplate = async () => await loadCustomIdTemplate(inventoryId);
+    fetchTemplate();
+  }, [inventoryId, loadCustomIdTemplate]);
+
+  useEffect(() => {
+    const templateArray = Array.isArray(customIdTemplate)
+      ? customIdTemplate
+      : JSON.parse(customIdTemplate || "[]");
+
+    const mappedElements = templateArray.map(elementMapper);
+
+    setIdElements(mappedElements);
+    setLiveExample(generateLiveExample(mappedElements));
+  }, [customIdTemplate]);
+
+  const handleSaveTemplate = async () => {
+    const template = generateTemplate(idElements);
+    try {
+      await update(inventoryId, { customIdFormat: template });
+      toast.success("Template saved successfully!");
+    } catch (err: any) {
+      toast.error("Failed to save template", err);
     }
-
-    if (destination.index === source.index) {
-      return;
-    }
-
-    const reorderedItems = Array.from(idElements);
-    const [removed] = reorderedItems.splice(source.index, 1);
-    reorderedItems.splice(destination.index, 0, removed);
-
-    setIdElements(reorderedItems);
-    generateLiveExample(reorderedItems);
-  };
-
-  const handleDragUpdate = (update: any) => {
-    const { destination } = update;
-
-    if (!destination) {
-      return;
-    }
-  };
-
-  const generateLiveExample = (elements: any[]) => {
-    const example = elements
-      .map((el) => {
-        switch (el.type) {
-          case "fixedText":
-            return el.value;
-          case "random32":
-            return generateRandom32();
-          case "random20":
-            return generateRandom20();
-          case "random6":
-            return generateRandom6();
-          case "random9":
-            return generateRandom9();
-          case "guid":
-            return uuidv4();
-          case "datetime":
-            return formatDateFn(new Date(), "yyyyMMddHHmmss");
-          case "sequence":
-            return 1 + elements.length;
-          default:
-            return "";
-        }
-      })
-      .join("-");
-
-    setLiveExample(example);
-  };
-
-  const handleAddElement = () => {
-    if (!newElementType) return;
-
-    const newElement = {
-      type: newElementType,
-      value: "",
-      label:
-        elementOptions.find((opt) => opt.value === newElementType)?.label || "",
-      tooltip:
-        elementOptions.find((opt) => opt.value === newElementType)?.tooltip ||
-        "",
-    };
-    const updatedElements = [...idElements, newElement];
-    setIdElements(updatedElements);
-    generateLiveExample(updatedElements);
-  };
-
-  const handleRemoveElement = (index: number) => {
-    const updatedElements = idElements.filter((_, i) => i !== index);
-    setIdElements(updatedElements);
-    generateLiveExample(updatedElements);
   };
 
   return (
     <div className="space-y-6">
       <h2 className="text-2xl font-semibold">Customize ID Format</h2>
-
-      <div className="p-4 rounded-md bg-gray-50">
-        <h3 className="text-lg font-medium">Live Example:</h3>
-        <div className="text-xl text-gray-700">{liveExample}</div>
-      </div>
-
-      <DragDropContext
-        onDragEnd={handleDragEnd}
-        onDragUpdate={handleDragUpdate}
-      >
-        <Droppable droppableId="droppable">
-          {(provided) => (
-            <div
-              className="space-y-4"
-              {...provided.droppableProps}
-              ref={provided.innerRef}
-            >
-              {idElements.map((item, index) => (
-                <Draggable
-                  key={item.label}
-                  draggableId={item.label}
-                  index={index}
-                >
-                  {(provided) => (
-                    <IdElement
-                      item={item}
-                      provided={provided}
-                      onRemove={() => handleRemoveElement(index)}
-                    />
-                  )}
-                </Draggable>
-              ))}
-              {provided.placeholder}
-            </div>
-          )}
-        </Droppable>
-      </DragDropContext>
-
-      <div className="flex items-center space-x-4">
-        <SelectWithTooltip
-          value={newElementType}
-          onChange={(e) => setNewElementType(e.target.value)}
-          options={elementOptions}
-        />
-        <Button onClick={handleAddElement} className="w-30 h-6 text-sm">
-          Add Element
-        </Button>
-      </div>
+      <CustomIdControls
+        newElementType={newElementType}
+        setNewElementType={setNewElementType}
+        fixedTextValue={fixedTextValue}
+        setFixedTextValue={setFixedTextValue}
+        idElements={idElements}
+        setIdElements={setIdElements}
+        liveExample={liveExample}
+        onSave={handleSaveTemplate}
+        setLiveExample={setLiveExample}
+      />
+      <ElementsList
+        elements={idElements}
+        setElements={setIdElements}
+        setLiveExample={setLiveExample}
+      />
     </div>
   );
 };

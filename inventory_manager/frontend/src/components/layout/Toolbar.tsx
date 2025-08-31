@@ -13,8 +13,8 @@ interface ToolbarProps {
   onChangeTab: (tab: string) => void;
   filterText: string;
   onFilterChange: (value: string) => void;
-  hiddenTabs: string[]; // Вкладки, на которых будут скрываться кнопки
-  partialHiddenTabs?: string[]; // Вкладки, на которых скрывается только кнопка "Create"
+  hiddenTabs: string[];
+  partialHiddenTabs?: string[];
 }
 
 const Toolbar: React.FC<ToolbarProps> = ({
@@ -61,7 +61,6 @@ const Toolbar: React.FC<ToolbarProps> = ({
             </Button>
           )}
 
-          {/* Если вкладка не в hiddenTabs, показываем кнопку Delete */}
           {!shouldHideAllButtons && onDelete && (
             <Button
               disabled={disabledDelete}
@@ -85,7 +84,6 @@ const Toolbar: React.FC<ToolbarProps> = ({
             </Button>
           )}
 
-          {/* Если вкладка не в hiddenTabs, показываем кнопку поиска */}
           {!shouldHideAllButtons && !showSearch && (
             <Button
               onClick={() => setShowSearch(true)}

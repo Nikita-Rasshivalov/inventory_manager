@@ -73,6 +73,7 @@ model Inventory {
   members   InventoryMember[]
   fields    Field[]
   items     Item[]
+  customIdFormat Json? 
 }
 
 model InventoryMember {

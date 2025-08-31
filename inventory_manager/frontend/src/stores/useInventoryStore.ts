@@ -5,12 +5,14 @@ import {
   InventoryMember,
   InventoryRole,
   MemberAction,
+  CustomIdPart,
 } from "../models/models";
 import { InventoryService } from "../services/inventoryService";
 
 interface InventoryStore {
   inventories: Inventory[];
   inventoryMembers: InventoryMember[];
+  customIdTemplate: CustomIdPart[];
   total: number;
   page: number;
   totalPages: number;
@@ -49,11 +51,18 @@ interface InventoryStore {
       action: MemberAction;
     }[]
   ) => Promise<void>;
+
+  loadCustomIdTemplate: (inventoryId: number) => Promise<void>;
+  saveCustomIdTemplate: (
+    inventoryId: number,
+    template: CustomIdPart[]
+  ) => Promise<void>;
 }
 
 export const useInventoryStore = create<InventoryStore>((set, get) => ({
   inventories: [],
   inventoryMembers: [],
+  customIdTemplate: [],
   total: 0,
   page: 1,
   totalPages: 1,
@@ -138,7 +147,12 @@ export const useInventoryStore = create<InventoryStore>((set, get) => ({
   update: async (id: number, data: Partial<InventoryPayload>) => {
     set({ loading: true, error: null });
     try {
-      await InventoryService.update(id, data);
+      const payload: any = { ...data };
+      if (data.customIdFormat) {
+        payload.customIdFormat = JSON.stringify(data.customIdFormat);
+      }
+      await InventoryService.update(id, payload);
+      if (data.customIdFormat) set({ customIdTemplate: data.customIdFormat });
       await get().getAll();
     } catch (err: any) {
       set({ error: err.message || "Failed to update inventory" });
@@ -166,7 +180,13 @@ export const useInventoryStore = create<InventoryStore>((set, get) => ({
     set({ loading: true, error: null, inventoryMembers: [] });
     try {
       const inventory = await InventoryService.getById(id);
-      set({ inventoryMembers: inventory.members });
+      const template: CustomIdPart[] = inventory.customIdFormat
+        ? JSON.parse(inventory.customIdFormat)
+        : [];
+      set({
+        inventoryMembers: inventory.members,
+        customIdTemplate: template,
+      });
       return inventory;
     } catch (err: any) {
       set({ error: err.message || "Failed to fetch inventory" });
@@ -184,6 +204,34 @@ export const useInventoryStore = create<InventoryStore>((set, get) => ({
       set({ inventoryMembers: inventory.members });
     } catch (err: any) {
       set({ error: err.message || "Failed to update members" });
+      throw err;
+    } finally {
+      set({ loading: false });
+    }
+  },
+
+  loadCustomIdTemplate: async (inventoryId) => {
+    set({ loading: true, error: null });
+    try {
+      const inventory = await InventoryService.getById(inventoryId);
+      const template: CustomIdPart[] = inventory.customIdFormat
+        ? JSON.parse(inventory.customIdFormat)
+        : [];
+      set({ customIdTemplate: template });
+    } catch (err: any) {
+      set({ error: err.message || "Failed to load template" });
+    } finally {
+      set({ loading: false });
+    }
+  },
+
+  saveCustomIdTemplate: async (inventoryId, template) => {
+    set({ loading: true, error: null });
+    try {
+      await get().update(inventoryId, { customIdFormat: template });
+      set({ customIdTemplate: template });
+    } catch (err: any) {
+      set({ error: err.message || "Failed to save template" });
       throw err;
     } finally {
       set({ loading: false });

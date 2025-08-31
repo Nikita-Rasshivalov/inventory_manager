@@ -7,21 +7,20 @@ import {
   checkVersion,
   generateUniqueCustomId,
 } from "../utils/itemUtils.ts";
-import { CustomIdPart } from "../utils/customId.ts";
+import { generateCustomId, CustomIdPart } from "../utils/customId.ts";
+import { UpdateItemData } from "../models/queries.ts";
 
 export class ItemService {
   async getAll(
     inventoryId: number,
     page = 1,
     limit = 8,
-    sortBy: string,
-    sortOrder: "asc" | "desc"
+    sortBy?: string,
+    sortOrder: "asc" | "desc" = "asc"
   ) {
     const skip = (page - 1) * limit;
     const orderBy: Record<string, "asc" | "desc"> = {};
-    if (sortBy) {
-      orderBy[sortBy] = sortOrder;
-    }
+    if (sortBy) orderBy[sortBy] = sortOrder;
 
     const [items, total] = await prisma.$transaction([
       prisma.item.findMany({
@@ -39,47 +38,44 @@ export class ItemService {
       prisma.item.count({ where: { inventoryId, deleted: false } }),
     ]);
 
-    const totalPages = Math.ceil(total / limit);
-
-    return { items, total, page, totalPages };
+    return { items, total, page, totalPages: Math.ceil(total / limit) };
   }
 
   async getById(inventoryId: number, itemId: number) {
-    return getItemOrThrow(inventoryId, itemId).then((item) =>
-      prisma.item.findFirst({
-        where: { id: item.id },
-        include: {
-          fieldValues: true,
-          createdBy: true,
-          likes: true,
-          comments: true,
-        },
-      })
-    );
+    const item = await getItemOrThrow(inventoryId, itemId);
+    return prisma.item.findFirst({
+      where: { id: item.id },
+      include: {
+        fieldValues: true,
+        createdBy: true,
+        likes: true,
+        comments: true,
+      },
+    });
   }
 
   async create(
     inventoryId: number,
     userId: number,
-    data: any,
-    customIdFormat?: CustomIdPart[]
+    data: { fieldValues?: any[]; customIdFormat?: CustomIdPart[] }
   ) {
     const validIdsSet = await getValidFieldIds(inventoryId);
-    const fieldValues = (data.fieldValues || []).filter((fv: any) =>
+    const fieldValues = (data.fieldValues || []).filter((fv) =>
       validIdsSet.has(fv.fieldId)
     );
 
-    const customId = customIdFormat
-      ? await generateUniqueCustomId(inventoryId, customIdFormat)
-      : undefined;
+    let customId: string | undefined;
+    if (data.customIdFormat) {
+      customId = await generateCustomId(inventoryId, data.customIdFormat);
+    }
 
-    const item = await prisma.item.create({
+    return prisma.item.create({
       data: {
         inventoryId,
         createdById: userId,
         customId,
         fieldValues: {
-          create: fieldValues.map((fv: any) => ({
+          create: fieldValues.map((fv) => ({
             fieldId: fv.fieldId,
             value: fv.value,
           })),
@@ -92,24 +88,24 @@ export class ItemService {
         comments: true,
       },
     });
-
-    return item;
   }
 
-  async update(inventoryId: number, itemId: number, data: any) {
+  async update(inventoryId: number, itemId: number, data: UpdateItemData) {
     const item = await getItemOrThrow(inventoryId, itemId);
     checkVersion(item, data.version);
 
     const validIdsSet = await getValidFieldIds(inventoryId);
-
     const { createFieldValues, updateFieldValues, deleteFieldValues } =
-      await prepareFieldValuesForUpdate(itemId, data.fieldValues, validIdsSet);
-
-    if (data.customIdFormat) {
-      data.customId = await generateUniqueCustomId(
-        inventoryId,
-        data.customIdFormat
+      await prepareFieldValuesForUpdate(
+        itemId,
+        data.fieldValues || [],
+        validIdsSet
       );
+
+    let customId: string | undefined;
+    if (data.customIdFormat) {
+      customId = await generateUniqueCustomId(inventoryId, data.customIdFormat);
+      data.customId = customId;
     }
 
     await runUpdateTransaction(
