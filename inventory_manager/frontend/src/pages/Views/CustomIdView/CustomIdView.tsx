@@ -24,12 +24,8 @@ const CustomIdView = ({ inventoryId }: { inventoryId: number }) => {
   }, [inventoryId, loadCustomIdTemplate]);
 
   useEffect(() => {
-    const templateArray = Array.isArray(customIdTemplate)
-      ? customIdTemplate
-      : JSON.parse(customIdTemplate || "[]");
-
+    const templateArray = customIdTemplate;
     const mappedElements = templateArray.map(elementMapper);
-
     setIdElements(mappedElements);
     setLiveExample(generateLiveExample(mappedElements));
   }, [customIdTemplate]);

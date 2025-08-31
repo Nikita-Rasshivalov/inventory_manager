@@ -157,3 +157,9 @@ model Like {
 
   @@unique([itemId, userId])
 }
+
+
+model InventorySequence {
+  inventoryId Int @id
+  currentSeq Int
+}

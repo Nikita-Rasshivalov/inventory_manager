@@ -105,7 +105,6 @@ export interface ItemFieldValue {
 
 export interface ItemPayload {
   customId?: string;
-  customIdFormat?: CustomIdPart[];
   fieldValues?: ItemFieldValue[];
   version?: number;
 }

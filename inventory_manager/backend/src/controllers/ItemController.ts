@@ -9,7 +9,7 @@ export class ItemController {
     const userId = (req as any).user.userId;
     const data = req.body;
 
-    const item = await itemService.create(inventoryId, userId, data);
+    const item = await itemService.create(inventoryId, userId);
     res.status(201).json(item);
   };
 

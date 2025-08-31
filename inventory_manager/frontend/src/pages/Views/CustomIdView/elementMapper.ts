@@ -4,6 +4,7 @@ interface ServerItem {
   type: string;
   value?: string;
   bits?: number;
+  digits?: number;
 }
 export const elementMapper = (item: ServerItem) => {
   const mapped = elementOptions.find((opt) => {
@@ -12,8 +13,8 @@ export const elementMapper = (item: ServerItem) => {
         return opt.type === "fixedText";
 
       case "random":
-        if (item.bits === 6) return opt.type === "random6";
-        if (item.bits === 9) return opt.type === "random9";
+        if (item.digits === 6) return opt.type === "random6";
+        if (item.digits === 9) return opt.type === "random9";
         if (item.bits === 20) return opt.type === "random20";
         if (item.bits === 32) return opt.type === "random32";
         return false;

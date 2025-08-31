@@ -44,11 +44,6 @@ export class InventoryController extends BaseController {
       const user = (req as any).user;
       const inventoryId = parseInt(req.params.inventoryId);
       const data = req.body;
-
-      if (data.customIdFormat && Array.isArray(data.customIdFormat)) {
-        data.customIdFormat = JSON.stringify(data.customIdFormat);
-      }
-
       return await inventoryService.update(inventoryId, data, user.userId);
     });
 

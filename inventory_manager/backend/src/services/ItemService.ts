@@ -54,35 +54,30 @@ export class ItemService {
     });
   }
 
-  async create(
-    inventoryId: number,
-    userId: number,
-    data: { fieldValues?: any[]; customIdFormat?: CustomIdPart[] }
-  ) {
-    const validIdsSet = await getValidFieldIds(inventoryId);
-    const fieldValues = (data.fieldValues || []).filter((fv) =>
-      validIdsSet.has(fv.fieldId)
-    );
+  async create(inventoryId: number, userId: number) {
+    const inventory = await prisma.inventory.findUnique({
+      where: { id: inventoryId },
+      select: { customIdFormat: true },
+    });
 
     let customId: string | undefined;
-    if (data.customIdFormat) {
-      customId = await generateCustomId(inventoryId, data.customIdFormat);
+    const raw = inventory?.customIdFormat;
+
+    let formatParts: CustomIdPart[] = [];
+
+    if (typeof raw === "string") {
+      formatParts = JSON.parse(raw) as CustomIdPart[];
     }
+
+    customId = await generateCustomId(inventoryId, formatParts);
 
     return prisma.item.create({
       data: {
         inventoryId,
         createdById: userId,
         customId,
-        fieldValues: {
-          create: fieldValues.map((fv) => ({
-            fieldId: fv.fieldId,
-            value: fv.value,
-          })),
-        },
       },
       include: {
-        fieldValues: true,
         createdBy: true,
         likes: true,
         comments: true,

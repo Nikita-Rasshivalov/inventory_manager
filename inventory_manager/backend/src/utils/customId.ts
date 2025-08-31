@@ -12,8 +12,12 @@ export type CustomIdPart =
 
 export async function generateCustomId(
   inventoryId: number,
-  formatParts: CustomIdPart[]
+  formatParts: CustomIdPart[],
+  attempt = 0
 ): Promise<string> {
+  if (attempt > 10)
+    throw new Error("Cannot generate unique Custom ID after 10 attempts");
+
   const values: string[] = [];
 
   for (const part of formatParts) {
@@ -21,6 +25,7 @@ export async function generateCustomId(
       case "text":
         values.push(part.value);
         break;
+
       case "random":
         if (part.bits) values.push(randomInt(0, 2 ** part.bits).toString());
         else if (part.digits) {
@@ -29,15 +34,22 @@ export async function generateCustomId(
           values.push(randomInt(min, max + 1).toString());
         }
         break;
+
       case "guid":
         values.push(uuidv4());
         break;
+
       case "datetime":
         values.push(formatDateFn(new Date(), part.format || "yyyyMMddHHmmss"));
         break;
+
       case "sequence":
-        const count = await prisma.item.count({ where: { inventoryId } });
-        values.push((count + 1).toString());
+        const seq = await prisma.inventorySequence.upsert({
+          where: { inventoryId },
+          update: { currentSeq: { increment: 1 } },
+          create: { inventoryId, currentSeq: 1 },
+        });
+        values.push(seq.currentSeq.toString());
         break;
     }
   }
@@ -49,7 +61,7 @@ export async function generateCustomId(
   });
 
   if (existingItem) {
-    return generateCustomId(inventoryId, formatParts);
+    return generateCustomId(inventoryId, formatParts, attempt + 1);
   }
 
   return customId;

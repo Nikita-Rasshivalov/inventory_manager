@@ -1,5 +1,6 @@
 import { DragDropContext, Droppable, Draggable } from "@hello-pangea/dnd";
 import Element from "./Element";
+import { generateLiveExample } from "../../../utils/customIdUtils";
 
 export const ElementsList = ({
   elements,
@@ -17,15 +18,19 @@ export const ElementsList = ({
       return;
     }
     if (destination.index === source.index) return;
+
     const reordered = Array.from(elements);
     const [removed] = reordered.splice(source.index, 1);
     reordered.splice(destination.index, 0, removed);
+
     setElements(reordered);
+    setLiveExample(generateLiveExample(reordered));
   };
 
   const handleRemoveElement = (index: number) => {
-    setElements(elements.filter((_, i) => i !== index));
-    setLiveExample("");
+    const updated = elements.filter((_, i) => i !== index);
+    setElements(updated);
+    setLiveExample(generateLiveExample(updated));
   };
 
   return (

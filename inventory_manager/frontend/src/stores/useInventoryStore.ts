@@ -149,7 +149,7 @@ export const useInventoryStore = create<InventoryStore>((set, get) => ({
     try {
       const payload: any = { ...data };
       if (data.customIdFormat) {
-        payload.customIdFormat = JSON.stringify(data.customIdFormat);
+        payload.customIdFormat = data.customIdFormat;
       }
       await InventoryService.update(id, payload);
       if (data.customIdFormat) set({ customIdTemplate: data.customIdFormat });
