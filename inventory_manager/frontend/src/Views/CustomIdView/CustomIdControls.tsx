@@ -1,8 +1,9 @@
-import Button from "../../../components/common/Button";
-import Input from "../../../components/common/Input";
-import { generateLiveExample } from "../../../utils/customIdUtils";
+import Button from "../../components/common/Button";
+import Input from "../../components/common/Input";
+import { generateLiveExample } from "../../utils/customIdUtils";
 import { elementOptions } from "./elementOptions";
-import SelectWithTooltip from "./SelectWithTooltip";
+import SelectWithTooltip from "../../components/common/SelectWithTooltip";
+import { Plus, Save } from "lucide-react";
 
 interface CustomIdControlsProps {
   newElementType: string;
@@ -56,7 +57,7 @@ export const CustomIdControls = ({
         <div className="text-xl text-gray-700">{liveExample}</div>
       </div>
 
-      <div className="flex flex-col md:flex-row items-center md:space-x-4 space-y-2 md:space-y-0">
+      <div className="flex flex-col gap-2 w-full">
         <SelectWithTooltip
           value={newElementType}
           onChange={(e) => setNewElementType(e.target.value)}
@@ -67,22 +68,24 @@ export const CustomIdControls = ({
             type="text"
             value={fixedTextValue}
             onChange={(e) => setFixedTextValue(e.target.value)}
-            className="border rounded px-2 py-1 text-sm w-35 min-[425px]:w-64"
+            className="border rounded px-2 py-2 text-sm  min-[425px]:h-8"
           />
         )}
-        <Button
-          onClick={handleAddElement}
-          className="text-[10px] min-[425px]:w-64 min-[425px]:h-8 sm:text-sm w-35 h-6"
-        >
-          Add Element
-        </Button>
+        <div className="flex flex-1 items-center gap-3">
+          <Button
+            onClick={handleAddElement}
+            className=" flex-1 items-center justify-center"
+          >
+            <Plus size={20} />
+          </Button>
 
-        <Button
-          onClick={onSave}
-          className="text-[10px] min-[425px]:w-64 min-[425px]:h-8 sm:text-sm w-35 h-6"
-        >
-          Save Template
-        </Button>
+          <Button
+            onClick={onSave}
+            className=" flex-1 items-center justify-center"
+          >
+            <Save size={20} />
+          </Button>
+        </div>
       </div>
     </div>
   );

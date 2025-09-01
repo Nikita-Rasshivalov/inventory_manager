@@ -6,6 +6,7 @@ import AuthSuccess from "./pages/AuthPage/AuthSuccess";
 import { ToastContainer } from "react-toastify";
 import InventoryItemPage from "./pages/InventoryItemPage";
 import AuthPage from "./pages/AuthPage/AuthPage";
+import ItemDetailsPage from "./pages/ItemDetailsPage";
 function App() {
   return (
     <BrowserRouter>
@@ -31,6 +32,10 @@ function App() {
               element={<InventoryItemPage />}
             />
           </Route>
+          <Route
+            path="/inventory/:inventoryId/items/:itemId"
+            element={<ItemDetailsPage />}
+          />
           <Route path="*" element={<AuthPage />} />
         </Routes>
       </AuthProvider>

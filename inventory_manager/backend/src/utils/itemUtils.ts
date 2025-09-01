@@ -3,6 +3,14 @@ import { CustomIdPart, generateCustomId } from "../utils/customId.ts";
 
 export const MAX_ID_ATTEMPTS = 5;
 
+const FIELD_TYPE_LIMITS: Record<string, number> = {
+  text: 3,
+  textarea: 3,
+  number: 3,
+  file: 3,
+  boolean: 3,
+};
+
 export async function getValidFieldIds(
   inventoryId: number
 ): Promise<Set<number>> {
@@ -44,6 +52,36 @@ export function checkVersion(item: any, clientVersion: number) {
     throw { status: 409, message: "Conflict: version mismatch" };
 }
 
+async function getFieldsByIds(validIdsSet: Set<number>) {
+  return prisma.field.findMany({
+    where: { id: { in: [...validIdsSet] }, deleted: false },
+    select: { id: true, type: true },
+  });
+}
+
+function countFieldTypes(fields: { id: number; type: string }[]) {
+  return fields.reduce<Record<string, number>>((acc, field) => {
+    acc[field.type] = (acc[field.type] || 0) + 1;
+    return acc;
+  }, {});
+}
+
+function checkFieldTypeLimits(
+  createFieldValues: any[],
+  fieldMap: Map<number, string>,
+  typeCount: Record<string, number>
+) {
+  for (const { fieldId } of createFieldValues) {
+    const type = fieldMap.get(fieldId);
+    if (!type) continue;
+
+    const limit = FIELD_TYPE_LIMITS[type];
+    if (limit && (++typeCount[type] || (typeCount[type] = 1)) > limit) {
+      throw new Error(`Exceeded max fields of type ${type} (limit ${limit})`);
+    }
+  }
+}
+
 export async function prepareFieldValuesForUpdate(
   itemId: number,
   fieldValues: any[],
@@ -51,11 +89,20 @@ export async function prepareFieldValuesForUpdate(
 ) {
   const createFieldValues = prepareFieldValues(fieldValues, validIdsSet, false);
   const updateFieldValues = prepareFieldValues(fieldValues, validIdsSet, true);
+
   const existingIds = updateFieldValues.map((fv) => fv.id);
   const deleteFieldValues = await prisma.itemFieldValue.findMany({
     where: { itemId, deleted: false, NOT: { id: { in: existingIds } } },
     select: { id: true },
   });
+
+  const fields = await getFieldsByIds(validIdsSet);
+  const fieldMap = new Map(fields.map((f) => [f.id, f.type]));
+
+  const typeCount = countFieldTypes(fields);
+
+  checkFieldTypeLimits(createFieldValues, fieldMap, typeCount);
+
   return { createFieldValues, updateFieldValues, deleteFieldValues };
 }
 
@@ -79,7 +126,13 @@ export async function runUpdateTransaction(
     ),
     ...createFieldValues.map((fv) =>
       prisma.itemFieldValue.create({
-        data: { itemId, fieldId: fv.fieldId, value: fv.value },
+        data: {
+          itemId,
+          fieldId: fv.fieldId,
+          value: fv.value,
+          order: fv.order,
+          showInTable: fv.showInTable ?? true,
+        },
       })
     ),
     ...deleteFieldValues.map((fv) =>

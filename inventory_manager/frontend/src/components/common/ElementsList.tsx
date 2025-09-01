@@ -1,16 +1,27 @@
 import { DragDropContext, Droppable, Draggable } from "@hello-pangea/dnd";
-import Element from "./Element";
-import { generateLiveExample } from "../../../utils/customIdUtils";
 
-export const ElementsList = ({
+interface ElementsListProps<T> {
+  elements: T[];
+  setElements: (elements: T[]) => void;
+  setLiveExample?: (example: string) => void;
+  renderElement: (
+    item: T,
+    index: number,
+    onRemove: () => void,
+    provided: any
+  ) => React.ReactNode;
+  getKey: (item: T, index: number) => string;
+  generateExample?: (elements: T[]) => string;
+}
+
+export function ElementsList<T>({
   elements,
   setElements,
   setLiveExample,
-}: {
-  elements: any[];
-  setElements: (elements: any[]) => void;
-  setLiveExample: (example: string) => void;
-}) => {
+  renderElement,
+  getKey,
+  generateExample,
+}: ElementsListProps<T>) {
   const handleDragEnd = (result: any) => {
     const { source, destination } = result;
     if (!destination) {
@@ -22,15 +33,20 @@ export const ElementsList = ({
     const reordered = Array.from(elements);
     const [removed] = reordered.splice(source.index, 1);
     reordered.splice(destination.index, 0, removed);
-
     setElements(reordered);
-    setLiveExample(generateLiveExample(reordered));
+
+    if (setLiveExample && generateExample) {
+      setLiveExample(generateExample(reordered));
+    }
   };
 
   const handleRemoveElement = (index: number) => {
     const updated = elements.filter((_, i) => i !== index);
     setElements(updated);
-    setLiveExample(generateLiveExample(updated));
+
+    if (setLiveExample && generateExample) {
+      setLiveExample(generateExample(updated));
+    }
   };
 
   return (
@@ -40,17 +56,18 @@ export const ElementsList = ({
           <div {...provided.droppableProps} ref={provided.innerRef}>
             {elements.map((item, index) => (
               <Draggable
-                key={item.label + index}
-                draggableId={item.label + index}
+                key={getKey(item, index)}
+                draggableId={getKey(item, index)}
                 index={index}
               >
-                {(provided) => (
-                  <Element
-                    item={item}
-                    provided={provided}
-                    onRemove={() => handleRemoveElement(index)}
-                  />
-                )}
+                {(provided) =>
+                  renderElement(
+                    item,
+                    index,
+                    () => handleRemoveElement(index),
+                    provided
+                  )
+                }
               </Draggable>
             ))}
             {provided.placeholder}
@@ -59,4 +76,4 @@ export const ElementsList = ({
       </Droppable>
     </DragDropContext>
   );
-};
+}

@@ -5,8 +5,8 @@ import {
   InventoryRole,
   MemberAction,
   User,
-} from "../../../../models/models";
-import { useDebounce } from "../../../../hooks/useDebounce";
+} from "../../../models/models";
+import { useDebounce } from "../../../hooks/useDebounce";
 
 interface MemberFormProps {
   members: InventoryMember[];

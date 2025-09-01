@@ -94,8 +94,6 @@ model Field {
   inventoryId  Int
   name         String
   type         String
-  order        Int
-  showInTable  Boolean           @default(false)
   deleted      Boolean           @default(false)
   deletedAt    DateTime?
   inventory    Inventory         @relation(fields: [inventoryId], references: [id])
@@ -122,14 +120,16 @@ model Item {
 }
 
 model ItemFieldValue {
-  id        Int     @id @default(autoincrement())
-  itemId    Int
-  fieldId   Int
-  value     String?
-  deleted   Boolean @default(false)
-  deletedAt DateTime?
-  item      Item    @relation(fields: [itemId], references: [id])
-  field     Field   @relation(fields: [fieldId], references: [id])
+  id           Int         @id @default(autoincrement())
+  itemId       Int
+  fieldId      Int
+  value        String?
+  order        Int
+  showInTable  Boolean     @default(false)
+  deleted      Boolean     @default(false)
+  deletedAt    DateTime?
+  item         Item        @relation(fields: [itemId], references: [id])
+  field        Field       @relation(fields: [fieldId], references: [id])
   @@unique([itemId, fieldId])
 }
 

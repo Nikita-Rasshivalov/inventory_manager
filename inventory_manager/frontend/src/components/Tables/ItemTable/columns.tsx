@@ -37,45 +37,30 @@ export const getItemColumns = (
         type="checkbox"
         checked={selectedIds.includes(row.original.id)}
         onChange={() => toggleSelect(row.original.id)}
+        onClick={(e) => e.stopPropagation()}
       />
     ),
-    size: 50,
+    size: 10,
     enableSorting: false,
   },
   {
     id: "number",
     header: "#",
-    size: 30,
+    size: 50,
     enableSorting: false,
   },
   {
     accessorKey: "customId",
     header: "Custom ID",
     enableSorting: true,
+    size: 250,
   },
   {
     accessorFn: (row) => row.createdBy?.name,
     id: "createdBy",
     header: "Created By",
     enableSorting: true,
-  },
-  {
-    accessorFn: (row) => row.fieldValues.map((fv) => `${fv.value}`).join(", "),
-    id: "fields",
-    header: "Fields",
-    enableSorting: false,
-  },
-  {
-    accessorFn: (row) => row.comments.length,
-    id: "comments",
-    header: "Comments",
-    enableSorting: false,
-  },
-  {
-    accessorFn: (row) => row.likes.length,
-    id: "likes",
-    header: "Likes",
-    enableSorting: false,
+    size: 250,
   },
   {
     accessorFn: (row) => new Date(row.createdAt),
@@ -83,5 +68,6 @@ export const getItemColumns = (
     header: "Created",
     enableSorting: true,
     cell: ({ getValue }) => (getValue() as Date).toLocaleDateString(),
+    size: 250,
   },
 ];

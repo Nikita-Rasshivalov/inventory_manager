@@ -19,7 +19,6 @@ interface ItemTableProps {
     sortBy?: string;
     sortOrder?: "asc" | "desc";
   }) => void;
-  onUpdate: (itemId: number, values: Record<string, any>) => void;
 }
 
 const ItemTable: React.FC<ItemTableProps> = ({
@@ -32,7 +31,6 @@ const ItemTable: React.FC<ItemTableProps> = ({
   onPageChange,
   loading,
   setSorting,
-  onUpdate,
 }) => {
   return (
     <TableWrapper
@@ -56,7 +54,6 @@ const ItemTable: React.FC<ItemTableProps> = ({
             rows={[row]}
             page={page}
             limit={limit}
-            onUpdate={onUpdate}
           />
         )}
         limit={limit}

@@ -1,6 +1,6 @@
 import React from "react";
 import { AccessTab } from "./AccessTab/AccessTab";
-import { InventoryMember } from "../../../models/models";
+import { InventoryMember } from "../../models/models";
 
 interface AccessViewProps {
   inventoryId: number;

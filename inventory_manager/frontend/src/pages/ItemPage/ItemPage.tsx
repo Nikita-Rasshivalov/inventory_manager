@@ -5,17 +5,19 @@ import { useItemStore } from "../../stores/useItemStore";
 import { useInventoryStore } from "../../stores/useInventoryStore";
 import { useSelection } from "../../hooks/useSelection";
 import { MemberAction } from "../../models/models";
-import { AccessView } from "../Views/AccessView/AccessView";
-import { ItemsView } from "../Views/ItemsView/ItemsView";
-import CustomIdView from "../Views/CustomIdView/CustomIdView";
+import { AccessView } from "../../Views/AccessView/AccessView";
+import { ItemsView } from "../../Views/ItemsView/ItemsView";
+import CustomIdView from "../../Views/CustomIdView/CustomIdView";
+import FieldView from "../../Views/FieldView/FieldView";
 
 enum TabId {
   Items = "Items",
   Access = "Access",
-  CustomId = "CustomId",
+  CustomId = "Settings",
+  Fields = "Fields",
 }
 
-const TABS: TabId[] = [TabId.Items, TabId.Access, TabId.CustomId];
+const TABS: TabId[] = [TabId.Items, TabId.Access, TabId.CustomId, TabId.Fields];
 
 const ItemPage = ({ inventoryId }: { inventoryId: number }) => {
   const {
@@ -26,7 +28,6 @@ const ItemPage = ({ inventoryId }: { inventoryId: number }) => {
     getAll,
     setPage,
     create,
-    update,
     delete: deleteItem,
     loading,
   } = useItemStore();
@@ -80,30 +81,12 @@ const ItemPage = ({ inventoryId }: { inventoryId: number }) => {
     }
   };
 
-  const handleCreate = async (values: Record<string, any>) => {
+  const handleCreate = async () => {
     try {
-      await create(inventoryId, {
-        fieldValues: Object.entries(values).map(([fieldId, value]) => ({
-          fieldId: Number(fieldId),
-          value,
-        })),
-      });
+      await create(inventoryId);
       setIsModalOpen(false);
     } catch (err: any) {
       toast.error(err.response?.data?.error || "Failed to create item");
-    }
-  };
-
-  const handleUpdate = async (itemId: number, values: Record<string, any>) => {
-    try {
-      await update(inventoryId, itemId, {
-        fieldValues: Object.entries(values).map(([fieldId, value]) => ({
-          fieldId: Number(fieldId),
-          value,
-        })),
-      });
-    } catch (err: any) {
-      toast.error(err.response?.data?.error || "Failed to update item");
     }
   };
 
@@ -123,7 +106,7 @@ const ItemPage = ({ inventoryId }: { inventoryId: number }) => {
         onDelete={handleDelete}
         onCreate={() => setIsModalOpen(true)}
         tabs={TABS}
-        hiddenTabs={[TabId.CustomId]}
+        hiddenTabs={[TabId.CustomId, TabId.Fields]}
         partialHiddenTabs={[TabId.Access]}
         activeTab={activeTab}
         onChangeTab={(tab) => setActiveTab(tab as TabId)}
@@ -142,7 +125,6 @@ const ItemPage = ({ inventoryId }: { inventoryId: number }) => {
           setPage={setPage}
           loading={loading}
           setSorting={setSorting}
-          onUpdate={handleUpdate}
           isModalOpen={isModalOpen}
           onCreate={handleCreate}
           onCloseModal={() => setIsModalOpen(false)}
@@ -159,6 +141,8 @@ const ItemPage = ({ inventoryId }: { inventoryId: number }) => {
           toggleSelect={membersSelection.toggleSelect}
         />
       )}
+
+      {activeTab === TabId.Fields && <FieldView inventoryId={inventoryId} />}
 
       {activeTab === TabId.CustomId && (
         <CustomIdView inventoryId={inventoryId} />

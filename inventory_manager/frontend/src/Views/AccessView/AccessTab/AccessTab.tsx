@@ -1,11 +1,11 @@
 import React from "react";
-import { MembersTable } from "../../../../components/Tables/MembersTable/MembersTable";
+import { MembersTable } from "../../../components/Tables/MembersTable/MembersTable";
 import {
   InventoryMember,
   InventoryRole,
   MemberAction,
-} from "../../../../models/models";
-import { useUserStore } from "../../../../stores/useUserStore";
+} from "../../../models/models";
+import { useUserStore } from "../../../stores/useUserStore";
 import { MemberForm } from "./MemberForm";
 
 interface AccessTabProps {

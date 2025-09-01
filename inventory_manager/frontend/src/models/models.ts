@@ -62,8 +62,26 @@ export interface Field {
   inventoryId: number;
   name: string;
   type: string;
+}
+
+export interface FieldPayload {
+  name: string;
+  type: string;
+}
+
+export interface ItemFieldValue {
+  id?: number;
+  fieldId: number;
+  value: string | number | boolean | null;
   order: number;
   showInTable: boolean;
+}
+
+export interface ItemPayload {
+  customId?: string;
+  fieldValues?: ItemFieldValue[];
+  version?: number;
+  order?: number;
 }
 
 export interface Comment {
@@ -97,17 +115,6 @@ export type InventoryPayload = {
   customIdFormat?: CustomIdPart[];
 };
 
-export interface ItemFieldValue {
-  id?: number;
-  fieldId: number;
-  value: string | number | boolean | null;
-}
-
-export interface ItemPayload {
-  customId?: string;
-  fieldValues?: ItemFieldValue[];
-  version?: number;
-}
 export enum MemberAction {
   Add = "add",
   Update = "update",

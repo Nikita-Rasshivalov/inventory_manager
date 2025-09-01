@@ -25,13 +25,14 @@ interface ItemStore {
   setSorting: (sortBy?: string, sortOrder?: "asc" | "desc") => void;
   setSearch: (search: string) => void;
 
-  create: (inventoryId: number, data: ItemPayload) => Promise<void>;
+  create: (inventoryId: number) => Promise<void>;
   update: (
     inventoryId: number,
     itemId: number,
     data: ItemPayload
   ) => Promise<void>;
   delete: (inventoryId: number, itemId: number) => Promise<string>;
+  getById: (inventoryId: number, itemId: number) => Promise<Item>;
 }
 
 export const useItemStore = create<ItemStore>((set, get) => ({
@@ -80,10 +81,10 @@ export const useItemStore = create<ItemStore>((set, get) => ({
     set({ sortBy, sortOrder, page: 1 }),
   setSearch: (search: string) => set({ search, page: 1 }),
 
-  create: async (inventoryId, data) => {
+  create: async (inventoryId) => {
     set({ loading: true, error: null });
     try {
-      await ItemService.create(inventoryId, data);
+      await ItemService.create(inventoryId);
       await get().getAll(inventoryId);
     } catch (err: any) {
       set({ error: err.message || "Failed to create item" });
@@ -114,6 +115,19 @@ export const useItemStore = create<ItemStore>((set, get) => ({
       return res.message;
     } catch (err: any) {
       set({ error: err.message || "Failed to delete item" });
+      throw err;
+    } finally {
+      set({ loading: false });
+    }
+  },
+
+  getById: async (inventoryId, itemId) => {
+    set({ loading: true, error: null });
+    try {
+      const item = await ItemService.getById(inventoryId, itemId);
+      return item;
+    } catch (err: any) {
+      set({ error: err.message || "Failed to fetch item" });
       throw err;
     } finally {
       set({ loading: false });

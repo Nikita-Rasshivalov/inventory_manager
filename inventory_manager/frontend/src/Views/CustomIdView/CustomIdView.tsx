@@ -2,12 +2,13 @@ import { useEffect, useState } from "react";
 import {
   generateLiveExample,
   generateTemplate,
-} from "../../../utils/customIdUtils";
-import { useInventoryStore } from "../../../stores/useInventoryStore";
+} from "../../utils/customIdUtils";
+import { useInventoryStore } from "../../stores/useInventoryStore";
 import { toast } from "react-toastify";
 import { elementMapper } from "./elementMapper";
-import { ElementsList } from "./ElementsList";
+import { ElementsList } from "../../components/common/ElementsList";
 import { CustomIdControls } from "./CustomIdControls";
+import DragElement from "../../components/common/DragElementProps";
 
 const CustomIdView = ({ inventoryId }: { inventoryId: number }) => {
   const [idElements, setIdElements] = useState<any[]>([]);
@@ -43,22 +44,38 @@ const CustomIdView = ({ inventoryId }: { inventoryId: number }) => {
   return (
     <div className="space-y-6">
       <h2 className="text-2xl font-semibold">Customize ID Format</h2>
-      <CustomIdControls
-        newElementType={newElementType}
-        setNewElementType={setNewElementType}
-        fixedTextValue={fixedTextValue}
-        setFixedTextValue={setFixedTextValue}
-        idElements={idElements}
-        setIdElements={setIdElements}
-        liveExample={liveExample}
-        onSave={handleSaveTemplate}
-        setLiveExample={setLiveExample}
-      />
-      <ElementsList
-        elements={idElements}
-        setElements={setIdElements}
-        setLiveExample={setLiveExample}
-      />
+      <div className="flex flex-col md:flex-row gap-6">
+        <div className="md:w-1/3">
+          <CustomIdControls
+            newElementType={newElementType}
+            setNewElementType={setNewElementType}
+            fixedTextValue={fixedTextValue}
+            setFixedTextValue={setFixedTextValue}
+            idElements={idElements}
+            setIdElements={setIdElements}
+            liveExample={liveExample}
+            onSave={handleSaveTemplate}
+            setLiveExample={setLiveExample}
+          />
+        </div>
+
+        <div className="md:w-2/3">
+          <ElementsList
+            elements={idElements}
+            setElements={setIdElements}
+            setLiveExample={setLiveExample}
+            generateExample={generateLiveExample}
+            getKey={(el, i) => el.label + i}
+            renderElement={(item, _index, onRemove, provided) => (
+              <DragElement
+                item={item}
+                provided={provided}
+                onRemove={onRemove}
+              />
+            )}
+          />
+        </div>
+      </div>
     </div>
   );
 };

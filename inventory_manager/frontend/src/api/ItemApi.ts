@@ -30,10 +30,9 @@ export class ItemApi {
     return res.data;
   }
 
-  static async create(inventoryId: number, data: ItemPayload): Promise<Item> {
+  static async create(inventoryId: number): Promise<Item> {
     const res = await axiosInstance.post<Item>(
-      `/inventory/${inventoryId}/items`,
-      data
+      `/inventory/${inventoryId}/items`
     );
     return res.data;
   }

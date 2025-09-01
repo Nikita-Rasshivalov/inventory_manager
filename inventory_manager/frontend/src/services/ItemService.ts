@@ -16,8 +16,8 @@ export const ItemService = {
     return await ItemApi.getById(inventoryId, itemId);
   },
 
-  create: async (inventoryId: number, data: ItemPayload): Promise<Item> => {
-    return await ItemApi.create(inventoryId, data);
+  create: async (inventoryId: number): Promise<Item> => {
+    return await ItemApi.create(inventoryId);
   },
 
   update: async (

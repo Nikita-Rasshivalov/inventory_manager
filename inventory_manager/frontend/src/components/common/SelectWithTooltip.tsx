@@ -1,16 +1,16 @@
 import React from "react";
-import Select from "../../../components/common/Select";
+import Select from "./Select";
 
-interface Option {
+interface ElementOption {
   label: string;
   type: string;
-  tooltip: string;
+  tooltip?: string;
 }
 
 interface SelectWithTooltipProps {
   value: string;
   onChange: (e: React.ChangeEvent<HTMLSelectElement>) => void;
-  options: Option[];
+  options: ElementOption[];
 }
 
 const SelectWithTooltip: React.FC<SelectWithTooltipProps> = ({
@@ -19,11 +19,11 @@ const SelectWithTooltip: React.FC<SelectWithTooltipProps> = ({
   options,
 }) => {
   return (
-    <div>
+    <>
       <Select
         value={value}
         onChange={onChange}
-        className="min-[425px]:w-64 min-[425px]:h-8"
+        className="w-full  min-[425px]:h-8"
       >
         <option value="">Select an element</option>
         {options.map((option) => (
@@ -32,7 +32,7 @@ const SelectWithTooltip: React.FC<SelectWithTooltipProps> = ({
           </option>
         ))}
       </Select>
-    </div>
+    </>
   );
 };
 

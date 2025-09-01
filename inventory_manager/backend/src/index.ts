@@ -6,6 +6,7 @@ import oauthRoutes from "./routes/oauthRoutes.ts";
 import inventoryRoutes from "./routes/inventoryRoutes.ts";
 import itemRoutes from "./routes/itemRoutes.ts";
 import userRoutes from "./routes/userRoutes.ts";
+import fieldRoutes from "./routes/fieldRoutes.ts";
 
 const app = express();
 const allowedOrigins = process.env.CORS_ORIGINS?.split(",") || [];
@@ -23,6 +24,7 @@ app.use("/api/auth", authRoutes);
 app.use("/api/auth", oauthRoutes);
 app.use("/api/users", userRoutes);
 app.use("/api/inventory", inventoryRoutes);
+app.use("/api/inventory", fieldRoutes);
 app.use("/api/inventory/:inventoryId/items", itemRoutes);
 
 const PORT = process.env.PORT ? Number(process.env.PORT) : 3001;
