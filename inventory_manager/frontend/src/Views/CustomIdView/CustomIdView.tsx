@@ -71,6 +71,7 @@ const CustomIdView = ({ inventoryId }: { inventoryId: number }) => {
                 item={item}
                 provided={provided}
                 onRemove={onRemove}
+                isCustom={true}
               />
             )}
           />

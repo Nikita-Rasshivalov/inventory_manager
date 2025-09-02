@@ -6,7 +6,7 @@ import AuthSuccess from "./pages/AuthPage/AuthSuccess";
 import { ToastContainer } from "react-toastify";
 import InventoryItemPage from "./pages/InventoryItemPage";
 import AuthPage from "./pages/AuthPage/AuthPage";
-import ItemDetailsPage from "./pages/ItemDetailsPage";
+import ItemDetailsPage from "./pages/ItemDetailsPage/ItemDetailsPage";
 function App() {
   return (
     <BrowserRouter>

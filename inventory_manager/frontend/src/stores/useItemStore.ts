@@ -30,9 +30,13 @@ interface ItemStore {
     inventoryId: number,
     itemId: number,
     data: ItemPayload
-  ) => Promise<void>;
+  ) => Promise<Item>;
   delete: (inventoryId: number, itemId: number) => Promise<string>;
   getById: (inventoryId: number, itemId: number) => Promise<Item>;
+
+  currentItem: Item | null;
+  setCurrentItem: (item: Item | null) => void;
+  fetchItemById: (inventoryId: number, itemId: number) => Promise<Item>;
 }
 
 export const useItemStore = create<ItemStore>((set, get) => ({
@@ -95,15 +99,21 @@ export const useItemStore = create<ItemStore>((set, get) => ({
   },
 
   update: async (inventoryId, itemId, data) => {
-    set({ loading: true, error: null });
     try {
-      await ItemService.update(inventoryId, itemId, data);
-      await get().getAll(inventoryId);
+      const currentItem = await ItemService.getById(inventoryId, itemId);
+      let updatedItem: Item;
+
+      if (data.version !== currentItem.version) {
+        updatedItem = currentItem;
+      } else {
+        updatedItem = await ItemService.update(inventoryId, itemId, data);
+      }
+
+      set({ currentItem: updatedItem });
+      return updatedItem;
     } catch (err: any) {
       set({ error: err.message || "Failed to update item" });
       throw err;
-    } finally {
-      set({ loading: false });
     }
   },
 
@@ -125,6 +135,21 @@ export const useItemStore = create<ItemStore>((set, get) => ({
     set({ loading: true, error: null });
     try {
       const item = await ItemService.getById(inventoryId, itemId);
+      return item;
+    } catch (err: any) {
+      set({ error: err.message || "Failed to fetch item" });
+      throw err;
+    } finally {
+      set({ loading: false });
+    }
+  },
+  currentItem: null,
+  setCurrentItem: (item) => set({ currentItem: item }),
+  fetchItemById: async (inventoryId, itemId) => {
+    set({ loading: true, error: null });
+    try {
+      const item = await ItemService.getById(inventoryId, itemId);
+      set({ currentItem: item });
       return item;
     } catch (err: any) {
       set({ error: err.message || "Failed to fetch item" });

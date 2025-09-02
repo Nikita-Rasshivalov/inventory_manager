@@ -15,4 +15,5 @@ export interface UpdateItemData {
   customIdFormat?: CustomIdPart[];
   version: number;
   customId?: string;
+  order?: number;
 }

@@ -2,18 +2,19 @@ import { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { ArrowLeft, Loader } from "lucide-react";
 import { toast } from "react-toastify";
-import Header from "../components/layout/Header";
-import { useItemStore } from "../stores/useItemStore";
-import { useInventoryStore } from "../stores/useInventoryStore";
-import { Item } from "../models/models";
-import Button from "../components/common/Button";
-import ItemView from "../Views/FieldView/ItemViev";
+import Header from "../../components/layout/Header";
+import { useItemStore } from "../../stores/useItemStore";
+import { useInventoryStore } from "../../stores/useInventoryStore";
+import Button from "../../components/common/Button";
+import ItemView from "../../Views/FieldView/ItemViev";
+import FieldsTab from "./FieldsTab";
 
 enum TabId {
   ItemDetails = "Item Details",
+  ItemFields = "Fields",
 }
 
-const TABS: TabId[] = [TabId.ItemDetails];
+const TABS: TabId[] = [TabId.ItemDetails, TabId.ItemFields];
 
 const ItemDetailsPage = () => {
   const { inventoryId, itemId } = useParams<{
@@ -21,10 +22,9 @@ const ItemDetailsPage = () => {
     itemId: string;
   }>();
   const navigate = useNavigate();
-  const { getById: getItemById, loading } = useItemStore();
+  const { fetchItemById, currentItem, loading } = useItemStore();
   const { getById: getInventoryById } = useInventoryStore();
 
-  const [item, setItem] = useState<Item | null>(null);
   const [activeTab, setActiveTab] = useState<TabId>(TabId.ItemDetails);
 
   useEffect(() => {
@@ -32,17 +32,16 @@ const ItemDetailsPage = () => {
       if (!inventoryId || !itemId) return;
 
       try {
-        const itm = await getItemById(Number(inventoryId), Number(itemId));
-        setItem(itm);
+        await fetchItemById(Number(inventoryId), Number(itemId));
       } catch (err: any) {
         toast.error(err?.message || "Failed to fetch item or inventory");
       }
     };
 
     fetchData();
-  }, [inventoryId, itemId, getInventoryById, getItemById]);
+  }, [inventoryId, itemId, fetchItemById, getInventoryById]);
 
-  if (loading)
+  if (loading || !currentItem)
     return (
       <div className="absolute inset-0 flex items-center justify-center bg-white bg-opacity-60 z-10">
         <Loader />
@@ -60,7 +59,7 @@ const ItemDetailsPage = () => {
             onClick={() => navigate(-1)}
           />
           <h2 className="text-2xl font-semibold">
-            {item?.customId || `Item ${item?.id}`}
+            {currentItem.customId || `Item ${currentItem.id}`}
           </h2>
         </div>
 
@@ -69,7 +68,7 @@ const ItemDetailsPage = () => {
             <Button
               key={tab}
               active={activeTab === tab}
-              className=" w-30 px-2 py-1 rounded-lg text-xs sm:text-sm md:text-base font-medium truncate"
+              className="w-30 px-2 py-1 rounded-lg text-xs sm:text-sm md:text-base font-medium truncate"
               onClick={() => setActiveTab(tab)}
             >
               {tab}
@@ -77,13 +76,12 @@ const ItemDetailsPage = () => {
           ))}
         </div>
 
-        {!item ? (
-          <div className="text-center text-gray-500 py-10">No item found</div>
-        ) : (
-          <div className="space-y-4 mt-2">
-            {activeTab === TabId.ItemDetails && <ItemView item={item} />}
-          </div>
-        )}
+        <div className="space-y-4 mt-2">
+          {activeTab === TabId.ItemDetails && <ItemView item={currentItem} />}
+          {activeTab === TabId.ItemFields && inventoryId && itemId && (
+            <FieldsTab inventoryId={Number(inventoryId)} />
+          )}
+        </div>
       </div>
     </>
   );

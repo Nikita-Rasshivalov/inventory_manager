@@ -49,7 +49,7 @@ export async function getItemOrThrow(inventoryId: number, itemId: number) {
 
 export function checkVersion(item: any, clientVersion: number) {
   if (clientVersion !== item.version)
-    throw { status: 409, message: "Conflict: version mismatch" };
+    throw new Error("Conflict: version mismatch");
 }
 
 async function getFieldsByIds(validIdsSet: Set<number>) {
@@ -95,7 +95,6 @@ export async function prepareFieldValuesForUpdate(
     where: { itemId, deleted: false, NOT: { id: { in: existingIds } } },
     select: { id: true },
   });
-
   const fields = await getFieldsByIds(validIdsSet);
   const fieldMap = new Map(fields.map((f) => [f.id, f.type]));
 
@@ -113,15 +112,26 @@ export async function runUpdateTransaction(
   updateFieldValues: any[],
   deleteFieldValues: any[]
 ) {
+  const { fieldValues, ...updateData } = data;
+
+  const itemUpdateData = {
+    ...updateData,
+    version: { increment: 1 },
+  };
+
   const transactionOps = [
     prisma.item.update({
       where: { id: itemId },
-      data: { ...data, version: { increment: 1 } },
+      data: itemUpdateData,
     }),
     ...updateFieldValues.map((fv) =>
       prisma.itemFieldValue.update({
         where: { id: fv.id },
-        data: { value: fv.value },
+        data: {
+          value: fv.value,
+          order: fv.order ?? 0,
+          showInTable: fv.showInTable ?? true,
+        },
       })
     ),
     ...createFieldValues.map((fv) =>
@@ -130,15 +140,14 @@ export async function runUpdateTransaction(
           itemId,
           fieldId: fv.fieldId,
           value: fv.value,
-          order: fv.order,
+          order: fv.order ?? 0,
           showInTable: fv.showInTable ?? true,
         },
       })
     ),
     ...deleteFieldValues.map((fv) =>
-      prisma.itemFieldValue.update({
+      prisma.itemFieldValue.delete({
         where: { id: fv.id },
-        data: { deleted: true, deletedAt: new Date() },
       })
     ),
   ];

@@ -7,12 +7,14 @@ interface DragElementProps {
   item: any;
   provided: any;
   onRemove: () => void;
+  isCustom?: boolean;
 }
 
 const DragElement: React.FC<DragElementProps> = ({
   item,
   provided,
   onRemove,
+  isCustom,
 }) => {
   return (
     <div
@@ -25,8 +27,11 @@ const DragElement: React.FC<DragElementProps> = ({
         <Tooltip title={item.tooltip} placement="top">
           <span className="text-lg">
             {item.label}
-            {item.type === "fixedText" && item.value ? `: ${item.value}` : ""}
-            {item.name ? `: ${item.name}` : ""}
+            {item.type && item.name ? `: ${item.name}` : ""}
+            {item.type === "fixedText" && item.name ? `: ${item.name}` : ""}
+
+            {isCustom && item.name ? `${item.name}` : ""}
+            {isCustom && item.value ? `: ${item.value}` : ""}
           </span>
         </Tooltip>
       </div>

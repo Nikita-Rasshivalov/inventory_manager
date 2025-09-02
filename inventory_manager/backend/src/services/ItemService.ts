@@ -26,7 +26,11 @@ export class ItemService {
       prisma.item.findMany({
         where: { inventoryId, deleted: false },
         include: {
-          fieldValues: true,
+          fieldValues: {
+            where: { deleted: false },
+            include: { field: true },
+            orderBy: { order: "asc" },
+          },
           createdBy: true,
           likes: true,
           comments: true,
@@ -46,7 +50,11 @@ export class ItemService {
     return prisma.item.findFirst({
       where: { id: item.id },
       include: {
-        fieldValues: true,
+        fieldValues: {
+          where: { deleted: false },
+          include: { field: true },
+          orderBy: { order: "asc" },
+        },
         createdBy: true,
         likes: true,
         comments: true,
@@ -97,10 +105,11 @@ export class ItemService {
         validIdsSet
       );
 
-    let customId: string | undefined;
     if (data.customIdFormat) {
-      customId = await generateUniqueCustomId(inventoryId, data.customIdFormat);
-      data.customId = customId;
+      data.customId = await generateUniqueCustomId(
+        inventoryId,
+        data.customIdFormat
+      );
     }
 
     await runUpdateTransaction(

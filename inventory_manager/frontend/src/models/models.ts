@@ -75,6 +75,8 @@ export interface ItemFieldValue {
   value: string | number | boolean | null;
   order: number;
   showInTable: boolean;
+  name?: string;
+  field?: Field;
 }
 
 export interface ItemPayload {
@@ -82,6 +84,7 @@ export interface ItemPayload {
   fieldValues?: ItemFieldValue[];
   version?: number;
   order?: number;
+  showInTable?: boolean;
 }
 
 export interface Comment {

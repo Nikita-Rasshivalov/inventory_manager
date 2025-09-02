@@ -41,7 +41,6 @@ export class ItemController {
     const inventoryId = parseInt(req.params.inventoryId);
     const itemId = parseInt(req.params.itemId);
     const data = req.body;
-
     const item = await itemService.update(inventoryId, itemId, data);
     res.json(item);
   };
