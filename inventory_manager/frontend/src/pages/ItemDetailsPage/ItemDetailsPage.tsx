@@ -6,8 +6,8 @@ import Header from "../../components/layout/Header";
 import { useItemStore } from "../../stores/useItemStore";
 import { useInventoryStore } from "../../stores/useInventoryStore";
 import Button from "../../components/common/Button";
-import ItemView from "../../Views/FieldView/ItemViev";
-import FieldsTab from "./FieldsTab";
+import FieldsTab from "./Tabs/FieldsTab";
+import ItemTab from "./Tabs/ItemTab";
 
 enum TabId {
   ItemDetails = "Item Details",
@@ -77,7 +77,7 @@ const ItemDetailsPage = () => {
         </div>
 
         <div className="space-y-4 mt-2">
-          {activeTab === TabId.ItemDetails && <ItemView item={currentItem} />}
+          {activeTab === TabId.ItemDetails && <ItemTab item={currentItem} />}
           {activeTab === TabId.ItemFields && inventoryId && itemId && (
             <FieldsTab inventoryId={Number(inventoryId)} />
           )}

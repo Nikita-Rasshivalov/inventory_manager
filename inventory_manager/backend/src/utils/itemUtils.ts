@@ -20,7 +20,6 @@ export async function getValidFieldIds(
   });
   return new Set(validFields.map((f) => f.id));
 }
-
 export function prepareFieldValues(
   fieldValues: any[],
   validIdsSet: Set<number>,
@@ -34,8 +33,18 @@ export function prepareFieldValues(
     )
     .map((fv) =>
       withId
-        ? { id: fv.id, value: fv.value }
-        : { fieldId: fv.fieldId, value: fv.value }
+        ? {
+            id: fv.id,
+            value: fv.value,
+            showInTable: fv.showInTable,
+            order: fv.order,
+          }
+        : {
+            fieldId: fv.fieldId,
+            value: fv.value,
+            showInTable: fv.showInTable,
+            order: fv.order,
+          }
     );
 }
 
