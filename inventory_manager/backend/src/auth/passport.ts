@@ -21,7 +21,9 @@ passport.use(
     },
     async (req: any, _at, _rt, profile, done) => {
       try {
-        const email = profile.emails?.[0]?.value;
+        const email =
+          profile.emails?.[0]?.value ||
+          `google-${profile.id}@users.noreply.example.com`;
         const name = profile.displayName || profile.name?.givenName || "User";
         const providerUserId = profile.id;
         if (!email) return done(new Error("No email from Google"));
@@ -65,6 +67,7 @@ passport.use(
           getIp(req),
           req.headers["user-agent"]?.toString()
         );
+
         return done(null, result);
       } catch (e) {
         return done(e as any);

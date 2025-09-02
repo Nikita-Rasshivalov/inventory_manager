@@ -3,6 +3,7 @@ import {
   InventoryPayload,
   InventoryRole,
   MemberAction,
+  Comment,
 } from "../models/models";
 import axiosInstance from "../services/axiosInstance";
 
@@ -73,6 +74,20 @@ export class InventoryApi {
     const res = await axiosInstance.patch(`/inventory/${inventoryId}/members`, {
       updates,
     });
+    return res.data;
+  }
+
+  static async getComments(inventoryId: number) {
+    const res = await axiosInstance.get<Comment[]>(
+      `/inventory/${inventoryId}/comments`
+    );
+    return res.data;
+  }
+
+  static async deleteComment(inventoryId: number, commentId: number) {
+    const res = await axiosInstance.delete<{ id: number }>(
+      `/inventory/${inventoryId}/comments/${commentId}`
+    );
     return res.data;
   }
 }

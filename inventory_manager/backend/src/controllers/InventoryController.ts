@@ -65,4 +65,35 @@ export class InventoryController extends BaseController {
         updates
       );
     });
+
+  getComments = (req: Request, res: Response) =>
+    this.handle(res, async () => {
+      const user = (req as any).user;
+      const inventoryId = parseInt(req.params.inventoryId);
+      return await inventoryService.getComments(inventoryId);
+    });
+
+  addComment = (req: Request, res: Response) =>
+    this.handle(
+      res,
+      async () => {
+        const user = (req as any).user;
+        const inventoryId = parseInt(req.params.inventoryId);
+        const { content } = req.body;
+        if (!content) throw new Error("Comment content is required");
+        return await inventoryService.addComment(
+          inventoryId,
+          user.userId,
+          content
+        );
+      },
+      201
+    );
+
+  deleteComment = (req: Request, res: Response) =>
+    this.handle(res, async () => {
+      const user = (req as any).user;
+      const commentId = parseInt(req.params.commentId);
+      return await inventoryService.deleteComment(commentId, user.userId);
+    });
 }

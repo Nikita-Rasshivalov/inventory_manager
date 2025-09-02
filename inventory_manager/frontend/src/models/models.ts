@@ -40,6 +40,7 @@ export interface Inventory {
   fields: Field[];
   items: Item[];
   customIdFormat?: string;
+  comments: Comment[];
 }
 
 export interface Item {
@@ -53,7 +54,6 @@ export interface Item {
   deleted: boolean;
   createdBy?: User;
   fieldValues: ItemFieldValue[];
-  comments: Comment[];
   likes: Like[];
 }
 
@@ -94,6 +94,7 @@ export interface Comment {
   content: string;
   createdAt: string;
   user?: User;
+  inventory?: Inventory;
 }
 
 export interface Like {

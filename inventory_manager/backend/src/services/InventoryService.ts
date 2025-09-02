@@ -1,4 +1,4 @@
-import { InventoryRole } from "@prisma/client";
+import { InventoryRole, SystemRole } from "@prisma/client";
 import { prisma } from "../prisma/client.ts";
 import {
   getUserMemberships,
@@ -142,5 +142,46 @@ export class InventoryService {
     });
 
     return Promise.all(promises);
+  }
+
+  async getComments(inventoryId: number) {
+    const comments = await prisma.comment.findMany({
+      where: { inventoryId },
+      include: { user: true },
+      orderBy: { createdAt: "asc" },
+    });
+    return comments;
+  }
+
+  async addComment(inventoryId: number, userId: number, content: string) {
+    const member = await prisma.inventoryMember.findUnique({
+      where: { inventoryId_userId: { inventoryId, userId } },
+    });
+    if (!member) throw new Error("Access denied");
+
+    const comment = await prisma.comment.create({
+      data: { inventoryId, userId, content },
+      include: { user: true },
+    });
+
+    return comment;
+  }
+
+  async deleteComment(commentId: number, userId: number) {
+    const comment = await prisma.comment.findUnique({
+      where: { id: commentId },
+      include: { user: true },
+    });
+    if (!comment) throw new Error("Comment not found");
+
+    const user = await prisma.user.findUnique({ where: { id: userId } });
+    if (!user) throw new Error("User not found");
+
+    if (comment.userId !== userId && user.role !== SystemRole.ADMIN) {
+      throw new Error("Access denied");
+    }
+
+    await prisma.comment.delete({ where: { id: commentId } });
+    return { success: true };
   }
 }

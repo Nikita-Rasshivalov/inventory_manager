@@ -43,4 +43,13 @@ router.patch(
   controller.updateMembers
 );
 
+router.get("/:inventoryId/comments", authMiddleware, controller.getComments);
+router.post("/:inventoryId/comments", authMiddleware, controller.addComment);
+
+router.delete(
+  "/:inventoryId/comments/:commentId",
+  authMiddleware,
+  controller.deleteComment
+);
+
 export default router;

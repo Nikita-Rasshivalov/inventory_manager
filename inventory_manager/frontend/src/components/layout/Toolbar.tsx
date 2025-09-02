@@ -110,20 +110,18 @@ const Toolbar: React.FC<ToolbarProps> = ({
         </div>
       </div>
 
-      {tabs.length > 0 && onChangeTab && (
-        <div className="flex w-full gap-2 sm:flex-wrap sm:w-auto sm:flex-row sm:justify-end">
-          {tabs.map((tab) => (
-            <Button
-              key={tab}
-              onClick={() => onChangeTab(tab)}
-              active={activeTab === tab}
-              className="flex-1 px-2 py-1 rounded-lg text-[10px] text-xs sm:text-sm md:text-base font-medium truncate"
-            >
-              {tab}
-            </Button>
-          ))}
-        </div>
-      )}
+      <div className="flex flex-wrap gap-2">
+        {tabs.map((tab) => (
+          <Button
+            key={tab}
+            onClick={() => onChangeTab(tab)}
+            active={activeTab === tab}
+            className="px-4 py-2 rounded-lg text-xs sm:text-sm md:text-base font-medium truncate min-w-[80px] flex-1 sm:flex-none"
+          >
+            {tab}
+          </Button>
+        ))}
+      </div>
     </div>
   );
 };

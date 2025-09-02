@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import { AuthApi } from "../api/authApi";
 import { logout as serviceLogout } from "../services/authActions";
 import { useAuthTokens } from "./useAuthTokens";
@@ -7,8 +7,8 @@ import { useAuthStore } from "../stores/useAuthStore";
 
 export const useAuthProvider = () => {
   const navigate = useNavigate();
+  const location = useLocation();
   const { token, setTokens, clearAuth, refreshToken } = useAuthTokens();
-
   const { user, setUser, initialized, setInitialized } = useAuthStore();
   const [loading, setLoading] = useState(true);
 
@@ -19,45 +19,66 @@ export const useAuthProvider = () => {
     navigate("/login");
   }, [clearAuth, navigate, setUser]);
 
-  useEffect(() => {
-    if (initialized) {
+  const initAuth = useCallback(async () => {
+    if (!refreshToken) {
       setLoading(false);
+      setInitialized(true);
       return;
     }
 
-    const initAuth = async () => {
-      if (!refreshToken) {
-        setLoading(false);
-        setInitialized(true);
-        return;
+    try {
+      let currentAccess = token;
+      if (!currentAccess) {
+        const res = await AuthApi.refresh();
+        currentAccess = res.accessToken;
+        setTokens(currentAccess, refreshToken);
       }
 
-      try {
-        let currentAccess = token;
-        if (!currentAccess) {
-          const res = await AuthApi.refresh();
-          currentAccess = res.accessToken;
-          setTokens(currentAccess, refreshToken);
+      const currentUser = await AuthApi.getCurrentUser();
+      setUser(currentUser);
+    } catch {
+      logout();
+    } finally {
+      setLoading(false);
+      setInitialized(true);
+    }
+  }, [refreshToken, token, setTokens, setUser, logout, setInitialized]);
+
+  useEffect(() => {
+    const query = new URLSearchParams(location.search);
+    const accessToken = query.get("accessToken");
+    const refreshTokenParam = query.get("refreshToken");
+
+    if (accessToken && refreshTokenParam) {
+      (async () => {
+        try {
+          setTokens(accessToken, refreshTokenParam);
+          const currentUser = await AuthApi.getCurrentUser();
+          setUser(currentUser);
+          navigate("/dashboard", { replace: true });
+        } catch {
+          logout();
+        } finally {
+          setLoading(false);
+          setInitialized(true);
         }
+      })();
+      return;
+    }
 
-        const currentUser = await AuthApi.getCurrentUser();
-        setUser(currentUser);
-      } catch {
-        logout();
-      } finally {
-        setLoading(false);
-        setInitialized(true);
-      }
-    };
-
-    initAuth();
+    if (!initialized) {
+      initAuth();
+    } else {
+      setLoading(false);
+    }
   }, [
+    location.search,
     initialized,
-    token,
-    refreshToken,
-    logout,
+    initAuth,
     setTokens,
     setUser,
+    logout,
+    navigate,
     setInitialized,
   ]);
 
@@ -71,7 +92,7 @@ export const useAuthProvider = () => {
       setUser(user);
       navigate("/dashboard");
     },
-    [navigate, setTokens, setUser]
+    [setTokens, setUser, navigate]
   );
 
   const register = useCallback(
@@ -93,11 +114,11 @@ export const useAuthProvider = () => {
     } catch {
       logout();
     }
-  }, [refreshToken, logout, setTokens]);
+  }, [refreshToken, setTokens, logout]);
 
   const setAuth = useCallback(
-    (accessToken: string, refreshToken: string, user: any) => {
-      setTokens(accessToken, refreshToken);
+    (accessToken: string, refreshTokenParam: string, user: any) => {
+      setTokens(accessToken, refreshTokenParam);
       setUser(user);
     },
     [setTokens, setUser]

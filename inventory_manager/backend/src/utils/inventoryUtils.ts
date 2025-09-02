@@ -133,10 +133,6 @@ export async function softDeleteTransaction(inventoryIds: number[], now: Date) {
       where: { itemId: { in: itemIds } },
       data: { deleted: true, deletedAt: now },
     }),
-    prisma.comment.updateMany({
-      where: { itemId: { in: itemIds } },
-      data: { deleted: true, deletedAt: now },
-    }),
     prisma.like.updateMany({
       where: { itemId: { in: itemIds } },
       data: { deleted: true, deletedAt: now },

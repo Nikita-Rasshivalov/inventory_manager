@@ -33,7 +33,6 @@ export class ItemService {
           },
           createdBy: true,
           likes: true,
-          comments: true,
         },
         skip,
         take: limit,
@@ -57,7 +56,6 @@ export class ItemService {
         },
         createdBy: true,
         likes: true,
-        comments: true,
       },
     });
   }
@@ -88,7 +86,6 @@ export class ItemService {
       include: {
         createdBy: true,
         likes: true,
-        comments: true,
       },
     });
   }

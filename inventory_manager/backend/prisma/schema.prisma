@@ -74,6 +74,7 @@ model Inventory {
   fields    Field[]
   items     Item[]
   customIdFormat Json? 
+  comments      Comment[]
 }
 
 model InventoryMember {
@@ -113,7 +114,6 @@ model Item {
   inventory     Inventory         @relation(fields: [inventoryId], references: [id])
   createdBy     User              @relation(fields: [createdById], references: [id])
   fieldValues   ItemFieldValue[]
-  comments      Comment[]
   likes         Like[]
 
   @@unique([inventoryId, customId])
@@ -134,15 +134,15 @@ model ItemFieldValue {
 }
 
 model Comment {
-  id        Int      @id @default(autoincrement())
-  itemId    Int
-  userId    Int
-  content   String
-  createdAt DateTime @default(now())
-  deleted   Boolean  @default(false)
-  deletedAt DateTime?
-  item      Item     @relation(fields: [itemId], references: [id])
-  user      User     @relation(fields: [userId], references: [id])
+  id          Int       @id @default(autoincrement())
+  inventoryId Int  
+  userId      Int
+  content     String
+  createdAt   DateTime  @default(now())
+  deleted     Boolean   @default(false)
+  deletedAt   DateTime?
+  inventory   Inventory @relation(fields: [inventoryId], references: [id])
+  user        User      @relation(fields: [userId], references: [id])
 }
 
 model Like {

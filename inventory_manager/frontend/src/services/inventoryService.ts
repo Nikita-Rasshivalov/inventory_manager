@@ -4,6 +4,7 @@ import {
   InventoryPayload,
   InventoryRole,
   MemberAction,
+  Comment,
 } from "../models/models";
 
 export const InventoryService = {
@@ -52,5 +53,16 @@ export const InventoryService = {
     }[]
   ): Promise<any> => {
     return await InventoryApi.updateMembers(inventoryId, updates);
+  },
+
+  getComments: async (inventoryId: number): Promise<Comment[]> => {
+    return await InventoryApi.getComments(inventoryId);
+  },
+
+  deleteComment: async (
+    inventoryId: number,
+    commentId: number
+  ): Promise<{ id: number }> => {
+    return await InventoryApi.deleteComment(inventoryId, commentId);
   },
 };

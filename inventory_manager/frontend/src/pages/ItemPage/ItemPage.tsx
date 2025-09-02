@@ -9,15 +9,24 @@ import { AccessView } from "../../Views/AccessView/AccessView";
 import { ItemsView } from "../../Views/ItemsView/ItemsView";
 import CustomIdView from "../../Views/CustomIdView/CustomIdView";
 import FieldView from "../../Views/FieldView/FieldView";
+import { DiscussionView } from "../../Views/DiscussionView/DiscussionView";
+import { useAuthStore } from "../../stores/useAuthStore";
 
 enum TabId {
   Items = "Items",
   Access = "Access",
   CustomId = "Settings",
   Fields = "Fields",
+  Discussion = "Discussion",
 }
 
-const TABS: TabId[] = [TabId.Items, TabId.Access, TabId.CustomId, TabId.Fields];
+const TABS: TabId[] = [
+  TabId.Items,
+  TabId.Access,
+  TabId.CustomId,
+  TabId.Fields,
+  TabId.Discussion,
+];
 
 const ItemPage = ({ inventoryId }: { inventoryId: number }) => {
   const {
@@ -32,6 +41,7 @@ const ItemPage = ({ inventoryId }: { inventoryId: number }) => {
     loading,
   } = useItemStore();
 
+  const { user } = useAuthStore();
   const { inventoryMembers, updateMembers, getById } = useInventoryStore();
 
   const itemsSelection = useSelection(items);
@@ -146,6 +156,10 @@ const ItemPage = ({ inventoryId }: { inventoryId: number }) => {
 
       {activeTab === TabId.CustomId && (
         <CustomIdView inventoryId={inventoryId} />
+      )}
+
+      {activeTab === TabId.Discussion && user && (
+        <DiscussionView inventoryId={inventoryId} currentUser={user} />
       )}
     </div>
   );
