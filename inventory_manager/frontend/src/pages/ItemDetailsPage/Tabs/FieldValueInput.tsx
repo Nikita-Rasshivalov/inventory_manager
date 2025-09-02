@@ -17,7 +17,7 @@ const FieldValueInput: React.FC<FieldValueInputProps> = ({
       return (
         <Input
           type="text"
-          value={value}
+          value={value ?? ""}
           placeholder="Enter text"
           onChange={(e) => onChange(e.target.value)}
           className="border rounded px-2 py-2 text-sm min-[425px]:h-8"
@@ -55,7 +55,7 @@ const FieldValueInput: React.FC<FieldValueInputProps> = ({
         <div className="flex items-center gap-2">
           <Input
             type="checkbox"
-            checked={value || false}
+            checked={value === true || value === "true"}
             onChange={(e) => onChange(e.target.checked)}
           />
           <span className="text-sm">True / False</span>

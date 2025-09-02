@@ -13,6 +13,7 @@ interface FieldValueFormProps {
   setShowInTable: (val: boolean) => void;
   onAddField: () => void;
   onSave: () => void;
+  onlyShowInTable?: boolean;
 }
 
 const FieldValueForm: React.FC<FieldValueFormProps> = ({
@@ -24,30 +25,35 @@ const FieldValueForm: React.FC<FieldValueFormProps> = ({
   setShowInTable,
   onAddField,
   onSave,
+  onlyShowInTable = false,
 }) => (
   <>
-    <FieldValueInput
-      type={
-        fields.find((f) => f.id === selectedFieldId)?.type ?? "singleLineText"
-      }
-      value={value}
-      onChange={setValue}
-    />
-    <div className="flex items-center gap-2">
+    {!onlyShowInTable && (
+      <FieldValueInput
+        type={
+          fields.find((f) => f.id === selectedFieldId)?.type ?? "singleLineText"
+        }
+        value={value}
+        onChange={setValue}
+      />
+    )}
+    <div className="flex items-center gap-2 mt-2">
       <Input
         type="checkbox"
-        checked={showInTable}
+        checked={!!showInTable}
         onChange={(e) => setShowInTable(e.target.checked)}
       />
       <div className="text-sm">Show in table</div>
     </div>
     <div className="flex gap-3 mt-2">
-      <Button
-        onClick={onAddField}
-        className="border rounded px-2 py-2 text-sm min-[425px]:h-8"
-      >
-        <Plus size={16} />
-      </Button>
+      {!onlyShowInTable && (
+        <Button
+          onClick={onAddField}
+          className="border rounded px-2 py-2 text-sm min-[425px]:h-8"
+        >
+          <Plus size={16} />
+        </Button>
+      )}
       <Button
         onClick={onSave}
         className="border rounded px-2 py-2 text-sm min-[425px]:h-8"

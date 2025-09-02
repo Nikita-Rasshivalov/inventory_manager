@@ -19,8 +19,9 @@ const FieldsTab: React.FC<FieldsTabProps> = ({ inventoryId }) => {
 
   const [itemFieldValues, setItemFieldValues] = useState<ItemFieldValue[]>([]);
   const [selectedFieldId, setSelectedFieldId] = useState<number | null>(null);
-  const [value, setValue] = useState<string>("");
+  const [value, setValue] = useState<string | null>(null);
   const [showInTable, setShowInTable] = useState<boolean>(false);
+  const [editingIndex, setEditingIndex] = useState<number | null>(null);
 
   useEffect(() => {
     getAll(inventoryId);
@@ -33,17 +34,24 @@ const FieldsTab: React.FC<FieldsTabProps> = ({ inventoryId }) => {
           ...fv,
           name: fv.field?.name,
           order: fv.order ?? 0,
-          value: fv.value ?? null, // строго string | null
+          value: fv.value ?? null,
         }))
         .sort((a, b) => (a.order ?? 0) - (b.order ?? 0));
       setItemFieldValues(existing);
     }
   }, [currentItem]);
 
-  const handleAddFieldValue = (newField: ItemFieldValue) => {
-    setItemFieldValues([...itemFieldValues, newField]);
+  const handleAddOrUpdateFieldValue = (newField: ItemFieldValue) => {
+    if (editingIndex !== null) {
+      const updated = [...itemFieldValues];
+      updated[editingIndex] = { ...updated[editingIndex], ...newField };
+      setItemFieldValues(updated);
+      setEditingIndex(null);
+    } else {
+      setItemFieldValues([...itemFieldValues, newField]);
+    }
     setSelectedFieldId(null);
-    setValue("");
+    setValue(null);
     setShowInTable(false);
   };
 
@@ -51,17 +59,42 @@ const FieldsTab: React.FC<FieldsTabProps> = ({ inventoryId }) => {
     const updated = [...itemFieldValues];
     updated.splice(index, 1);
     setItemFieldValues(updated);
+    if (editingIndex === index) {
+      setEditingIndex(null);
+      setSelectedFieldId(null);
+      setValue(null);
+      setShowInTable(false);
+    }
+  };
+
+  const handleSelectFieldValue = (index: number) => {
+    const fv = itemFieldValues[index];
+    setSelectedFieldId(fv.fieldId);
+    setValue(
+      fv.value !== null && fv.value !== undefined ? String(fv.value) : ""
+    );
+    setShowInTable(fv.showInTable);
+    setEditingIndex(index);
   };
 
   const handleSave = async () => {
     if (!currentItem) return;
+
+    const finalValues = [...itemFieldValues];
+    if (editingIndex !== null) {
+      finalValues[editingIndex] = {
+        ...finalValues[editingIndex],
+        value,
+        showInTable,
+      };
+    }
 
     try {
       const updatedItem = await update(
         currentItem.inventoryId,
         currentItem.id,
         {
-          fieldValues: itemFieldValues.map((fv, index) => ({
+          fieldValues: finalValues.map((fv, index) => ({
             id: fv.id,
             fieldId: fv.fieldId,
             value:
@@ -76,12 +109,18 @@ const FieldsTab: React.FC<FieldsTabProps> = ({ inventoryId }) => {
       );
 
       setCurrentItem(updatedItem);
+
       const existing = updatedItem.fieldValues.map((fv) => ({
         ...fv,
         name: fv.field?.name,
         value: fv.value ?? null,
       }));
+
       setItemFieldValues(existing);
+      setEditingIndex(null);
+      setSelectedFieldId(null);
+      setValue(null);
+      setShowInTable(false);
       toast.success("Item field values saved!");
     } catch (err: any) {
       toast.error(err.response?.data?.error || "Failed to save field values");
@@ -91,20 +130,31 @@ const FieldsTab: React.FC<FieldsTabProps> = ({ inventoryId }) => {
   const onAddField = () => {
     if (!selectedFieldId) return toast.error("Select a field");
 
-    if (itemFieldValues.some((fv) => fv.fieldId === selectedFieldId)) {
-      return toast.error("This field is already added");
+    const exists = itemFieldValues.some(
+      (fv, idx) => fv.fieldId === selectedFieldId && idx !== editingIndex
+    );
+
+    if (exists) {
+      return toast.error(
+        "This field is already added. You cannot add duplicates."
+      );
     }
 
     const field = fields.find((f) => f.id === selectedFieldId);
     if (!field) return toast.error("Field not found");
 
-    handleAddFieldValue({
+    const newField: ItemFieldValue = {
       fieldId: field.id,
       name: field.name,
       value,
       showInTable,
-      order: itemFieldValues.length + 1,
-    } as ItemFieldValue);
+      order:
+        editingIndex !== null
+          ? itemFieldValues[editingIndex].order
+          : itemFieldValues.length + 1,
+    };
+
+    handleAddOrUpdateFieldValue(newField);
   };
 
   return (
@@ -130,6 +180,7 @@ const FieldsTab: React.FC<FieldsTabProps> = ({ inventoryId }) => {
         itemFieldValues={itemFieldValues}
         setItemFieldValues={setItemFieldValues}
         onRemove={handleRemoveFieldValue}
+        onSelect={handleSelectFieldValue}
       />
     </div>
   );
