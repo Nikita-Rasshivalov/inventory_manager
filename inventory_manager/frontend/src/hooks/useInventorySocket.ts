@@ -35,6 +35,7 @@ export const useInventorySocket = (options: InventorySocketOptions) => {
     }
 
     globalSocket.emit("joinInventory", inventoryId);
+
     const handleNewComment = (comment: Comment) =>
       newCommentRef.current?.(comment);
     const handleInitialComments = (comments: Comment[]) =>
@@ -63,15 +64,8 @@ export const useInventorySocket = (options: InventorySocketOptions) => {
     }
   };
 
-  const emitLikeItem = (itemId: number, userId: number) => {
-    if (connected) {
-      globalSocket.emit("likeItem", { itemId, userId });
-    }
-  };
-
   return {
     socket: connected ? globalSocket : null,
     emitNewComment,
-    emitLikeItem,
   };
 };

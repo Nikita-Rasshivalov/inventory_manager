@@ -62,33 +62,67 @@ export function handleInventoryEvents(socket: Socket, io: Server) {
     }
   );
 
-  socket.on("joinItem", (itemId: number) => {
+  socket.on("joinItem", async (itemId: number) => {
     socket.join(`item_${itemId}`);
     console.log(`Socket ${socket.id} joined item ${itemId}`);
-  });
 
-  socket.on("likeItem", async (data: { itemId: number; userId: number }) => {
     try {
-      await prisma.like.upsert({
-        where: {
-          itemId_userId: { itemId: data.itemId, userId: data.userId },
-        },
-        update: {},
-        create: { itemId: data.itemId, userId: data.userId },
+      const likes = await prisma.like.findMany({
+        where: { itemId },
       });
 
-      const likeCount = await prisma.like.count({
-        where: { itemId: data.itemId, deleted: false },
-      });
-
-      io.to(`item_${data.itemId}`).emit("itemLiked", {
-        itemId: data.itemId,
-        userId: data.userId,
-        likeCount,
+      socket.emit("initialItemLikes", {
+        itemId,
+        likes: likes.map((like) => ({
+          id: like.id,
+          itemId: like.itemId,
+          userId: like.userId,
+          createdAt: like.createdAt,
+        })),
       });
     } catch (err) {
-      console.error("Failed to like item:", err);
-      socket.emit("error", { message: "Failed to like item" });
+      console.error("Failed to load initial likes:", err);
+      socket.emit("error", { message: "Failed to load likes" });
     }
   });
+
+  socket.on(
+    "toggleLikeItem",
+    async (data: { itemId: number; userId: number }) => {
+      try {
+        const existingLike = await prisma.like.findFirst({
+          where: { itemId: data.itemId, userId: data.userId },
+        });
+
+        if (existingLike) {
+          await prisma.like.delete({ where: { id: existingLike.id } });
+        } else {
+          await prisma.like.upsert({
+            where: {
+              itemId_userId: { itemId: data.itemId, userId: data.userId },
+            },
+            create: { itemId: data.itemId, userId: data.userId },
+            update: {},
+          });
+        }
+
+        const likes = await prisma.like.findMany({
+          where: { itemId: data.itemId },
+        });
+
+        io.to(`item_${data.itemId}`).emit("itemLiked", {
+          itemId: data.itemId,
+          likes: likes.map((like) => ({
+            id: like.id,
+            itemId: like.itemId,
+            userId: like.userId,
+            createdAt: like.createdAt,
+          })),
+        });
+      } catch (err) {
+        console.error("Failed to toggle like:", err);
+        socket.emit("error", { message: "Failed to toggle like" });
+      }
+    }
+  );
 }

@@ -8,6 +8,8 @@ import { useInventoryStore } from "../../stores/useInventoryStore";
 import Button from "../../components/common/Button";
 import FieldsTab from "./Tabs/FieldsTab";
 import ItemTab from "./Tabs/ItemTab";
+import LikeButton from "./LikeButton";
+import { useAuthStore } from "../../stores/useAuthStore";
 
 enum TabId {
   ItemDetails = "Item Details",
@@ -24,6 +26,7 @@ const ItemDetailsPage = () => {
   const navigate = useNavigate();
   const { fetchItemById, currentItem, loading } = useItemStore();
   const { getById: getInventoryById } = useInventoryStore();
+  const { user } = useAuthStore();
 
   const [activeTab, setActiveTab] = useState<TabId>(TabId.ItemDetails);
 
@@ -63,17 +66,26 @@ const ItemDetailsPage = () => {
           </h2>
         </div>
 
-        <div className="flex w-full justify-end gap-2 mb-4 pb-3 rounded-lg border-b border-gray-300">
-          {TABS.map((tab) => (
-            <Button
-              key={tab}
-              active={activeTab === tab}
-              className="w-30 px-2 py-1 rounded-lg text-xs sm:text-sm md:text-base font-medium truncate"
-              onClick={() => setActiveTab(tab)}
-            >
-              {tab}
-            </Button>
-          ))}
+        <div className="flex w-full justify-between items-center gap-2 mb-4 pb-3 rounded-lg border-b border-gray-300">
+          {user && (
+            <LikeButton
+              itemId={currentItem.id}
+              currentUser={user}
+              initialLikes={currentItem.likes}
+            />
+          )}
+          <div className="flex gap-2">
+            {TABS.map((tab) => (
+              <Button
+                key={tab}
+                active={activeTab === tab}
+                className="w-30 px-2 py-1 rounded-lg text-xs sm:text-sm md:text-base font-medium truncate"
+                onClick={() => setActiveTab(tab)}
+              >
+                {tab}
+              </Button>
+            ))}
+          </div>
         </div>
 
         <div className="space-y-4 mt-2">
