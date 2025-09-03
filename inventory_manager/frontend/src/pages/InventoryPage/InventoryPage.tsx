@@ -3,22 +3,17 @@ import Toolbar from "../../components/layout/Toolbar";
 import GenericModal from "../../components/layout/Modal";
 import { useSelection } from "../../hooks/useSelection";
 import { useInventoryActions } from "./hooks/useInventoryActions";
-import { InventoryRole } from "../../models/models";
+import { InventoryRole, InventoryTabId, SystemRole } from "../../models/models";
 import { useInventoryStore } from "../../stores/useInventoryStore";
 import InventoryTable from "../../components/Tables/InventoryTable/InventoryTable";
 import { useDebounce } from "../../hooks/useDebounce";
+import { useAuth } from "../../hooks/useAuth";
 
-const tabs: InventoryRole[] = [
-  InventoryRole.OWNER,
-  InventoryRole.WRITER,
-  InventoryRole.READER,
-];
-
-const debouce = 400;
+const debounceTime = 400;
 
 const InventoryPage = () => {
-  const { createInventory, deleteInventories, user } = useInventoryActions();
-
+  const { createInventory, deleteInventories } = useInventoryActions();
+  const { user } = useAuth();
   const {
     inventories,
     page,
@@ -31,32 +26,42 @@ const InventoryPage = () => {
     activeTab,
     setActiveTab,
     limit,
+    sorting,
+    setSorting,
+    currentUser,
+    setCurrentUser,
   } = useInventoryStore();
 
-  const debouncedSearch = useDebounce(search, debouce);
-  const [sorting, setSorting] = useState<{
-    sortBy?: string;
-    sortOrder?: "asc" | "desc";
-  }>({
-    sortBy: "created",
-    sortOrder: "desc",
-  });
+  const TABS: InventoryTabId[] =
+    user?.role === SystemRole.ADMIN
+      ? [InventoryTabId.All]
+      : [InventoryTabId.Own, InventoryTabId.Member, InventoryTabId.All];
+
+  const isAdmin = user?.role === SystemRole.ADMIN;
+  const showCheckboxes = isAdmin || activeTab === InventoryTabId.Own;
+
+  const debouncedSearch = useDebounce(search, debounceTime);
   const [isModalOpen, setIsModalOpen] = useState(false);
 
   const { selectedIds, toggleSelect, clearSelection } =
     useSelection(inventories);
 
   useEffect(() => {
-    getAll(page, sorting.sortBy, sorting.sortOrder, activeTab, debouncedSearch);
-  }, [page, sorting, activeTab, debouncedSearch, getAll]);
+    if (user && (!currentUser || currentUser.id !== user.id)) {
+      setCurrentUser(user);
+    }
+  }, [user, currentUser, setCurrentUser]);
 
-  const handleFilterChange = useCallback(
-    (text: string) => setSearch(text),
-    [setSearch]
-  );
+  useEffect(() => {
+    if (currentUser) {
+      getAll();
+    }
+  }, [page, activeTab, debouncedSearch, sorting, getAll, currentUser]);
+
+  const handleFilterChange = (text: string) => setSearch(text);
 
   const handleTabChange = useCallback(
-    (tab: InventoryRole) => {
+    (tab: InventoryTabId) => {
       setActiveTab(tab);
       clearSelection();
       setPage(1);
@@ -88,9 +93,9 @@ const InventoryPage = () => {
         hiddenTabs={[InventoryRole.READER, InventoryRole.WRITER]}
         onDelete={handleDelete}
         onCreate={() => setIsModalOpen(true)}
-        tabs={tabs}
+        tabs={TABS}
         activeTab={activeTab}
-        onChangeTab={(tab) => handleTabChange(tab as InventoryRole)}
+        onChangeTab={(tab) => handleTabChange(tab as InventoryTabId)}
         filterText={search}
         onFilterChange={handleFilterChange}
       />
@@ -105,7 +110,9 @@ const InventoryPage = () => {
         onPageChange={handlePageChange}
         loading={loading}
         setSorting={setSorting}
+        showCheckboxes={showCheckboxes}
       />
+
       {isModalOpen && (
         <GenericModal
           title="Create Inventory"

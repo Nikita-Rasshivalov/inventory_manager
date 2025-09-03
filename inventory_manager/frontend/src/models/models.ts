@@ -6,7 +6,13 @@ export enum SystemRole {
 export enum InventoryRole {
   OWNER = "OWNER",
   WRITER = "WRITER",
-  READER = "ALL",
+  READER = "READER",
+}
+
+export enum InventoryFilter {
+  Own = "own",
+  Member = "member",
+  Public = "public",
 }
 
 export class User {
@@ -129,6 +135,12 @@ export enum MemberAction {
   Add = "add",
   Update = "update",
   Remove = "remove",
+}
+
+export enum InventoryTabId {
+  Own = "Own",
+  Member = "Member",
+  All = "All",
 }
 
 export type CustomIdPart =

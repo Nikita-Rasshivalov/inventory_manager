@@ -1,8 +1,8 @@
 import React from "react";
 import { Plus, Save } from "lucide-react";
 import FieldValueInput from "./FieldValueInput";
-import Input from "../../../components/common/Input";
-import Button from "../../../components/common/Button";
+import Input from "../../../../components/common/Input";
+import Button from "../../../../components/common/Button";
 
 interface FieldValueFormProps {
   fields: { id: number; name: string; type?: string }[];

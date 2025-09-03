@@ -1,5 +1,5 @@
-import { PrismaClient, InventoryRole } from "@prisma/client";
-import { isNonEmptyString } from "./validation.ts";
+import { PrismaClient, InventoryRole, SystemRole } from "@prisma/client";
+import { InventoryFilter } from "../models/types.ts";
 
 const prisma = new PrismaClient();
 
@@ -8,12 +8,20 @@ export async function checkPermission(
   userId: number,
   allowedRoles: InventoryRole[]
 ) {
+  const user = await prisma.user.findUnique({ where: { id: userId } });
+
+  if (user?.role === SystemRole.ADMIN) {
+    return { inventoryId, userId, role: InventoryRole.OWNER };
+  }
+
   const member = await prisma.inventoryMember.findUnique({
     where: { inventoryId_userId: { inventoryId, userId } },
   });
+
   if (!member || !allowedRoles.includes(member.role)) {
     throw new Error("Access denied");
   }
+
   return member;
 }
 
@@ -36,25 +44,32 @@ export function buildOrderBy(sortBy?: string, sortOrder?: "asc" | "desc") {
 export function buildWhere(
   userId: number,
   search?: string,
-  inventoryRole?: InventoryRole
+  filter?: InventoryFilter
 ) {
   const where: any = { deleted: false };
 
-  where.OR = [
-    { isPublic: true },
-    { ownerId: userId },
-    {
-      members: {
-        some: {
-          userId,
-          deleted: false,
-          ...(inventoryRole ? { role: inventoryRole } : {}),
-        },
-      },
-    },
-  ];
+  switch (filter) {
+    case InventoryFilter.Own:
+      where.ownerId = userId;
+      break;
+    case InventoryFilter.Member:
+      where.members = {
+        some: { userId, role: InventoryRole.WRITER, deleted: false },
+      };
+      break;
+    case InventoryFilter.Public:
+      where.isPublic = true;
+      break;
+    default:
+      where.OR = [
+        { isPublic: true },
+        { ownerId: userId },
+        { members: { some: { userId, deleted: false } } },
+      ];
+      break;
+  }
 
-  if (isNonEmptyString(search)) {
+  if (search && search.trim() !== "") {
     where.title = { contains: search };
   }
 

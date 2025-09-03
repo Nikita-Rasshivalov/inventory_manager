@@ -1,5 +1,6 @@
 import { InventoryRole } from "@prisma/client";
 import { CustomIdPart } from "../utils/customId.ts";
+import { InventoryFilter } from "./types.ts";
 
 export interface InventoryQueryParams {
   page: number;
@@ -7,7 +8,7 @@ export interface InventoryQueryParams {
   search: string;
   sortBy?: string;
   sortOrder?: "asc" | "desc";
-  inventoryRole?: InventoryRole;
+  inventoryFilter?: InventoryFilter;
 }
 
 export interface UpdateItemData {

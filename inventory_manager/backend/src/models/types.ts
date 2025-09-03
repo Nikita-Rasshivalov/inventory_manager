@@ -33,3 +33,9 @@ export enum MemberAction {
   Update = "update",
   Remove = "remove",
 }
+
+export enum InventoryFilter {
+  Own = "own",
+  Member = "member",
+  Public = "public",
+}

@@ -1,5 +1,5 @@
 import React from "react";
-import Select from "../../../components/common/Select";
+import Select from "../../../../components/common/Select";
 
 interface FieldSelectorProps {
   fields: { id: number; name: string }[];

@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useMemo } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { ArrowLeft, Loader } from "lucide-react";
 import { toast } from "react-toastify";
@@ -6,17 +6,16 @@ import Header from "../../components/layout/Header";
 import { useItemStore } from "../../stores/useItemStore";
 import { useInventoryStore } from "../../stores/useInventoryStore";
 import Button from "../../components/common/Button";
-import FieldsTab from "./Tabs/FieldsTab";
-import ItemTab from "./Tabs/ItemTab";
+import FieldsTab from "./Tabs/FieldTab/FieldsTab";
+import ItemTab from "./Tabs/ItemTab/ItemTab";
 import LikeButton from "./LikeButton";
 import { useAuthStore } from "../../stores/useAuthStore";
+import { InventoryRole, SystemRole } from "../../models/models";
 
 enum TabId {
   ItemDetails = "Item Details",
   ItemFields = "Fields",
 }
-
-const TABS: TabId[] = [TabId.ItemDetails, TabId.ItemFields];
 
 const ItemDetailsPage = () => {
   const { inventoryId, itemId } = useParams<{
@@ -25,7 +24,7 @@ const ItemDetailsPage = () => {
   }>();
   const navigate = useNavigate();
   const { fetchItemById, currentItem, loading } = useItemStore();
-  const { getById: getInventoryById } = useInventoryStore();
+  const { getById: getInventoryById, inventoryMembers } = useInventoryStore();
   const { user } = useAuthStore();
 
   const [activeTab, setActiveTab] = useState<TabId>(TabId.ItemDetails);
@@ -36,6 +35,7 @@ const ItemDetailsPage = () => {
 
       try {
         await fetchItemById(Number(inventoryId), Number(itemId));
+        await getInventoryById(Number(inventoryId));
       } catch (err: any) {
         toast.error(err?.message || "Failed to fetch item or inventory");
       }
@@ -43,6 +43,16 @@ const ItemDetailsPage = () => {
 
     fetchData();
   }, [inventoryId, itemId, fetchItemById, getInventoryById]);
+
+  const canEditFields = useMemo(() => {
+    if (!user) return false;
+    if (user.role === SystemRole.ADMIN) return true;
+    const member = inventoryMembers.find((m) => m.userId === user.id);
+    return (
+      member?.role === InventoryRole.OWNER ||
+      member?.role === InventoryRole.WRITER
+    );
+  }, [user, inventoryMembers]);
 
   if (loading || !currentItem)
     return (
@@ -75,24 +85,34 @@ const ItemDetailsPage = () => {
             />
           )}
           <div className="flex gap-2">
-            {TABS.map((tab) => (
+            <Button
+              active={activeTab === TabId.ItemDetails}
+              className="w-30 px-2 py-1 rounded-lg text-xs sm:text-sm md:text-base font-medium truncate"
+              onClick={() => setActiveTab(TabId.ItemDetails)}
+            >
+              {TabId.ItemDetails}
+            </Button>
+
+            {canEditFields && (
               <Button
-                key={tab}
-                active={activeTab === tab}
+                active={activeTab === TabId.ItemFields}
                 className="w-30 px-2 py-1 rounded-lg text-xs sm:text-sm md:text-base font-medium truncate"
-                onClick={() => setActiveTab(tab)}
+                onClick={() => setActiveTab(TabId.ItemFields)}
               >
-                {tab}
+                {TabId.ItemFields}
               </Button>
-            ))}
+            )}
           </div>
         </div>
 
         <div className="space-y-4 mt-2">
-          {activeTab === TabId.ItemDetails && <ItemTab item={currentItem} />}
-          {activeTab === TabId.ItemFields && inventoryId && itemId && (
-            <FieldsTab inventoryId={Number(inventoryId)} />
+          {activeTab === TabId.ItemDetails && (
+            <ItemTab item={currentItem} canEditFields={canEditFields} />
           )}
+          {activeTab === TabId.ItemFields &&
+            canEditFields &&
+            inventoryId &&
+            itemId && <FieldsTab inventoryId={Number(inventoryId)} />}
         </div>
       </div>
     </>

@@ -5,25 +5,25 @@ import {
   InventoryRole,
   MemberAction,
   Comment,
+  InventoryFilter,
 } from "../models/models";
 
 export const InventoryService = {
   getAll: async (
-    page: number,
-    limit: number,
-    search: string,
-    sortBy?: string,
-    sortOrder?: "asc" | "desc",
-    role?: InventoryRole
+    userId: number,
+    params: {
+      page: number;
+      limit: number;
+      search?: string;
+      sortBy?: string;
+      sortOrder?: "asc" | "desc";
+      inventoryFilter?: InventoryFilter;
+    }
   ): Promise<PaginatedInventoryResponse> => {
-    return await InventoryApi.getAll(
-      page,
-      limit,
-      search,
-      sortBy,
-      sortOrder,
-      role
-    );
+    return await InventoryApi.getAll({
+      userId,
+      ...params,
+    });
   },
 
   getById: async (id: number): Promise<Inventory> => {
@@ -44,6 +44,7 @@ export const InventoryService = {
   delete: async (ids: number[]): Promise<{ message: string }> => {
     return await InventoryApi.delete(ids);
   },
+
   updateMembers: async (
     inventoryId: number,
     updates: {

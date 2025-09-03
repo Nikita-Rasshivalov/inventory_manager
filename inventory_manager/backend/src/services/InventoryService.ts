@@ -1,5 +1,8 @@
 import { InventoryRole, SystemRole } from "@prisma/client";
 import { prisma } from "../prisma/client.ts";
+import { InventoryQueryParams } from "../models/queries.ts";
+import { MemberAction } from "../models/types.ts";
+import { checkVersion } from "../utils/validation.ts";
 import {
   getUserMemberships,
   splitAllowedAndSkipped,
@@ -12,18 +15,15 @@ import {
   fetchItems,
   getSkip,
 } from "../utils/inventoryUtils.ts";
-import { InventoryQueryParams } from "../models/queries.ts";
 import {
   addMember,
   updateMemberRole,
   removeMember,
 } from "../utils/inventoryMembers.ts";
-import { MemberAction } from "../models/types.ts";
-import { checkVersion } from "../utils/validation.ts";
 
 export class InventoryService {
   async getAll(userId: number, query: InventoryQueryParams) {
-    const { page, limit, search, sortBy, sortOrder, inventoryRole } = query;
+    const { page, limit, search, sortBy, sortOrder, inventoryFilter } = query;
     const skip = getSkip(page, limit);
     const orderBy = buildOrderBy(sortBy, sortOrder);
 
@@ -35,32 +35,17 @@ export class InventoryService {
         fetchItems({ deleted: false }, skip, limit, orderBy),
         countItems({ deleted: false }),
       ]);
-
-      return {
-        items,
-        total,
-        page,
-        totalPages: Math.ceil(total / limit),
-      };
+      return { items, total, page, totalPages: Math.ceil(total / limit) };
     }
 
-    const where = buildWhere(userId, search, inventoryRole);
-
-    if (search) {
-      where.title = { contains: search };
-    }
+    const where = buildWhere(userId, search, inventoryFilter);
 
     const [items, total] = await Promise.all([
       fetchItems(where, skip, limit, orderBy),
       countItems(where),
     ]);
 
-    return {
-      items,
-      total,
-      page,
-      totalPages: Math.ceil(total / limit),
-    };
+    return { items, total, page, totalPages: Math.ceil(total / limit) };
   }
 
   async create(title: string, ownerId: number, isPublic = false) {

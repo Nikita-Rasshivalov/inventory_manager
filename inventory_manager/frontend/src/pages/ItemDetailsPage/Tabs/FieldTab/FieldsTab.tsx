@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from "react";
-import { useItemStore } from "../../../stores/useItemStore";
-import { useFieldStore } from "../../../stores/useFieldStore";
+import { useItemStore } from "../../../../stores/useItemStore";
+import { useFieldStore } from "../../../../stores/useFieldStore";
 import { toast } from "react-toastify";
-import { ItemFieldValue } from "../../../models/models";
+import { ItemFieldValue } from "../../../../models/models";
 import FieldSelector from "./FieldSelector";
 import FieldValueForm from "./FieldValueForm";
 import FieldValuesList from "./FieldValuesList";

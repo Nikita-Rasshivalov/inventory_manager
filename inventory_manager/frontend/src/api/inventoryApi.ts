@@ -4,6 +4,7 @@ import {
   InventoryRole,
   MemberAction,
   Comment,
+  InventoryFilter,
 } from "../models/models";
 import axiosInstance from "../services/axiosInstance";
 
@@ -19,23 +20,48 @@ export interface InventoryMemberUpdate {
   role?: InventoryRole;
   action: MemberAction;
 }
+
+export interface GetAllInventoryParams {
+  page: number;
+  limit: number;
+  search?: string;
+  sortBy?: string;
+  sortOrder?: "asc" | "desc";
+  inventoryFilter?: InventoryFilter;
+}
+
 export class InventoryApi {
   static async getAll(
-    page: number,
-    limit: number,
-    search: string,
-    sortBy: string = "",
-    sortOrder: "asc" | "desc" = "asc",
-    role?: InventoryRole
+    params: GetAllInventoryParams & { userId: number }
   ): Promise<PaginatedInventoryResponse> {
+    const {
+      userId,
+      page,
+      limit,
+      search,
+      sortBy = "",
+      sortOrder = "asc",
+      inventoryFilter,
+    } = params;
+
     const res = await axiosInstance.get<PaginatedInventoryResponse>(
       "/inventory",
       {
-        params: { page, limit, search, sortBy, sortOrder, role },
+        params: {
+          userId,
+          page,
+          limit,
+          search,
+          sortBy,
+          sortOrder,
+          inventoryFilter, // теперь сервер понимает фильтр вкладки
+        },
       }
     );
+
     return res.data;
   }
+
   static async getById(inventoryId: number): Promise<Inventory> {
     const res = await axiosInstance.get<Inventory>(`/inventory/${inventoryId}`);
     return res.data;

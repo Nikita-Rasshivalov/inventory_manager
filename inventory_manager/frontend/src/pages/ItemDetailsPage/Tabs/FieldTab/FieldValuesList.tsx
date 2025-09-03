@@ -1,7 +1,7 @@
 import React from "react";
-import DragElement from "../../../components/common/DragElementProps";
-import { ElementsList } from "../../../components/common/ElementsList";
-import { ItemFieldValue } from "../../../models/models";
+import DragElement from "../../../../components/common/DragElementProps";
+import { ElementsList } from "../../../../components/common/ElementsList";
+import { ItemFieldValue } from "../../../../models/models";
 
 interface FieldValuesListProps {
   itemFieldValues: ItemFieldValue[];

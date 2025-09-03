@@ -19,6 +19,7 @@ interface InventoryTableProps {
     sortBy?: string;
     sortOrder?: "asc" | "desc";
   }) => void;
+  showCheckboxes: boolean;
 }
 
 const InventoryTable: React.FC<InventoryTableProps> = ({
@@ -31,6 +32,7 @@ const InventoryTable: React.FC<InventoryTableProps> = ({
   onPageChange,
   loading,
   setSorting,
+  showCheckboxes,
 }) => {
   return (
     <TableWrapper
@@ -41,7 +43,12 @@ const InventoryTable: React.FC<InventoryTableProps> = ({
     >
       <Table
         data={inventories}
-        columns={getInventoryColumns(inventories, selectedIds, toggleSelect)}
+        columns={getInventoryColumns(
+          inventories,
+          selectedIds,
+          toggleSelect,
+          showCheckboxes
+        )}
         onSortChange={(sortBy, sortOrder) => setSorting({ sortBy, sortOrder })}
         renderHeader={(table) => (
           <TableHeader headerGroups={table.getHeaderGroups()} />

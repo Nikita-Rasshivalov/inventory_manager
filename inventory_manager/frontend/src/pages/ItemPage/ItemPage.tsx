@@ -1,11 +1,11 @@
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useMemo } from "react";
 import { useSearchParams } from "react-router-dom";
 import { toast } from "react-toastify";
 import Toolbar from "../../components/layout/Toolbar";
 import { useItemStore } from "../../stores/useItemStore";
 import { useInventoryStore } from "../../stores/useInventoryStore";
 import { useSelection } from "../../hooks/useSelection";
-import { MemberAction } from "../../models/models";
+import { InventoryRole, MemberAction, SystemRole } from "../../models/models";
 import { AccessView } from "../../Views/AccessView/AccessView";
 import { ItemsView } from "../../Views/ItemsView/ItemsView";
 import CustomIdView from "../../Views/CustomIdView/CustomIdView";
@@ -23,7 +23,7 @@ enum TabId {
   Statistics = "Statistics",
 }
 
-const TABS: TabId[] = [
+const ALL_TABS: TabId[] = [
   TabId.Items,
   TabId.Access,
   TabId.CustomId,
@@ -44,6 +44,7 @@ const ItemPage = ({ inventoryId }: { inventoryId: number }) => {
     delete: deleteItem,
     loading,
   } = useItemStore();
+
   const { user } = useAuthStore();
   const { inventoryMembers, updateMembers, getById } = useInventoryStore();
 
@@ -68,22 +69,48 @@ const ItemPage = ({ inventoryId }: { inventoryId: number }) => {
     [inventoryId, page, sorting, getAll]
   );
 
+  const isAdminOrOwner = useMemo(() => {
+    if (!user) return false;
+    if (user.role === SystemRole.ADMIN) return true;
+    const member = inventoryMembers.find((m) => m.userId === user.id);
+    return member?.role === InventoryRole.OWNER;
+  }, [user, inventoryMembers]);
+
+  const visibleTabs = useMemo(() => {
+    if (isAdminOrOwner) return ALL_TABS;
+    return ALL_TABS.filter(
+      (t) => t !== TabId.Access && t !== TabId.CustomId && t !== TabId.Fields
+    );
+  }, [isAdminOrOwner]);
+
+  useEffect(() => {
+    if (!visibleTabs.includes(activeTab)) {
+      setActiveTab(TabId.Items);
+    }
+  }, [activeTab, visibleTabs]);
+
   useEffect(() => {
     searchParams.set("tab", activeTab);
     setSearchParams(searchParams, { replace: true });
   }, [activeTab, searchParams, setSearchParams]);
 
   useEffect(() => {
-    if (activeTab === TabId.Items) loadItems();
-    if (activeTab === TabId.Access) getById(inventoryId);
+    getById(inventoryId);
+  }, [inventoryId, getById]);
+
+  useEffect(() => {
+    if (activeTab === TabId.Items) {
+      loadItems();
+    }
     setFilterText("");
-  }, [activeTab, loadItems, getById, inventoryId]);
+  }, [activeTab, loadItems]);
 
   const handleDelete = async () => {
     try {
       if (activeTab === TabId.Items) {
-        for (const id of itemsSelection.selectedIds)
+        for (const id of itemsSelection.selectedIds) {
           await deleteItem(inventoryId, id);
+        }
         itemsSelection.clearSelection();
       }
       if (activeTab === TabId.Access) {
@@ -122,9 +149,8 @@ const ItemPage = ({ inventoryId }: { inventoryId: number }) => {
         totalCount={totalCount}
         onDelete={handleDelete}
         onCreate={() => setIsModalOpen(true)}
-        tabs={TABS}
-        hiddenTabs={[TabId.CustomId, TabId.Fields, TabId.Discussion]}
-        partialHiddenTabs={[TabId.Access]}
+        tabs={visibleTabs}
+        hiddenTabs={[TabId.Discussion]}
         activeTab={activeTab}
         onChangeTab={(tab) => setActiveTab(tab as TabId)}
         filterText={filterText}
@@ -148,7 +174,7 @@ const ItemPage = ({ inventoryId }: { inventoryId: number }) => {
         />
       )}
 
-      {activeTab === TabId.Access && (
+      {activeTab === TabId.Access && isAdminOrOwner && (
         <AccessView
           inventoryId={inventoryId}
           members={inventoryMembers}
@@ -159,13 +185,18 @@ const ItemPage = ({ inventoryId }: { inventoryId: number }) => {
         />
       )}
 
-      {activeTab === TabId.Fields && <FieldView inventoryId={inventoryId} />}
-      {activeTab === TabId.CustomId && (
+      {activeTab === TabId.Fields && isAdminOrOwner && (
+        <FieldView inventoryId={inventoryId} />
+      )}
+
+      {activeTab === TabId.CustomId && isAdminOrOwner && (
         <CustomIdView inventoryId={inventoryId} />
       )}
+
       {activeTab === TabId.Discussion && user && (
         <DiscussionView inventoryId={inventoryId} currentUser={user} />
       )}
+
       {activeTab === TabId.Statistics && <StatisticsView items={items} />}
     </div>
   );

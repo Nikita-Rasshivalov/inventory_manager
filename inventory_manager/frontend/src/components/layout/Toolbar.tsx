@@ -35,9 +35,9 @@ const Toolbar: React.FC<ToolbarProps> = ({
   const shouldHideCreateButton = partialHiddenTabs.includes(activeTab);
 
   return (
-    <div className="flex flex-col-reverse sm:flex-row gap-2 mb-4 p-2 sm:p-3 bg-gray-50 rounded-lg shadow-sm border border-gray-200">
-      <div className="flex flex-row gap-2 items-center justify-center w-full sm:w-auto sm:flex-1 sm:justify-start relative">
-        <div className="flex gap-2 items-center flex-1">
+    <div className="flex flex-col-reverse sm:flex-row gap-2 min-h-17  mb-4 p-2 sm:p-3 bg-gray-50 rounded-lg shadow-sm border border-gray-200">
+      <div className="flex flex-row gap-2 items-center justify-center w-full  sm:w-auto sm:flex-1 sm:justify-start relative">
+        <div className="flex gap-2 items-center w-65 xl:w-full flex-1">
           {!shouldHideAllButtons && !shouldHideCreateButton && onCreate && (
             <Button
               onClick={onCreate}
@@ -103,20 +103,22 @@ const Toolbar: React.FC<ToolbarProps> = ({
                 placeholder="Search..."
                 autoFocus
                 onBlur={() => setShowSearch(false)}
-                className="w-full sm:w-60 h-8 sm:h-10 px-2 sm:px-3 text-sm sm:text-sm"
+                className="w-full sm:w-40 h-8 sm:h-10 px-2 sm:px-3 text-sm sm:text-sm"
               />
             </div>
           )}
         </div>
       </div>
 
-      <div className="flex flex-wrap gap-2">
+      <div className="flex flex-wrap justify-end  gap-2 w-full md:w-auto">
         {tabs.map((tab) => (
           <Button
             key={tab}
             onClick={() => onChangeTab(tab)}
             active={activeTab === tab}
-            className="px-4 py-2 rounded-lg text-xs sm:text-sm md:text-base font-medium truncate min-w-[80px] flex-1 sm:flex-none"
+            className="flex-1 md:flex-none px-4 py-2 rounded-lg text-xs 
+            sm:text-sm md:text-[15px] font-medium text-center min-w-[90px]
+            md:min-w-[120px] lg:min-w-[90px]"
           >
             {tab}
           </Button>
