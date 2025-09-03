@@ -16,6 +16,7 @@ interface Field {
   label: string;
   type?: string;
   initialValue?: string;
+  initialBooleanValue?: boolean;
 }
 
 interface GenericModalProps {
@@ -23,7 +24,7 @@ interface GenericModalProps {
   fields: Field[];
   isOpen: boolean;
   onClose: () => void;
-  onSubmit: (values: Record<string, string>) => void;
+  onSubmit: (values: Record<string, string | boolean>) => void;
 }
 
 const GenericModal: React.FC<GenericModalProps> = ({
@@ -33,18 +34,25 @@ const GenericModal: React.FC<GenericModalProps> = ({
   onClose,
   onSubmit,
 }) => {
-  const [values, setValues] = useState<Record<string, string>>(
-    Object.fromEntries(fields.map((f) => [f.name, f.initialValue || ""]))
+  const [values, setValues] = useState<Record<string, string | boolean>>(
+    Object.fromEntries(
+      fields.map((f) => [
+        f.name,
+        f.type === "checkbox"
+          ? f.initialBooleanValue ?? false
+          : f.initialValue ?? "",
+      ])
+    )
   );
 
-  const handleChange = (name: string, value: string) => {
+  const handleChange = (name: string, value: string | boolean) => {
     setValues((prev) => ({ ...prev, [name]: value }));
   };
 
   const handleSubmit = () => {
     for (const f of fields) {
-      if (isNullOrEmpty(values[f.name])) {
-        toast.error(`"${f.label}" was not empty`);
+      if (f.type !== "checkbox" && isNullOrEmpty(values[f.name] as string)) {
+        toast.error(`"${f.label}" cannot be empty`);
         return;
       }
     }
@@ -85,16 +93,29 @@ const GenericModal: React.FC<GenericModalProps> = ({
                   {title}
                 </DialogTitle>
 
-                {fields.map((f) => (
-                  <Input
-                    key={f.name}
-                    type={f.type || "text"}
-                    placeholder={f.label}
-                    value={values[f.name]}
-                    onChange={(e) => handleChange(f.name, e.target.value)}
-                    className="mb-3"
-                  />
-                ))}
+                {fields.map((f) =>
+                  f.type === "checkbox" ? (
+                    <div key={f.name} className="flex items-center mb-3">
+                      <input
+                        type="checkbox"
+                        id={f.name}
+                        checked={values[f.name] as boolean}
+                        onChange={(e) => handleChange(f.name, e.target.checked)}
+                        className="mr-2"
+                      />
+                      <label htmlFor={f.name}>{f.label}</label>
+                    </div>
+                  ) : (
+                    <Input
+                      key={f.name}
+                      type={f.type || "text"}
+                      placeholder={f.label}
+                      value={values[f.name] as string}
+                      onChange={(e) => handleChange(f.name, e.target.value)}
+                      className="mb-3"
+                    />
+                  )
+                )}
 
                 <div className="mt-4 flex justify-end space-x-2">
                   <Button

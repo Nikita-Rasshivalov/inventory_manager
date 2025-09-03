@@ -2,16 +2,23 @@ import { useCallback } from "react";
 import { toast } from "react-toastify";
 import { useAuthProvider } from "../../../hooks/useAuthProvider";
 import { useInventoryStore } from "../../../stores/useInventoryStore";
+import { InventoryPayload } from "../../../models/models";
 
 export const useInventoryActions = () => {
   const { inventories, create, delete: remove } = useInventoryStore();
   const { user } = useAuthProvider();
 
   const createInventory = useCallback(
-    async (title: string) => {
+    async (data: { title: string; isPublic?: boolean }) => {
       if (!user) return;
+      const payload: InventoryPayload = {
+        title: data.title,
+        version: 0,
+        isPublic: data.isPublic ?? false,
+      };
+
       try {
-        await create({ title });
+        await create(payload);
         toast.success("Inventory created successfully");
       } catch (err: any) {
         toast.error(err.message || "Failed to create inventory");

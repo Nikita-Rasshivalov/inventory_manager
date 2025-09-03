@@ -23,11 +23,32 @@ import { checkVersion } from "../utils/validation.ts";
 
 export class InventoryService {
   async getAll(userId: number, query: InventoryQueryParams) {
-    const { page, limit, search, sortBy, sortOrder, role } = query;
-
+    const { page, limit, search, sortBy, sortOrder, inventoryRole } = query;
     const skip = getSkip(page, limit);
-    const where = buildWhere(userId, search, role);
     const orderBy = buildOrderBy(sortBy, sortOrder);
+
+    const user = await prisma.user.findUnique({ where: { id: userId } });
+    if (!user) throw new Error("User not found");
+
+    if (user.role === SystemRole.ADMIN) {
+      const [items, total] = await Promise.all([
+        fetchItems({ deleted: false }, skip, limit, orderBy),
+        countItems({ deleted: false }),
+      ]);
+
+      return {
+        items,
+        total,
+        page,
+        totalPages: Math.ceil(total / limit),
+      };
+    }
+
+    const where = buildWhere(userId, search, inventoryRole);
+
+    if (search) {
+      where.title = { contains: search };
+    }
 
     const [items, total] = await Promise.all([
       fetchItems(where, skip, limit, orderBy),
@@ -41,11 +62,13 @@ export class InventoryService {
       totalPages: Math.ceil(total / limit),
     };
   }
-  async create(title: string, ownerId: number) {
+
+  async create(title: string, ownerId: number, isPublic = false) {
     return prisma.inventory.create({
       data: {
         title,
         ownerId,
+        isPublic,
         members: { create: { userId: ownerId, role: InventoryRole.OWNER } },
       },
       include: { owner: true, members: true },
@@ -53,44 +76,81 @@ export class InventoryService {
   }
 
   async getById(id: number, userId: number) {
-    const inventory = await prisma.inventory.findFirst({
-      where: { id, members: { some: { userId } } },
-      include: {
-        owner: true,
-        members: {
-          include: {
-            user: true,
-          },
+    const user = await prisma.user.findUnique({ where: { id: userId } });
+    if (!user) throw new Error("User not found");
+
+    let inventory;
+    if (user.role === SystemRole.ADMIN) {
+      inventory = await prisma.inventory.findUnique({
+        where: { id },
+        include: {
+          owner: true,
+          members: { include: { user: true } },
+          fields: true,
+          items: true,
         },
-        fields: true,
-        items: true,
-      },
-    });
+      });
+    } else {
+      inventory = await prisma.inventory.findFirst({
+        where: {
+          id,
+          OR: [
+            { isPublic: true },
+            { members: { some: { userId } } },
+            { ownerId: userId },
+          ],
+        },
+        include: {
+          owner: true,
+          members: { include: { user: true } },
+          fields: true,
+          items: true,
+        },
+      });
+    }
+
     if (!inventory) throw new Error("Inventory not found or access denied");
     return inventory;
   }
 
   async update(
     id: number,
-    data: Partial<{ title: string; customIdFormat?: any[] }>,
+    data: Partial<{
+      title: string;
+      customIdFormat?: any[];
+      isPublic?: boolean;
+    }>,
     userId: number,
     clientVersion: number
   ) {
-    await checkPermission(id, userId, [
+    const user = await prisma.user.findUnique({ where: { id: userId } });
+    if (!user) throw new Error("User not found");
+
+    if (user.role === SystemRole.ADMIN) {
+      return this._updateInventory(id, data, clientVersion);
+    }
+
+    const member = await checkPermission(id, userId, [
       InventoryRole.OWNER,
       InventoryRole.WRITER,
     ]);
 
+    if (member.role === InventoryRole.WRITER && "isPublic" in data) {
+      throw new Error("Writers cannot change isPublic");
+    }
+
+    return this._updateInventory(id, data, clientVersion);
+  }
+
+  private async _updateInventory(id: number, data: any, clientVersion: number) {
     const current = await prisma.inventory.findUnique({
       where: { id },
       select: { version: true },
     });
     if (!current) throw new Error("Inventory not found");
-    console.log(current, clientVersion);
     checkVersion(current, clientVersion);
 
     const updateData: any = { ...data };
-
     if (data.customIdFormat) {
       updateData.customIdFormat = JSON.stringify(data.customIdFormat);
     }
@@ -106,6 +166,14 @@ export class InventoryService {
   }
 
   async delete(ids: number[], userId: number) {
+    const user = await prisma.user.findUnique({ where: { id: userId } });
+    if (!user) throw new Error("User not found");
+
+    if (user.role === SystemRole.ADMIN) {
+      await softDeleteTransaction(ids, new Date());
+      return buildBulkResponse(ids.length, 0);
+    }
+
     const memberships = await getUserMemberships(userId, ids);
     const { allowedIds, skippedIds } = splitAllowedAndSkipped(
       memberships,
@@ -119,6 +187,7 @@ export class InventoryService {
 
     return buildBulkResponse(allowedIds.length, skippedIds.length);
   }
+
   async getUserRole(
     userId: number,
     inventoryId: number
@@ -139,7 +208,12 @@ export class InventoryService {
       action: MemberAction;
     }>
   ) {
-    await checkPermission(inventoryId, currentUserId, [InventoryRole.OWNER]);
+    const user = await prisma.user.findUnique({ where: { id: currentUserId } });
+    if (!user) throw new Error("User not found");
+
+    if (user.role !== SystemRole.ADMIN) {
+      await checkPermission(inventoryId, currentUserId, [InventoryRole.OWNER]);
+    }
 
     const promises = updates.map(({ userId, role, action }) => {
       switch (action) {
@@ -159,26 +233,28 @@ export class InventoryService {
   }
 
   async getComments(inventoryId: number) {
-    const comments = await prisma.comment.findMany({
+    return prisma.comment.findMany({
       where: { inventoryId },
       include: { user: true },
       orderBy: { createdAt: "asc" },
     });
-    return comments;
   }
 
   async addComment(inventoryId: number, userId: number, content: string) {
-    const member = await prisma.inventoryMember.findUnique({
-      where: { inventoryId_userId: { inventoryId, userId } },
-    });
-    if (!member) throw new Error("Access denied");
+    const user = await prisma.user.findUnique({ where: { id: userId } });
+    if (!user) throw new Error("User not found");
 
-    const comment = await prisma.comment.create({
+    if (user.role !== SystemRole.ADMIN) {
+      const member = await prisma.inventoryMember.findUnique({
+        where: { inventoryId_userId: { inventoryId, userId } },
+      });
+      if (!member) throw new Error("Access denied");
+    }
+
+    return prisma.comment.create({
       data: { inventoryId, userId, content },
       include: { user: true },
     });
-
-    return comment;
   }
 
   async deleteComment(commentId: number, userId: number) {

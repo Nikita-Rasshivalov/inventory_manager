@@ -7,7 +7,7 @@ export interface InventoryQueryParams {
   search: string;
   sortBy?: string;
   sortOrder?: "asc" | "desc";
-  role?: InventoryRole;
+  inventoryRole?: InventoryRole;
 }
 
 export interface UpdateItemData {

@@ -34,7 +34,7 @@ const AvatarUploader = ({ currentUrl }: AvatarUploaderProps) => {
     setLoading(true);
     try {
       const updatedUser = await uploadProfilePhoto(selectedFile);
-      if (updatedUser) setUser(updatedUser); // обновляем локально
+      if (updatedUser) setUser(updatedUser);
       resetInput();
     } catch (err) {
       console.error(err);
@@ -46,12 +46,16 @@ const AvatarUploader = ({ currentUrl }: AvatarUploaderProps) => {
 
   return (
     <div className="flex flex-col items-center">
-      <div className="w-32 h-32 rounded-full overflow-hidden shadow-md mb-4">
-        <img
-          src={preview || currentUrl || "/default-avatar.png"}
-          alt="Avatar"
-          className="w-full h-full object-cover"
-        />
+      <div className="w-32 h-32 rounded-full overflow-hidden shadow-md mb-4 flex items-center justify-center bg-gray-200 text-gray-600">
+        {preview || currentUrl ? (
+          <img
+            src={preview || currentUrl}
+            alt="Avatar"
+            className="w-full h-full object-cover"
+          />
+        ) : (
+          <span>Avatar</span>
+        )}
       </div>
 
       <div className="flex gap-2">

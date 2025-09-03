@@ -72,10 +72,11 @@ const InventoryPage = () => {
     clearSelection();
   };
 
-  const handleCreate = async (values: Record<string, string>) => {
+  const handleCreate = async (values: Record<string, any>) => {
     const title = values["title"];
+    const isPublic = values["isPublic"] ?? false;
     if (!title || !user) return;
-    await createInventory(title);
+    await createInventory({ title, isPublic });
     setIsModalOpen(false);
   };
 
@@ -108,7 +109,15 @@ const InventoryPage = () => {
       {isModalOpen && (
         <GenericModal
           title="Create Inventory"
-          fields={[{ name: "title", label: "Title" }]}
+          fields={[
+            { name: "title", label: "Title" },
+            {
+              name: "isPublic",
+              label: "Public",
+              type: "checkbox",
+              initialBooleanValue: false,
+            },
+          ]}
           isOpen={isModalOpen}
           onClose={() => setIsModalOpen(false)}
           onSubmit={handleCreate}

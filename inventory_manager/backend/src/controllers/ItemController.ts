@@ -1,5 +1,6 @@
 import { Request, Response } from "express";
 import { ItemService } from "../services/ItemService.ts";
+import { SystemRole } from "@prisma/client";
 
 const itemService = new ItemService();
 
@@ -7,7 +8,6 @@ export class ItemController {
   create = async (req: Request, res: Response) => {
     const inventoryId = parseInt(req.params.inventoryId);
     const userId = (req as any).user.userId;
-    const data = req.body;
 
     const item = await itemService.create(inventoryId, userId);
     res.status(201).json(item);
@@ -15,6 +15,8 @@ export class ItemController {
 
   getAll = async (req: Request, res: Response) => {
     const inventoryId = parseInt(req.params.inventoryId);
+    const userId = (req as any).user.userId;
+    const userRole: SystemRole = (req as any).user.role;
     const page = parseInt(req.query.page as string) || 1;
     const limit = parseInt(req.query.limit as string) || 8;
     const sortBy = req.query.sortBy as string;
@@ -22,6 +24,8 @@ export class ItemController {
 
     const result = await itemService.getAll(
       inventoryId,
+      userId,
+      userRole,
       page,
       limit,
       sortBy,
@@ -33,7 +37,15 @@ export class ItemController {
   getById = async (req: Request, res: Response) => {
     const inventoryId = parseInt(req.params.inventoryId);
     const itemId = parseInt(req.params.itemId);
-    const item = await itemService.getById(inventoryId, itemId);
+    const userId = (req as any).user.userId;
+    const userRole: SystemRole = (req as any).user.role;
+
+    const item = await itemService.getById(
+      inventoryId,
+      itemId,
+      userId,
+      userRole
+    );
     res.json(item);
   };
 
@@ -41,6 +53,7 @@ export class ItemController {
     const inventoryId = parseInt(req.params.inventoryId);
     const itemId = parseInt(req.params.itemId);
     const data = req.body;
+
     const item = await itemService.update(inventoryId, itemId, data);
     res.json(item);
   };
@@ -48,6 +61,7 @@ export class ItemController {
   delete = async (req: Request, res: Response) => {
     const inventoryId = parseInt(req.params.inventoryId);
     const itemId = parseInt(req.params.itemId);
+
     const item = await itemService.delete(inventoryId, itemId);
     res.json(item);
   };

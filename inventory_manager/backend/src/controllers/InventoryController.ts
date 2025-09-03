@@ -15,7 +15,7 @@ export class InventoryController extends BaseController {
         search: (req.query.search as string) ?? "",
         sortBy: req.query.sortBy as string,
         sortOrder: req.query.sortOrder as "asc" | "desc",
-        role: req.query.role as InventoryRole,
+        inventoryRole: req.query.inventoryRole as InventoryRole,
       };
 
       return await inventoryService.getAll(user.userId, query);
@@ -25,9 +25,9 @@ export class InventoryController extends BaseController {
     this.handle(
       res,
       async () => {
-        const { title } = req.body;
+        const { title, isPublic } = req.body;
         const user = (req as any).user;
-        return await inventoryService.create(title, user.userId);
+        return await inventoryService.create(title, user.userId, isPublic);
       },
       201
     );
@@ -44,15 +44,16 @@ export class InventoryController extends BaseController {
       const user = (req as any).user;
       const inventoryId = parseInt(req.params.inventoryId);
 
-      const { version, ...data } = req.body;
+      const { version, isPublic, ...data } = req.body;
 
       return await inventoryService.update(
         inventoryId,
-        data,
+        { ...data, isPublic },
         user.userId,
         version
       );
     });
+
   delete = (req: Request, res: Response) =>
     this.handle(res, async () => {
       const user = (req as any).user;

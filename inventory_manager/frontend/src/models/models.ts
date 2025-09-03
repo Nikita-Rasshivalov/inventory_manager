@@ -6,7 +6,7 @@ export enum SystemRole {
 export enum InventoryRole {
   OWNER = "OWNER",
   WRITER = "WRITER",
-  READER = "READER",
+  READER = "ALL",
 }
 
 export class User {
@@ -44,6 +44,7 @@ export interface Inventory {
   customIdFormat?: string;
   comments: Comment[];
   version: number;
+  isPublic: boolean;
 }
 
 export interface Item {
@@ -121,6 +122,7 @@ export type InventoryPayload = {
   members?: InventoryMember[];
   customIdFormat?: CustomIdPart[];
   version: number;
+  isPublic?: boolean;
 };
 
 export enum MemberAction {

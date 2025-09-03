@@ -23,21 +23,12 @@ interface InventoryStore {
   activeTab: InventoryRole;
   loading: boolean;
   error: string | null;
-
   editingRoleUserId: number | null;
   editingRoleValue: InventoryRole | null;
   startEditRole: (userId: number, currentRole: InventoryRole) => void;
   setEditingRoleValue: (role: InventoryRole) => void;
   saveEditRole: (inventoryId: number) => Promise<void>;
   cancelEditRole: () => void;
-
-  getAll: (
-    page?: number,
-    sortBy?: string,
-    sortOrder?: "asc" | "desc",
-    tab?: InventoryRole,
-    search?: string
-  ) => Promise<void>;
   setPage: (page: number) => void;
   setSearch: (search: string) => void;
   setActiveTab: (tab: InventoryRole) => void;
@@ -45,6 +36,14 @@ interface InventoryStore {
   update: (id: number, data: Partial<InventoryPayload>) => Promise<void>;
   delete: (ids: number[]) => Promise<string>;
   getById: (id: number) => Promise<Inventory>;
+  loadCustomIdTemplate: (inventoryId: number) => Promise<void>;
+  getAll: (
+    page?: number,
+    sortBy?: string,
+    sortOrder?: "asc" | "desc",
+    tab?: InventoryRole,
+    search?: string
+  ) => Promise<void>;
   updateMembers: (
     inventoryId: number,
     updates: {
@@ -53,8 +52,6 @@ interface InventoryStore {
       action: MemberAction;
     }[]
   ) => Promise<void>;
-
-  loadCustomIdTemplate: (inventoryId: number) => Promise<void>;
   saveCustomIdTemplate: (
     inventoryId: number,
     template: CustomIdPart[]
@@ -70,7 +67,7 @@ export const useInventoryStore = create<InventoryStore>((set, get) => ({
   total: 0,
   page: 1,
   totalPages: 1,
-  limit: 12,
+  limit: 10,
   search: "",
   activeTab: InventoryRole.OWNER,
   loading: false,
@@ -138,7 +135,10 @@ export const useInventoryStore = create<InventoryStore>((set, get) => ({
   create: async (data: InventoryPayload) => {
     set({ loading: true, error: null });
     try {
-      await InventoryService.create(data);
+      await InventoryService.create({
+        ...data,
+        isPublic: data.isPublic ?? false,
+      });
       await get().getAll();
     } catch (err: any) {
       set({ error: err.message || "Failed to create inventory" });
@@ -156,6 +156,9 @@ export const useInventoryStore = create<InventoryStore>((set, get) => ({
 
       if (data.customIdFormat) {
         payload.customIdFormat = data.customIdFormat;
+      }
+      if (data.isPublic !== undefined) {
+        payload.isPublic = data.isPublic;
       }
 
       await InventoryService.update(id, payload);

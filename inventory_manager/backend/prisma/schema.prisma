@@ -12,7 +12,7 @@ enum SystemRole {
   ADMIN
 }
 
-enum InventoryRole {
+enum InventoryRole { 
   OWNER
   WRITER
   READER
@@ -76,6 +76,7 @@ model Inventory {
   items     Item[]
   customIdFormat Json? 
   comments      Comment[]
+  isPublic Boolean            @default(false)
 }
 
 model InventoryMember {

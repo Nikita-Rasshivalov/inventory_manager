@@ -9,10 +9,13 @@ import {
 import { generateCustomId, CustomIdPart } from "../utils/customId.ts";
 import { UpdateItemData } from "../models/queries.ts";
 import { checkVersion } from "../utils/validation.ts";
+import { SystemRole } from "@prisma/client";
 
 export class ItemService {
   async getAll(
     inventoryId: number,
+    userId: number,
+    userRole: SystemRole,
     page = 1,
     limit = 8,
     sortBy?: string,
@@ -21,6 +24,19 @@ export class ItemService {
     const skip = (page - 1) * limit;
     const orderBy: Record<string, "asc" | "desc"> = {};
     if (sortBy) orderBy[sortBy] = sortOrder;
+
+    const inventory = await prisma.inventory.findUnique({
+      where: { id: inventoryId },
+      select: { isPublic: true },
+    });
+    if (!inventory) throw new Error("Inventory not found");
+
+    if (userRole !== SystemRole.ADMIN && !inventory.isPublic) {
+      const membership = await prisma.inventoryMember.findUnique({
+        where: { inventoryId_userId: { inventoryId, userId } },
+      });
+      if (!membership) throw new Error("Access denied");
+    }
 
     const [items, total] = await prisma.$transaction([
       prisma.item.findMany({
@@ -44,7 +60,25 @@ export class ItemService {
     return { items, total, page, totalPages: Math.ceil(total / limit) };
   }
 
-  async getById(inventoryId: number, itemId: number) {
+  async getById(
+    inventoryId: number,
+    itemId: number,
+    userId: number,
+    userRole: SystemRole
+  ) {
+    const inventory = await prisma.inventory.findUnique({
+      where: { id: inventoryId },
+      select: { isPublic: true },
+    });
+    if (!inventory) throw new Error("Inventory not found");
+
+    if (userRole !== SystemRole.ADMIN && !inventory.isPublic) {
+      const membership = await prisma.inventoryMember.findUnique({
+        where: { inventoryId_userId: { inventoryId, userId } },
+      });
+      if (!membership) throw new Error("Access denied");
+    }
+
     const item = await getItemOrThrow(inventoryId, itemId);
     return prisma.item.findFirst({
       where: { id: item.id },
@@ -68,7 +102,6 @@ export class ItemService {
 
     let customId: string | undefined;
     const raw = inventory?.customIdFormat;
-
     let formatParts: CustomIdPart[] = [];
 
     if (typeof raw === "string") {
@@ -117,7 +150,12 @@ export class ItemService {
       deleteFieldValues
     );
 
-    return this.getById(inventoryId, itemId);
+    return this.getById(
+      inventoryId,
+      itemId,
+      item.createdById,
+      SystemRole.ADMIN
+    );
   }
 
   async delete(inventoryId: number, itemId: number) {

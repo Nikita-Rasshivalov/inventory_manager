@@ -33,25 +33,26 @@ export function buildOrderBy(sortBy?: string, sortOrder?: "asc" | "desc") {
       return undefined;
   }
 }
-
 export function buildWhere(
   userId: number,
   search?: string,
-  role?: InventoryRole
+  inventoryRole?: InventoryRole
 ) {
   const where: any = { deleted: false };
 
-  if (role === InventoryRole.OWNER) {
-    where.OR = [{ ownerId: userId }];
-  } else {
-    where.members = {
-      some: {
-        userId,
-        deleted: false,
-        ...(role ? { role } : {}),
+  where.OR = [
+    { isPublic: true },
+    { ownerId: userId },
+    {
+      members: {
+        some: {
+          userId,
+          deleted: false,
+          ...(inventoryRole ? { role: inventoryRole } : {}),
+        },
       },
-    };
-  }
+    },
+  ];
 
   if (isNonEmptyString(search)) {
     where.title = { contains: search };
