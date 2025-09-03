@@ -101,20 +101,22 @@ export class ItemService {
     });
 
     let customId: string | undefined;
-    const raw = inventory?.customIdFormat;
-    let formatParts: CustomIdPart[] = [];
 
-    if (typeof raw === "string") {
-      formatParts = JSON.parse(raw) as CustomIdPart[];
+    if (inventory?.customIdFormat) {
+      let formatParts: CustomIdPart[] = [];
+
+      if (typeof inventory.customIdFormat === "string") {
+        formatParts = JSON.parse(inventory.customIdFormat) as CustomIdPart[];
+      }
+
+      customId = await generateCustomId(inventoryId, formatParts);
     }
-
-    customId = await generateCustomId(inventoryId, formatParts);
 
     return prisma.item.create({
       data: {
         inventoryId,
         createdById: userId,
-        customId,
+        customId: customId ?? undefined,
       },
       include: {
         createdBy: true,
