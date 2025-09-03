@@ -13,6 +13,8 @@ interface InventoryStore {
   inventories: Inventory[];
   inventoryMembers: InventoryMember[];
   customIdTemplate: CustomIdPart[];
+  currentInventory: Inventory | null;
+  version: number;
   total: number;
   page: number;
   totalPages: number;
@@ -63,6 +65,8 @@ export const useInventoryStore = create<InventoryStore>((set, get) => ({
   inventories: [],
   inventoryMembers: [],
   customIdTemplate: [],
+  currentInventory: null,
+  version: 0,
   total: 0,
   page: 1,
   totalPages: 1,
@@ -147,16 +151,33 @@ export const useInventoryStore = create<InventoryStore>((set, get) => ({
   update: async (id: number, data: Partial<InventoryPayload>) => {
     set({ loading: true, error: null });
     try {
-      const payload: any = { ...data };
+      const inventory = await get().getById(id);
+      const payload: any = { ...data, version: inventory.version };
+
       if (data.customIdFormat) {
         payload.customIdFormat = data.customIdFormat;
       }
+
       await InventoryService.update(id, payload);
       if (data.customIdFormat) set({ customIdTemplate: data.customIdFormat });
+
       await get().getAll();
     } catch (err: any) {
-      set({ error: err.message || "Failed to update inventory" });
-      throw err;
+      if (err.message?.includes("version mismatch")) {
+        const fresh = await get().getById(id);
+        set({ version: fresh.version });
+        try {
+          const retryPayload: any = { ...data, version: fresh.version };
+          await InventoryService.update(id, retryPayload);
+          await get().getAll();
+        } catch (retryErr: any) {
+          set({ error: retryErr.message || "Failed to update after retry" });
+          throw retryErr;
+        }
+      } else {
+        set({ error: err.message || "Failed to update inventory" });
+        throw err;
+      }
     } finally {
       set({ loading: false });
     }
@@ -186,6 +207,8 @@ export const useInventoryStore = create<InventoryStore>((set, get) => ({
       set({
         inventoryMembers: inventory.members,
         customIdTemplate: template,
+        currentInventory: inventory,
+        version: inventory.version,
       });
       return inventory;
     } catch (err: any) {
@@ -217,7 +240,7 @@ export const useInventoryStore = create<InventoryStore>((set, get) => ({
       const template: CustomIdPart[] = inventory.customIdFormat
         ? JSON.parse(inventory.customIdFormat)
         : [];
-      set({ customIdTemplate: template });
+      set({ customIdTemplate: template, version: inventory.version });
     } catch (err: any) {
       set({ error: err.message || "Failed to load template" });
     } finally {

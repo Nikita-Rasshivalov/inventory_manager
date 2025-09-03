@@ -56,11 +56,6 @@ export async function getItemOrThrow(inventoryId: number, itemId: number) {
   return item;
 }
 
-export function checkVersion(item: any, clientVersion: number) {
-  if (clientVersion !== item.version)
-    throw new Error("Conflict: version mismatch");
-}
-
 async function getFieldsByIds(validIdsSet: Set<number>) {
   return prisma.field.findMany({
     where: { id: { in: [...validIdsSet] }, deleted: false },

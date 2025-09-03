@@ -19,6 +19,7 @@ import {
   removeMember,
 } from "../utils/inventoryMembers.ts";
 import { MemberAction } from "../models/types.ts";
+import { checkVersion } from "../utils/validation.ts";
 
 export class InventoryService {
   async getAll(userId: number, query: InventoryQueryParams) {
@@ -72,12 +73,22 @@ export class InventoryService {
   async update(
     id: number,
     data: Partial<{ title: string; customIdFormat?: any[] }>,
-    userId: number
+    userId: number,
+    clientVersion: number
   ) {
     await checkPermission(id, userId, [
       InventoryRole.OWNER,
       InventoryRole.WRITER,
     ]);
+
+    const current = await prisma.inventory.findUnique({
+      where: { id },
+      select: { version: true },
+    });
+    if (!current) throw new Error("Inventory not found");
+    console.log(current, clientVersion);
+    checkVersion(current, clientVersion);
+
     const updateData: any = { ...data };
 
     if (data.customIdFormat) {
@@ -86,7 +97,10 @@ export class InventoryService {
 
     return prisma.inventory.update({
       where: { id },
-      data: updateData,
+      data: {
+        ...updateData,
+        version: { increment: 1 },
+      },
       include: { members: true, owner: true },
     });
   }

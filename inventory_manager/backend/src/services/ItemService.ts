@@ -4,11 +4,11 @@ import {
   prepareFieldValuesForUpdate,
   runUpdateTransaction,
   getItemOrThrow,
-  checkVersion,
   generateUniqueCustomId,
 } from "../utils/itemUtils.ts";
 import { generateCustomId, CustomIdPart } from "../utils/customId.ts";
 import { UpdateItemData } from "../models/queries.ts";
+import { checkVersion } from "../utils/validation.ts";
 
 export class ItemService {
   async getAll(

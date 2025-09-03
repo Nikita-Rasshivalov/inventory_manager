@@ -41,6 +41,7 @@ export interface Inventory {
   items: Item[];
   customIdFormat?: string;
   comments: Comment[];
+  version: number;
 }
 
 export interface Item {
@@ -117,6 +118,7 @@ export type InventoryPayload = {
   title: string;
   members?: InventoryMember[];
   customIdFormat?: CustomIdPart[];
+  version: number;
 };
 
 export enum MemberAction {

@@ -9,7 +9,7 @@ const InventoryItemPage = () => {
   const { inventoryId } = useParams<{ inventoryId: string }>();
   const location = useLocation();
   const navigate = useNavigate();
-  const { update } = useInventoryStore();
+  const { update, version } = useInventoryStore();
 
   const [isEditing, setIsEditing] = useState(false);
   const [titleDraft, setTitleDraft] = useState(
@@ -18,7 +18,10 @@ const InventoryItemPage = () => {
 
   const handleSave = () => {
     if (titleDraft.trim()) {
-      update(Number(inventoryId), { title: titleDraft });
+      update(Number(inventoryId), {
+        title: titleDraft,
+        version: version,
+      });
       setIsEditing(false);
     }
   };

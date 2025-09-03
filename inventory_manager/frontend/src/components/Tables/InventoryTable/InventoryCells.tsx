@@ -17,7 +17,9 @@ export const InventoryCells: React.FC<InventoryTableRowProps> = ({
   const navigate = useNavigate();
   const handleRowClick = () => {
     navigate(`/inventory/${row.original.id}/items`, {
-      state: { inventoryTitle: row.original.title },
+      state: {
+        inventoryTitle: row.original.title,
+      },
     });
   };
   return (

@@ -11,3 +11,8 @@ export function isValidEmail(email: any): boolean {
 export function isValidStatus(status: any): boolean {
   return status === 0 || status === 1 || status === 2;
 }
+
+export function checkVersion(item: any, clientVersion: number) {
+  if (clientVersion !== item.version)
+    throw new Error("Conflict: version mismatch");
+}

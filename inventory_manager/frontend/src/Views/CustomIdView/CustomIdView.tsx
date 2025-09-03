@@ -16,7 +16,7 @@ const CustomIdView = ({ inventoryId }: { inventoryId: number }) => {
   const [newElementType, setNewElementType] = useState<string>("");
   const [fixedTextValue, setFixedTextValue] = useState<string>("");
 
-  const { customIdTemplate, loadCustomIdTemplate, update } =
+  const { customIdTemplate, loadCustomIdTemplate, update, version } =
     useInventoryStore();
 
   useEffect(() => {
@@ -34,7 +34,7 @@ const CustomIdView = ({ inventoryId }: { inventoryId: number }) => {
   const handleSaveTemplate = async () => {
     const template = generateTemplate(idElements);
     try {
-      await update(inventoryId, { customIdFormat: template });
+      await update(inventoryId, { customIdFormat: template, version });
       toast.success("Template saved successfully!");
     } catch (err: any) {
       toast.error("Failed to save template", err);

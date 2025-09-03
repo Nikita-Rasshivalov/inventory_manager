@@ -43,10 +43,16 @@ export class InventoryController extends BaseController {
     this.handle(res, async () => {
       const user = (req as any).user;
       const inventoryId = parseInt(req.params.inventoryId);
-      const data = req.body;
-      return await inventoryService.update(inventoryId, data, user.userId);
-    });
 
+      const { version, ...data } = req.body;
+
+      return await inventoryService.update(
+        inventoryId,
+        data,
+        user.userId,
+        version
+      );
+    });
   delete = (req: Request, res: Response) =>
     this.handle(res, async () => {
       const user = (req as any).user;
