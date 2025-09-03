@@ -12,6 +12,7 @@ import CustomIdView from "../../Views/CustomIdView/CustomIdView";
 import FieldView from "../../Views/FieldView/FieldView";
 import { DiscussionView } from "../../Views/DiscussionView/DiscussionView";
 import { useAuthStore } from "../../stores/useAuthStore";
+import StatisticsView from "../../Views/StatisticsView/StatisticsView";
 
 enum TabId {
   Items = "Items",
@@ -19,6 +20,7 @@ enum TabId {
   CustomId = "Settings",
   Fields = "Fields",
   Discussion = "Discussion",
+  Statistics = "Statistics",
 }
 
 const TABS: TabId[] = [
@@ -27,6 +29,7 @@ const TABS: TabId[] = [
   TabId.CustomId,
   TabId.Fields,
   TabId.Discussion,
+  TabId.Statistics,
 ];
 
 const ItemPage = ({ inventoryId }: { inventoryId: number }) => {
@@ -163,6 +166,7 @@ const ItemPage = ({ inventoryId }: { inventoryId: number }) => {
       {activeTab === TabId.Discussion && user && (
         <DiscussionView inventoryId={inventoryId} currentUser={user} />
       )}
+      {activeTab === TabId.Statistics && <StatisticsView items={items} />}
     </div>
   );
 };
