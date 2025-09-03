@@ -8,7 +8,7 @@ const Header = () => {
 
   return (
     <header className="bg-gray-900 text-white flex justify-between items-center px-4 sm:px-6 py-3 sm:py-4 shadow-md">
-      <div className="text-xl sm:text-2xl font-extrabold tracking-wide truncate">
+      <div className="text-[15px] sm:text-2xl font-extrabold tracking-wide truncate">
         Inventory Manager
       </div>
 
