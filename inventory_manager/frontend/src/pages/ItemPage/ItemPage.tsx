@@ -1,4 +1,5 @@
-import { useEffect, useState, useCallback } from "react";
+import { useState, useEffect, useCallback } from "react";
+import { useSearchParams } from "react-router-dom";
 import { toast } from "react-toastify";
 import Toolbar from "../../components/layout/Toolbar";
 import { useItemStore } from "../../stores/useItemStore";
@@ -40,7 +41,6 @@ const ItemPage = ({ inventoryId }: { inventoryId: number }) => {
     delete: deleteItem,
     loading,
   } = useItemStore();
-
   const { user } = useAuthStore();
   const { inventoryMembers, updateMembers, getById } = useInventoryStore();
 
@@ -49,7 +49,12 @@ const ItemPage = ({ inventoryId }: { inventoryId: number }) => {
 
   const [filterText, setFilterText] = useState("");
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [activeTab, setActiveTab] = useState<TabId>(TabId.Items);
+  const [searchParams, setSearchParams] = useSearchParams();
+
+  const [activeTab, setActiveTab] = useState<TabId>(
+    (searchParams.get("tab") as TabId) || TabId.Items
+  );
+
   const [sorting, setSorting] = useState<{
     sortBy?: string;
     sortOrder?: "asc" | "desc";
@@ -61,21 +66,21 @@ const ItemPage = ({ inventoryId }: { inventoryId: number }) => {
   );
 
   useEffect(() => {
-    if (activeTab === TabId.Items) {
-      loadItems();
-    }
-    if (activeTab === TabId.Access) {
-      getById(inventoryId);
-    }
+    searchParams.set("tab", activeTab);
+    setSearchParams(searchParams, { replace: true });
+  }, [activeTab, searchParams, setSearchParams]);
+
+  useEffect(() => {
+    if (activeTab === TabId.Items) loadItems();
+    if (activeTab === TabId.Access) getById(inventoryId);
     setFilterText("");
   }, [activeTab, loadItems, getById, inventoryId]);
 
   const handleDelete = async () => {
     try {
       if (activeTab === TabId.Items) {
-        for (const id of itemsSelection.selectedIds) {
+        for (const id of itemsSelection.selectedIds)
           await deleteItem(inventoryId, id);
-        }
         itemsSelection.clearSelection();
       }
       if (activeTab === TabId.Access) {
@@ -104,19 +109,18 @@ const ItemPage = ({ inventoryId }: { inventoryId: number }) => {
     activeTab === TabId.Items
       ? itemsSelection.selectedIds.length
       : membersSelection.selectedIds.length;
-
   const totalCount =
     activeTab === TabId.Items ? items.length : inventoryMembers.length;
 
   return (
-    <div className="max-w-6xl mx-auto p-6 bg-white rounded-lg shadow-md mt-1">
+    <div className="max-w-6xl mx-auto px-6 pt-2 pb-4 bg-white rounded-lg shadow-md mt-1">
       <Toolbar
         selectedCount={selectedCount}
         totalCount={totalCount}
         onDelete={handleDelete}
         onCreate={() => setIsModalOpen(true)}
         tabs={TABS}
-        hiddenTabs={[TabId.CustomId, TabId.Fields]}
+        hiddenTabs={[TabId.CustomId, TabId.Fields, TabId.Discussion]}
         partialHiddenTabs={[TabId.Access]}
         activeTab={activeTab}
         onChangeTab={(tab) => setActiveTab(tab as TabId)}
@@ -153,11 +157,9 @@ const ItemPage = ({ inventoryId }: { inventoryId: number }) => {
       )}
 
       {activeTab === TabId.Fields && <FieldView inventoryId={inventoryId} />}
-
       {activeTab === TabId.CustomId && (
         <CustomIdView inventoryId={inventoryId} />
       )}
-
       {activeTab === TabId.Discussion && user && (
         <DiscussionView inventoryId={inventoryId} currentUser={user} />
       )}

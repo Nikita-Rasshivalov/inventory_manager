@@ -11,7 +11,7 @@ const ProfileTab = ({ user }: ProfileTabProps) => {
   const isCurrentUser = currentUser?.id === user.id;
 
   return (
-    <div className="flex flex-col md:flex-row items-center gap-6">
+    <div className="flex flex-col mt-4 pb-2 md:flex-row items-center gap-6">
       {isCurrentUser ? (
         <AvatarUploader currentUrl={user.imageUrl || ""} />
       ) : (

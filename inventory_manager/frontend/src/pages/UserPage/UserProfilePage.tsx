@@ -1,11 +1,13 @@
 import { useState, useEffect } from "react";
-import { useParams } from "react-router-dom";
+import { useParams, useSearchParams } from "react-router-dom";
 import Header from "../../components/layout/Header";
 import { useAuth } from "../../hooks/useAuth";
 import ProfileTab from "./ProfileTab";
 import Button from "../../components/common/Button";
 import { useUserStore } from "../../stores/useUserStore";
 import { User } from "../../models/models";
+import InventoryPage from "../InventoryPage/InventoryPage";
+import { Loader } from "lucide-react";
 
 enum ProfileTabs {
   PROFILE = "Profile",
@@ -18,8 +20,13 @@ const UserProfilePage = () => {
   const getById = useUserStore((state) => state.getById);
 
   const [user, setUser] = useState<User | null>(currentUser || null);
-  const [activeTab, setActiveTab] = useState<ProfileTabs>(ProfileTabs.PROFILE);
   const [loading, setLoading] = useState(false);
+
+  const [searchParams, setSearchParams] = useSearchParams();
+  const initialTab = searchParams.get("tab") as ProfileTabs | null;
+  const [activeTab, setActiveTab] = useState<ProfileTabs>(
+    initialTab || ProfileTabs.PROFILE
+  );
 
   useEffect(() => {
     const fetchUser = async () => {
@@ -35,8 +42,12 @@ const UserProfilePage = () => {
     fetchUser();
   }, [userId, currentUser, getById]);
 
+  useEffect(() => {
+    setSearchParams({ tab: activeTab });
+  }, [activeTab, setSearchParams]);
+
   if (loading) {
-    return <div className="p-6 text-center">Loading user...</div>;
+    return <Loader />;
   }
 
   if (!user) {
@@ -47,8 +58,8 @@ const UserProfilePage = () => {
     <>
       <Header />
 
-      <div className="max-w-4xl mx-auto mt-6 p-6 bg-white rounded-xl shadow-lg">
-        <div className="flex border-b p-6 border-gray-200 mb-6 gap-2">
+      <div className="max-w-4xl mx-auto pt-2 pb-0 p-6 bg-white rounded-xl shadow-lg">
+        <div className="flex border-b px-6 py-2 border-gray-200 gap-2">
           {Object.values(ProfileTabs).map((tab) => (
             <Button
               key={tab}
@@ -62,12 +73,7 @@ const UserProfilePage = () => {
         </div>
 
         {activeTab === ProfileTabs.PROFILE && <ProfileTab user={user} />}
-
-        {activeTab === ProfileTabs.INVENTORIES && (
-          <div className="text-gray-500">
-            Inventories tab is under construction.
-          </div>
-        )}
+        {activeTab === ProfileTabs.INVENTORIES && <InventoryPage />}
       </div>
     </>
   );

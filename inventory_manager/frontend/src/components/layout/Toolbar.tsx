@@ -37,7 +37,7 @@ const Toolbar: React.FC<ToolbarProps> = ({
   return (
     <div className="flex flex-col-reverse sm:flex-row gap-2 mb-4 p-2 sm:p-3 bg-gray-50 rounded-lg shadow-sm border border-gray-200">
       <div className="flex flex-row gap-2 items-center justify-center w-full sm:w-auto sm:flex-1 sm:justify-start relative">
-        <div className="flex gap-2 items-center">
+        <div className="flex gap-2 items-center flex-1">
           {!shouldHideAllButtons && !shouldHideCreateButton && onCreate && (
             <Button
               onClick={onCreate}

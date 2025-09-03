@@ -24,12 +24,12 @@ function App() {
           pauseOnHover
         />
         <Routes>
+          <Route path="/" element={<DashboardPage />} />
           <Route path="/login" element={<AuthPage />} />
           <Route path="/success" element={<AuthSuccess />} />
           <Route path="/users/:userId" element={<UserProfilePage />} />
           <Route element={<PrivateRoute />}>
             <Route path="/profile" element={<UserProfilePage />} />
-            <Route path="/dashboard" element={<DashboardPage />} />
             <Route
               path="/inventory/:inventoryId/items"
               element={<InventoryItemPage />}
@@ -39,7 +39,7 @@ function App() {
             path="/inventory/:inventoryId/items/:itemId"
             element={<ItemDetailsPage />}
           />
-          <Route path="*" element={<AuthPage />} />
+          <Route path="*" element={<DashboardPage />} />
         </Routes>
       </AuthProvider>
     </BrowserRouter>

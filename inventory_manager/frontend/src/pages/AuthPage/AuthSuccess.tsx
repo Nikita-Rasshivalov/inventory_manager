@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../../hooks/useAuth";
 import { SystemRole } from "../../models/models";
@@ -7,7 +7,6 @@ import { Loader } from "lucide-react";
 const AuthSuccess = () => {
   const navigate = useNavigate();
   const { setAuth } = useAuth();
-  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
@@ -21,20 +20,11 @@ const AuthSuccess = () => {
         id: 0,
         email: "",
         role: SystemRole.USER,
+        imageUrl: "",
       });
-
-      setLoading(false);
-    } else {
-      navigate("/login");
     }
+    navigate("/dashboard", { replace: true });
   }, [navigate, setAuth]);
-
-  useEffect(() => {
-    if (!loading) {
-      const timer = setTimeout(() => navigate("/dashboard"), 300);
-      return () => clearTimeout(timer);
-    }
-  }, [loading, navigate]);
 
   return (
     <div className="flex justify-center items-center h-screen">
