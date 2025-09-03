@@ -2,6 +2,7 @@ import { useEffect, useRef } from "react";
 import { Trash } from "lucide-react";
 import { Comment, User } from "../../models/models";
 import { useCommentStore } from "../../stores/useCommentsStore";
+import { Link } from "react-router-dom";
 
 interface CommentListProps {
   comments: Comment[];
@@ -16,7 +17,6 @@ const CommentList = ({
 }: CommentListProps) => {
   const containerRef = useRef<HTMLDivElement>(null);
   const { deleteComment } = useCommentStore();
-
   useEffect(() => {
     if (containerRef.current) {
       containerRef.current.scrollTop = containerRef.current.scrollHeight;
@@ -48,19 +48,37 @@ const CommentList = ({
                 className="flex items-start space-x-3 p-3 bg-white rounded-lg shadow-sm hover:shadow-md transition-shadow duration-150"
               >
                 <div className="flex-shrink-0">
-                  <div className="w-10 h-10 rounded-full bg-blue-300 flex items-center justify-center text-white font-bold">
-                    {c.user?.name?.[0] || "U"}
-                  </div>
+                  <Link
+                    to={
+                      c.userId === currentUser.id
+                        ? "/profile"
+                        : `/users/${c.userId}`
+                    }
+                  >
+                    <img
+                      src={c.user?.imageUrl || "/default-avatar.png"}
+                      alt={c.user?.name || "User"}
+                      className="w-10 h-10 rounded-full object-cover border border-gray-300"
+                    />
+                  </Link>
                 </div>
                 <div className="flex-1 min-w-0">
-                  <div className="flex justify-between items-center">
-                    <span className="font-semibold text-gray-800">
-                      {c.user?.name}
-                    </span>
-                    <span className="text-xs text-gray-500">
+                  <div className="flex justify-between items-center w-full">
+                    <Link
+                      to={
+                        c.userId === currentUser.id
+                          ? "/profile"
+                          : `/users/${c.userId}`
+                      }
+                      className="font-semibold text-gray-800 text-xs hover:underline flex-1 text-left"
+                    >
+                      {c.user?.name || "Unknown"}
+                    </Link>
+                    <span className="text-[10px] text-gray-500 text-right">
                       {new Date(c.createdAt).toLocaleString()}
                     </span>
                   </div>
+
                   <div className="mt-1 text-gray-700 break-words break-all overflow-wrap-anywhere">
                     {c.content}
                   </div>

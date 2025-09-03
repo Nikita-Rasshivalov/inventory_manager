@@ -21,7 +21,7 @@ const AuthPage = () => {
   return (
     <div className="flex flex-col min-h-screen overflow-x-hidden">
       <Header />
-      <main className="flex-1 flex items-center justify-center bg-gray-200 px-4">
+      <main className="flex flex-1 items-center  justify-center bg-gray-200 px-4">
         <div className="w-full max-w-sm bg-white p-10 rounded-md shadow-lg transition-all duration-300 mx-auto">
           <div className="flex justify-center mb-6 space-x-4">
             <Button

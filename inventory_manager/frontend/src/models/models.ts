@@ -14,12 +14,14 @@ export class User {
   name: string;
   email: string;
   role: SystemRole;
+  imageUrl: string;
 
   constructor(data: any) {
     this.id = data.id;
     this.name = data.name;
     this.email = data.email;
     this.role = data.role || SystemRole.USER;
+    this.imageUrl = data.imageUrl;
   }
 }
 

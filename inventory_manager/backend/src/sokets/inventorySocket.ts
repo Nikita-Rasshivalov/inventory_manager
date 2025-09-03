@@ -11,17 +11,20 @@ export function handleInventoryEvents(socket: Socket, io: Server) {
     try {
       const comments = await prisma.comment.findMany({
         where: { inventoryId },
-        include: { user: { select: { id: true, name: true } } },
+        include: { user: { select: { id: true, name: true, imageUrl: true } } },
         orderBy: { createdAt: "asc" },
       });
-
       socket.emit(
         "initialDiscussionPosts",
         comments.map((c) => ({
           id: c.id,
           inventoryId: c.inventoryId,
           userId: c.userId,
-          userName: c.user.name,
+          user: {
+            id: c.user.id,
+            name: c.user.name,
+            imageUrl: c.user.imageUrl || null,
+          },
           content: c.content,
           createdAt: c.createdAt,
         }))

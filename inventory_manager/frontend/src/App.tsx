@@ -7,6 +7,7 @@ import { ToastContainer } from "react-toastify";
 import InventoryItemPage from "./pages/InventoryItemPage";
 import AuthPage from "./pages/AuthPage/AuthPage";
 import ItemDetailsPage from "./pages/ItemDetailsPage/ItemDetailsPage";
+import UserProfilePage from "./pages/UserPage/UserProfilePage";
 function App() {
   return (
     <BrowserRouter>
@@ -25,7 +26,9 @@ function App() {
         <Routes>
           <Route path="/login" element={<AuthPage />} />
           <Route path="/success" element={<AuthSuccess />} />
+          <Route path="/users/:userId" element={<UserProfilePage />} />
           <Route element={<PrivateRoute />}>
+            <Route path="/profile" element={<UserProfilePage />} />
             <Route path="/dashboard" element={<DashboardPage />} />
             <Route
               path="/inventory/:inventoryId/items"
