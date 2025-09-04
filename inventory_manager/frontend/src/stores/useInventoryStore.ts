@@ -235,34 +235,24 @@ export const useInventoryStore = create<InventoryStore>((set, get) => ({
     }
   },
 
-  // Теперь getAll использует currentUser автоматически
   getAll: async () => {
     const { currentUser, page, limit, search, activeTab, sorting } = get();
     if (!currentUser) return;
 
-    let inventoryFilter: InventoryFilter | undefined;
-    switch (activeTab) {
-      case InventoryTabId.Own:
-        inventoryFilter = InventoryFilter.Own;
-        break;
-      case InventoryTabId.Member:
-        inventoryFilter = InventoryFilter.Member;
-        break;
-      case InventoryTabId.All:
-        inventoryFilter = InventoryFilter.Public;
-        break;
-    }
-
     set({ loading: true, error: null });
+
     try {
-      const data = await InventoryService.getAll(currentUser.id, {
+      const inventoryFilter = getInventoryFilter(activeTab);
+      const queryParams = buildQueryParams({
         page,
         limit,
         search,
-        sortBy: sorting?.sortBy,
-        sortOrder: sorting?.sortOrder,
+        sorting,
         inventoryFilter,
       });
+
+      const data = await InventoryService.getAll(currentUser.id, queryParams);
+
       set({
         inventories: data.items,
         total: data.total,
@@ -275,9 +265,41 @@ export const useInventoryStore = create<InventoryStore>((set, get) => ({
       set({ loading: false });
     }
   },
-
-  // fetchAll для удобства в компонентах
   fetchAll: async () => {
     await get().getAll();
   },
 }));
+
+const getInventoryFilter = (
+  tab: InventoryTabId
+): InventoryFilter | undefined => {
+  switch (tab) {
+    case InventoryTabId.Own:
+      return InventoryFilter.Own;
+    case InventoryTabId.Member:
+      return InventoryFilter.Member;
+    case InventoryTabId.All:
+      return InventoryFilter.Public;
+    default:
+      return undefined;
+  }
+};
+
+const buildQueryParams = (options: {
+  page: number;
+  limit: number;
+  search?: string;
+  sorting?: { sortBy?: string; sortOrder?: "asc" | "desc" };
+  inventoryFilter?: InventoryFilter;
+}) => {
+  const { page, limit, search, sorting, inventoryFilter } = options;
+
+  return {
+    page,
+    limit,
+    search,
+    sortBy: sorting?.sortBy,
+    sortOrder: sorting?.sortOrder,
+    inventoryFilter,
+  };
+};
