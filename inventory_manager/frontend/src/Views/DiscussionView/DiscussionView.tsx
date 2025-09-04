@@ -31,15 +31,15 @@ export const DiscussionView = ({
   });
 
   useEffect(() => {
-    setLoading(true); // начинаем загрузку при смене inventory
+    setLoading(true);
     return () => clearComments();
   }, [inventoryId, clearComments]);
 
   const handleSend = () => {
-    if (newComment.trim()) {
-      emitNewComment(newComment, currentUser.id);
-      setNewComment("");
-    }
+    if (!newComment.trim()) return;
+
+    emitNewComment(newComment, currentUser.id);
+    setNewComment("");
   };
 
   if (!currentUser.id || loading) {

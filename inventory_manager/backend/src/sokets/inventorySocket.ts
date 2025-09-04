@@ -46,7 +46,7 @@ export function handleInventoryEvents(socket: Socket, io: Server) {
             content: data.content,
           },
           include: {
-            user: { select: { id: true, name: true } },
+            user: { select: { id: true, name: true, imageUrl: true } },
           },
         });
 
@@ -54,13 +54,52 @@ export function handleInventoryEvents(socket: Socket, io: Server) {
           id: post.id,
           inventoryId: post.inventoryId,
           userId: post.userId,
-          userName: post.user.name,
+          user: {
+            id: post.user.id,
+            name: post.user.name,
+            imageUrl: post.user.imageUrl || null,
+          },
           content: post.content,
           createdAt: post.createdAt,
         });
       } catch (err) {
         console.error("Failed to save discussion post:", err);
         socket.emit("error", { message: "Failed to save discussion post" });
+      }
+    }
+  );
+
+  socket.on(
+    "deleteDiscussionPost",
+    async (data: {
+      inventoryId: number;
+      commentId: number;
+      userId: number;
+    }) => {
+      try {
+        const comment = await prisma.comment.findUnique({
+          where: { id: data.commentId },
+        });
+
+        if (!comment) throw new Error("Comment not found");
+
+        const user = await prisma.user.findUnique({
+          where: { id: data.userId },
+        });
+        if (!user) throw new Error("User not found");
+
+        if (comment.userId !== data.userId && user.role !== "ADMIN") {
+          throw new Error("Access denied");
+        }
+
+        await prisma.comment.delete({ where: { id: data.commentId } });
+
+        io.to(`inventory_${data.inventoryId}`).emit("discussionPostDeleted", {
+          commentId: data.commentId,
+        });
+      } catch (err) {
+        console.error("Failed to delete discussion post:", err);
+        socket.emit("error", { message: "Failed to delete discussion post" });
       }
     }
   );
