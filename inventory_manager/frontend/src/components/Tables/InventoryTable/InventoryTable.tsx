@@ -43,6 +43,7 @@ const InventoryTable: React.FC<InventoryTableProps> = ({
     >
       <Table
         data={inventories}
+        initialSorting={[{ id: "created", desc: true }]}
         columns={getInventoryColumns(
           inventories,
           selectedIds,

@@ -18,16 +18,14 @@ export const DiscussionView = ({
   const [newComment, setNewComment] = useState("");
   const [loading, setLoading] = useState(true);
 
-  const { comments, setComments, addComment, clearComments } =
-    useCommentStore();
+  const { comments, setComments, clearComments } = useCommentStore();
 
-  const { emitNewComment } = useInventorySocket({
+  const { emitNewComment, emitDeleteComment } = useInventorySocket({
     inventoryId,
     onInitialComments: (initialComments) => {
       setComments(initialComments);
       setLoading(false);
     },
-    onNewComment: (comment) => addComment(comment),
   });
 
   useEffect(() => {
@@ -37,12 +35,16 @@ export const DiscussionView = ({
 
   const handleSend = () => {
     if (!newComment.trim()) return;
-
     emitNewComment(newComment, currentUser.id);
     setNewComment("");
   };
 
+  const handleDelete = (commentId: number) => {
+    emitDeleteComment(commentId, currentUser.id);
+  };
+
   if (!currentUser.id || loading) {
+    console.log(loading);
     return <Loader className="mx-auto my-4 animate-spin" />;
   }
 
@@ -52,6 +54,7 @@ export const DiscussionView = ({
         inventoryId={inventoryId}
         comments={comments}
         currentUser={currentUser}
+        onDelete={handleDelete}
       />
       <CommentInput
         value={newComment}

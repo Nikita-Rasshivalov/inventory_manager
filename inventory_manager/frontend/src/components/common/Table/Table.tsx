@@ -13,6 +13,7 @@ interface TableProps<T> {
   renderHeader?: (table: any) => React.ReactNode;
   renderRow?: (row: any, table: any, idx: number) => React.ReactNode;
   limit?: number;
+  initialSorting?: SortingState;
 }
 
 export const Table = <T,>({
@@ -22,8 +23,9 @@ export const Table = <T,>({
   renderHeader,
   renderRow,
   limit,
+  initialSorting,
 }: TableProps<T>) => {
-  const [sorting, setSorting] = useState<SortingState>([]);
+  const [sorting, setSorting] = useState<SortingState>(initialSorting || []);
 
   const table = useReactTable({
     data,

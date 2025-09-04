@@ -1,36 +1,30 @@
 import { useEffect, useRef } from "react";
 import { Trash } from "lucide-react";
 import { Comment, User } from "../../models/models";
-import { useCommentStore } from "../../stores/useCommentsStore";
+
 import { Link } from "react-router-dom";
 
 interface CommentListProps {
   comments: Comment[];
   currentUser: User;
   inventoryId: number;
+  onDelete?: (commentId: number) => void;
 }
 
-const CommentList = ({
-  inventoryId,
-  comments,
-  currentUser,
-}: CommentListProps) => {
+const CommentList = ({ comments, currentUser, onDelete }: CommentListProps) => {
   const containerRef = useRef<HTMLDivElement>(null);
-  const { deleteComment } = useCommentStore();
+
   useEffect(() => {
     if (containerRef.current) {
       containerRef.current.scrollTop = containerRef.current.scrollHeight;
     }
   }, [comments]);
 
-  const handleDelete = (commentId: number) => {
-    deleteComment(inventoryId, commentId);
-  };
-
   return (
     <div
       ref={containerRef}
-      className="flex-1 overflow-y-auto border border-gray-300 rounded-md p-4 bg-gray-50 shadow-inner max-h-[400px] sm:max-h-[600px]"
+      className="flex-1 overflow-y-auto p-4 bg-gray-50 border border-gray-300 rounded-md shadow-inner"
+      style={{ maxHeight: "400px" }}
     >
       {comments.length === 0 ? (
         <div className="text-center text-gray-400 py-10">
@@ -85,7 +79,7 @@ const CommentList = ({
                 </div>
                 {canDelete && (
                   <button
-                    onClick={() => handleDelete(c.id)}
+                    onClick={() => onDelete?.(c.id)}
                     className="ml-2 p-1 text-gray-500 hover:text-red-500"
                     title="Delete comment"
                   >
