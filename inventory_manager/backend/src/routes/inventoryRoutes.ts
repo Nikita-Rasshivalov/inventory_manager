@@ -8,8 +8,8 @@ import { authorizeInventoryBulkRole } from "../middleware/authorizeInventoryBulk
 const router = Router();
 const controller = new InventoryController();
 
-router.get("/", controller.getAll);
 router.post("/", authMiddleware, controller.create);
+router.get("/", authMiddleware, controller.getAll);
 
 router.delete(
   "/",
@@ -18,7 +18,7 @@ router.delete(
   controller.delete
 );
 
-router.get("/:inventoryId", controller.getById);
+router.get("/:inventoryId", authMiddleware, controller.getById);
 
 router.put(
   "/:inventoryId",
@@ -34,7 +34,7 @@ router.patch(
   controller.updateMembers
 );
 
-router.get("/:inventoryId/comments", controller.getComments);
+router.get("/:inventoryId/comments", authMiddleware, controller.getComments);
 router.post("/:inventoryId/comments", authMiddleware, controller.addComment);
 
 router.delete(

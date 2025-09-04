@@ -14,13 +14,7 @@ interface ItemStore {
   sortBy?: string;
   sortOrder?: "asc" | "desc";
 
-  getAll: (
-    inventoryId: number,
-    page?: number,
-    sortBy?: string,
-    sortOrder?: "asc" | "desc",
-    search?: string
-  ) => Promise<void>;
+  getAll: (inventoryId: number) => Promise<void>;
   setPage: (page: number) => void;
   setSorting: (sortBy?: string, sortOrder?: "asc" | "desc") => void;
   setSearch: (search: string) => void;
@@ -48,24 +42,21 @@ export const useItemStore = create<ItemStore>((set, get) => ({
   search: "",
   loading: false,
   error: null,
-  sortBy: undefined,
-  sortOrder: undefined,
+  sortBy: "created",
+  sortOrder: "desc",
 
-  getAll: async (
-    inventoryId,
-    page = get().page,
-    sortBy = get().sortBy,
-    sortOrder = get().sortOrder
-  ) => {
-    const { limit } = get();
+  getAll: async (inventoryId) => {
+    const { page, limit, search, sortBy, sortOrder } = get();
     set({ loading: true, error: null });
+
     try {
       const data = await ItemService.getAll(
         inventoryId,
         page,
         limit,
         sortBy,
-        sortOrder
+        sortOrder,
+        search
       );
       set({
         items: data.items,
@@ -143,6 +134,7 @@ export const useItemStore = create<ItemStore>((set, get) => ({
       set({ loading: false });
     }
   },
+
   currentItem: null,
   setCurrentItem: (item) => set({ currentItem: item }),
   fetchItemById: async (inventoryId, itemId) => {

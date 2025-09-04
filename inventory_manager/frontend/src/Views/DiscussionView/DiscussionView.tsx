@@ -43,7 +43,7 @@ export const DiscussionView = ({
     if (currentUser) emitDeleteComment(commentId, currentUser.id);
   };
 
-  if (currentUser?.id || loading) {
+  if (loading) {
     return <Loader className="mx-auto my-4 animate-spin" />;
   }
 

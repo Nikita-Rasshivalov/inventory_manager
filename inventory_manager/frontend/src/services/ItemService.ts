@@ -7,9 +7,17 @@ export const ItemService = {
     page: number,
     limit: number,
     sortBy?: string,
-    sortOrder?: "asc" | "desc"
+    sortOrder?: "asc" | "desc",
+    search?: string
   ): Promise<PaginatedItemResponse> => {
-    return await ItemApi.getAll(inventoryId, page, limit, sortBy, sortOrder);
+    return await ItemApi.getAll(
+      inventoryId,
+      page,
+      limit,
+      sortBy,
+      sortOrder,
+      search
+    );
   },
 
   getById: async (inventoryId: number, itemId: number): Promise<Item> => {

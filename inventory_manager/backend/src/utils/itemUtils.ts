@@ -176,3 +176,68 @@ export async function generateUniqueCustomId(
   }
   throw new Error("Cannot generate unique customId after multiple attempts");
 }
+
+export async function buildWhere(inventoryId: number, search?: string) {
+  if (!search || search.trim() === "") {
+    return { inventoryId, deleted: false };
+  }
+
+  return {
+    inventoryId,
+    deleted: false,
+    OR: [
+      { customId: { contains: search } },
+      { createdBy: { is: { name: { contains: search } } } },
+    ],
+  };
+}
+export async function buildOrderBy(
+  sortBy?: string,
+  sortOrder: "asc" | "desc" = "asc"
+) {
+  if (!sortBy) return undefined;
+
+  const allowedItemFields = [
+    "id",
+    "name",
+    "createdAt",
+    "updatedAt",
+    "customId",
+  ];
+  if (allowedItemFields.includes(sortBy)) {
+    return [{ [sortBy]: sortOrder }];
+  }
+
+  if (sortBy === "createdBy.name") {
+    return [{ createdBy: { name: sortOrder } }];
+  }
+
+  return undefined;
+}
+
+export async function fetchItems(
+  where: any,
+  skip: number,
+  limit: number,
+  orderBy?: any
+) {
+  return prisma.item.findMany({
+    where,
+    skip,
+    take: limit,
+    orderBy: orderBy ?? {},
+    include: {
+      fieldValues: {
+        where: { deleted: false },
+        include: { field: true },
+        orderBy: { order: "asc" },
+      },
+      createdBy: true,
+      likes: true,
+    },
+  });
+}
+
+export async function countItems(where: any) {
+  return prisma.item.count({ where });
+}

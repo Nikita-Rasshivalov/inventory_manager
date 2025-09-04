@@ -1,44 +1,13 @@
-import { useEffect, useState } from "react";
 import Header from "../components/layout/Header";
 import { useNavigate } from "react-router-dom";
 import { Inventory } from "../models/models";
-import { InventoryService } from "../services/inventoryService";
 
 const DashboardPage = () => {
-  const [latestInventories, setLatestInventories] = useState<Inventory[]>([]);
-  const [popularInventories, setPopularInventories] = useState<Inventory[]>([]);
-  const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
+  const popularInventories: any = [];
+  const latestInventories: any = [];
 
-  useEffect(() => {
-    const fetchInventories = async () => {
-      setLoading(true);
-      try {
-        const userId = undefined;
-
-        const latestResponse = await InventoryService.getAll(userId, {
-          page: 1,
-          limit: 5,
-          sortBy: "created",
-          sortOrder: "desc",
-        });
-        setLatestInventories(latestResponse.items);
-
-        const popularResponse = await InventoryService.getAll(userId, {
-          page: 1,
-          limit: 5,
-          sortBy: "elementsCount",
-          sortOrder: "desc",
-        });
-        setPopularInventories(popularResponse.items);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchInventories();
-  }, []);
-
+  const loading = true;
   const handleClick = (id: number, title: string) => {
     navigate(`/inventory/${id}/items`, { state: { inventoryTitle: title } });
   };

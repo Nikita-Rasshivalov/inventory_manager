@@ -11,6 +11,5 @@ export const logout = () => {
     logoutFn();
   } else {
     clearAuthData();
-    window.location.href = "/login";
   }
 };

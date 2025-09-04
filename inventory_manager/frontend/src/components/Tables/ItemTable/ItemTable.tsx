@@ -19,6 +19,7 @@ interface ItemTableProps {
     sortBy?: string;
     sortOrder?: "asc" | "desc";
   }) => void;
+  showCheckboxes: boolean;
 }
 
 const ItemTable: React.FC<ItemTableProps> = ({
@@ -31,6 +32,7 @@ const ItemTable: React.FC<ItemTableProps> = ({
   onPageChange,
   loading,
   setSorting,
+  showCheckboxes,
 }) => {
   return (
     <TableWrapper
@@ -41,7 +43,13 @@ const ItemTable: React.FC<ItemTableProps> = ({
     >
       <Table
         data={items}
-        columns={getItemColumns(items, selectedIds, toggleSelect)}
+        columns={getItemColumns(
+          items,
+          selectedIds,
+          toggleSelect,
+          showCheckboxes
+        )}
+        initialSorting={[{ id: "createdAt", desc: true }]}
         onSortChange={(sortBy: any, sortOrder: any) =>
           setSorting({ sortBy, sortOrder })
         }

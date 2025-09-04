@@ -16,6 +16,7 @@ interface ItemsViewProps {
   isModalOpen: boolean;
   onCreate: (values: Record<string, any>) => void;
   onCloseModal: () => void;
+  showCheckboxes: boolean;
 }
 
 export const ItemsView: React.FC<ItemsViewProps> = ({
@@ -31,6 +32,7 @@ export const ItemsView: React.FC<ItemsViewProps> = ({
   isModalOpen,
   onCreate,
   onCloseModal,
+  showCheckboxes,
 }) => (
   <>
     <ItemTable
@@ -43,6 +45,7 @@ export const ItemsView: React.FC<ItemsViewProps> = ({
       onPageChange={setPage}
       loading={loading}
       setSorting={setSorting}
+      showCheckboxes={showCheckboxes}
     />
     {isModalOpen && (
       <GenericModal

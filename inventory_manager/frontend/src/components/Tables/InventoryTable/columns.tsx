@@ -6,7 +6,7 @@ export const getInventoryColumns = (
   inventories: Inventory[],
   selectedIds: number[],
   toggleSelect: (id: number) => void,
-  showCheckboxes: boolean = true // новый параметр
+  showCheckboxes: boolean = true
 ): ColumnDef<Inventory>[] => {
   const columns: ColumnDef<Inventory>[] = [];
 
@@ -68,7 +68,7 @@ export const getInventoryColumns = (
     {
       accessorFn: (row) => row.owner?.name,
       id: "owner",
-      header: "Owner",
+      header: "Created by",
       enableSorting: true,
     },
     {

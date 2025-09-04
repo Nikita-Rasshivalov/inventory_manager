@@ -13,6 +13,7 @@ import FieldView from "../../Views/FieldView/FieldView";
 import { DiscussionView } from "../../Views/DiscussionView/DiscussionView";
 import { useAuthStore } from "../../stores/useAuthStore";
 import StatisticsView from "../../Views/StatisticsView/StatisticsView";
+import { useDebounce } from "../../hooks/useDebounce";
 
 enum TabId {
   Items = "Items",
@@ -43,15 +44,18 @@ const ItemPage = ({ inventoryId }: { inventoryId: number }) => {
     create,
     delete: deleteItem,
     loading,
+    setSearch,
+    setSorting,
   } = useItemStore();
-
   const { user } = useAuthStore();
   const { inventoryMembers, updateMembers, getById } = useInventoryStore();
+
+  const [filterText, setFilterText] = useState("");
+  const debouncedFilter = useDebounce(filterText, 300);
 
   const itemsSelection = useSelection(items);
   const membersSelection = useSelection(inventoryMembers);
 
-  const [filterText, setFilterText] = useState("");
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [searchParams, setSearchParams] = useSearchParams();
 
@@ -59,20 +63,16 @@ const ItemPage = ({ inventoryId }: { inventoryId: number }) => {
     (searchParams.get("tab") as TabId) || TabId.Items
   );
 
-  const [sorting, setSorting] = useState<{
-    sortBy?: string;
-    sortOrder?: "asc" | "desc";
-  }>({});
-
   const loadItems = useCallback(
-    () => getAll(inventoryId, page, sorting.sortBy, sorting.sortOrder),
-    [inventoryId, page, sorting, getAll]
+    () => getAll(inventoryId),
+    [inventoryId, getAll]
   );
 
   const isAdminOrOwner = useMemo(() => {
     if (!user) return false;
     if (user.role === SystemRole.ADMIN) return true;
-    const member = inventoryMembers.find((m) => m.userId === user.id);
+    const members = inventoryMembers || [];
+    const member = members.find((m) => m.userId === user.id);
     return member?.role === InventoryRole.OWNER;
   }, [user, inventoryMembers]);
 
@@ -84,9 +84,7 @@ const ItemPage = ({ inventoryId }: { inventoryId: number }) => {
   }, [isAdminOrOwner]);
 
   useEffect(() => {
-    if (!visibleTabs.includes(activeTab)) {
-      setActiveTab(TabId.Items);
-    }
+    if (!visibleTabs.includes(activeTab)) setActiveTab(TabId.Items);
   }, [activeTab, visibleTabs]);
 
   useEffect(() => {
@@ -99,18 +97,26 @@ const ItemPage = ({ inventoryId }: { inventoryId: number }) => {
   }, [inventoryId, getById]);
 
   useEffect(() => {
-    if (activeTab === TabId.Items) {
-      loadItems();
-    }
-    setFilterText("");
+    if (activeTab === TabId.Items) loadItems();
   }, [activeTab, loadItems]);
+
+  useEffect(() => {
+    if (activeTab === TabId.Items) {
+      setSearch(debouncedFilter);
+      getAll(inventoryId);
+    }
+  }, [debouncedFilter, activeTab, inventoryId, setSearch, getAll]);
+
+  const handleSortChange = (sortBy?: string, sortOrder?: "asc" | "desc") => {
+    setSorting(sortBy, sortOrder);
+    getAll(inventoryId);
+  };
 
   const handleDelete = async () => {
     try {
       if (activeTab === TabId.Items) {
-        for (const id of itemsSelection.selectedIds) {
+        for (const id of itemsSelection.selectedIds)
           await deleteItem(inventoryId, id);
-        }
         itemsSelection.clearSelection();
       }
       if (activeTab === TabId.Access) {
@@ -139,11 +145,12 @@ const ItemPage = ({ inventoryId }: { inventoryId: number }) => {
     activeTab === TabId.Items
       ? itemsSelection.selectedIds?.length || 0
       : membersSelection.selectedIds?.length || 0;
-
   const totalCount =
     activeTab === TabId.Items
       ? items?.length || 0
       : inventoryMembers?.length || 0;
+
+  const showCheckboxes = isAdminOrOwner;
 
   return (
     <div className="max-w-6xl mx-auto px-6 pt-2 pb-4 bg-white rounded-lg shadow-md mt-1">
@@ -170,10 +177,11 @@ const ItemPage = ({ inventoryId }: { inventoryId: number }) => {
           totalPages={totalPages}
           setPage={setPage}
           loading={loading}
-          setSorting={setSorting}
+          setSorting={handleSortChange}
           isModalOpen={isModalOpen}
           onCreate={handleCreate}
           onCloseModal={() => setIsModalOpen(false)}
+          showCheckboxes={showCheckboxes}
         />
       )}
 
@@ -191,15 +199,12 @@ const ItemPage = ({ inventoryId }: { inventoryId: number }) => {
       {activeTab === TabId.Fields && isAdminOrOwner && (
         <FieldView inventoryId={inventoryId} />
       )}
-
       {activeTab === TabId.CustomId && isAdminOrOwner && (
         <CustomIdView inventoryId={inventoryId} />
       )}
-
       {activeTab === TabId.Discussion && (
         <DiscussionView inventoryId={inventoryId} currentUser={user} />
       )}
-
       {activeTab === TabId.Statistics && <StatisticsView items={items} />}
     </div>
   );

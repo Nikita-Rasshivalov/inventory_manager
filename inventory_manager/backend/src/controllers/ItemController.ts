@@ -21,6 +21,7 @@ export class ItemController {
     const limit = parseInt(req.query.limit as string) || 8;
     const sortBy = req.query.sortBy as string;
     const sortOrder = (req.query.sortOrder as "asc" | "desc") || "asc";
+    const search = req.query.search as string;
 
     const result = await itemService.getAll(
       inventoryId,
@@ -29,7 +30,8 @@ export class ItemController {
       page,
       limit,
       sortBy,
-      sortOrder
+      sortOrder,
+      search
     );
     res.json(result);
   };

@@ -33,7 +33,7 @@ const InventoryItemPage = () => {
   const canEdit = useMemo(() => {
     if (!user) return false;
     if (user.role === SystemRole.ADMIN) return true;
-    const member = inventoryMembers.find((m) => m.userId === user.id);
+    const member = inventoryMembers?.find((m) => m.userId === user.id);
     return member?.role === InventoryRole.OWNER;
   }, [user, inventoryMembers]);
 

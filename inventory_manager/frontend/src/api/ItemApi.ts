@@ -14,11 +14,12 @@ export class ItemApi {
     page: number,
     limit: number,
     sortBy?: string,
-    sortOrder?: "asc" | "desc"
+    sortOrder?: "asc" | "desc",
+    search?: string
   ): Promise<PaginatedItemResponse> {
     const res = await axiosInstance.get<PaginatedItemResponse>(
       `/inventory/${inventoryId}/items`,
-      { params: { page, limit, sortBy, sortOrder } }
+      { params: { page, limit, sortBy, sortOrder, search } }
     );
     return res.data;
   }

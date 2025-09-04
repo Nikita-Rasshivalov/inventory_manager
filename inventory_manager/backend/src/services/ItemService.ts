@@ -5,6 +5,10 @@ import {
   runUpdateTransaction,
   getItemOrThrow,
   generateUniqueCustomId,
+  buildWhere,
+  buildOrderBy,
+  fetchItems,
+  countItems,
 } from "../utils/itemUtils.ts";
 import { generateCustomId, CustomIdPart } from "../utils/customId.ts";
 import { UpdateItemData } from "../models/queries.ts";
@@ -12,18 +16,19 @@ import { checkVersion } from "../utils/validation.ts";
 import { SystemRole } from "@prisma/client";
 
 export class ItemService {
-  async getAll(
+  public async getAll(
     inventoryId: number,
     userId: number,
     userRole: SystemRole,
     page = 1,
     limit = 8,
     sortBy?: string,
-    sortOrder: "asc" | "desc" = "asc"
+    sortOrder: "asc" | "desc" = "asc",
+    search?: string
   ) {
     const skip = (page - 1) * limit;
-    const orderBy: Record<string, "asc" | "desc"> = {};
-    if (sortBy) orderBy[sortBy] = sortOrder;
+    const where = await buildWhere(inventoryId, search);
+    const orderBy = await buildOrderBy(sortBy, sortOrder);
 
     const inventory = await prisma.inventory.findUnique({
       where: { id: inventoryId },
@@ -37,27 +42,17 @@ export class ItemService {
       });
       if (!membership) throw new Error("Access denied");
     }
-
-    const [items, total] = await prisma.$transaction([
-      prisma.item.findMany({
-        where: { inventoryId, deleted: false },
-        include: {
-          fieldValues: {
-            where: { deleted: false },
-            include: { field: true },
-            orderBy: { order: "asc" },
-          },
-          createdBy: true,
-          likes: true,
-        },
-        skip,
-        take: limit,
-        orderBy,
-      }),
-      prisma.item.count({ where: { inventoryId, deleted: false } }),
+    const [items, total] = await Promise.all([
+      fetchItems(where, skip, limit, orderBy),
+      countItems(where),
     ]);
 
-    return { items, total, page, totalPages: Math.ceil(total / limit) };
+    return {
+      items,
+      total,
+      page,
+      totalPages: Math.ceil(total / limit),
+    };
   }
 
   async getById(
