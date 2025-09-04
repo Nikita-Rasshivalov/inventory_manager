@@ -15,8 +15,8 @@ export class ItemController {
 
   getAll = async (req: Request, res: Response) => {
     const inventoryId = parseInt(req.params.inventoryId);
-    const userId = (req as any).user.userId;
-    const userRole: SystemRole = (req as any).user.role;
+    const userId = (req as any).user?.userId;
+    const userRole: SystemRole = (req as any).user?.role;
     const page = parseInt(req.query.page as string) || 1;
     const limit = parseInt(req.query.limit as string) || 8;
     const sortBy = req.query.sortBy as string;
@@ -37,8 +37,8 @@ export class ItemController {
   getById = async (req: Request, res: Response) => {
     const inventoryId = parseInt(req.params.inventoryId);
     const itemId = parseInt(req.params.itemId);
-    const userId = (req as any).user.userId;
-    const userRole: SystemRole = (req as any).user.role;
+    const userId = (req as any).user?.userId;
+    const userRole: SystemRole = (req as any).user?.role;
 
     const item = await itemService.getById(
       inventoryId,

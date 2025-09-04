@@ -10,7 +10,7 @@ import {
   User,
   InventoryFilter,
 } from "../models/models";
-import { InventoryService } from "../services/inventoryService";
+import { InventoryService } from "../services/InventoryService";
 
 interface InventoryStore {
   inventories: Inventory[];
@@ -56,7 +56,7 @@ interface InventoryStore {
   ) => Promise<void>;
   currentUser: User | null;
   setCurrentUser: (user: User) => void;
-  fetchAll: () => Promise<void>; // новая удобная обёртка
+  fetchAll: () => Promise<void>;
 }
 
 export const useInventoryStore = create<InventoryStore>((set, get) => ({
@@ -265,6 +265,7 @@ export const useInventoryStore = create<InventoryStore>((set, get) => ({
       set({ loading: false });
     }
   },
+
   fetchAll: async () => {
     await get().getAll();
   },

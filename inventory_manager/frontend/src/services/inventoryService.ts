@@ -10,7 +10,7 @@ import {
 
 export const InventoryService = {
   getAll: async (
-    userId: number,
+    userId: number | undefined,
     params: {
       page: number;
       limit: number;

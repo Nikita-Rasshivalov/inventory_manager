@@ -32,7 +32,7 @@ export interface GetAllInventoryParams {
 
 export class InventoryApi {
   static async getAll(
-    params: GetAllInventoryParams & { userId: number }
+    params: GetAllInventoryParams & { userId: number | undefined }
   ): Promise<PaginatedInventoryResponse> {
     const {
       userId,
@@ -54,7 +54,7 @@ export class InventoryApi {
           search,
           sortBy,
           sortOrder,
-          inventoryFilter, // теперь сервер понимает фильтр вкладки
+          inventoryFilter,
         },
       }
     );

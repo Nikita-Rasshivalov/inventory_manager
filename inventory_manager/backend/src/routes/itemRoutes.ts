@@ -14,27 +14,8 @@ router.post(
   controller.create
 );
 
-router.get(
-  "/",
-  authMiddleware,
-  authorizeInventoryRole(
-    InventoryRole.OWNER,
-    InventoryRole.WRITER,
-    InventoryRole.READER
-  ),
-  controller.getAll
-);
-
-router.get(
-  "/:itemId",
-  authMiddleware,
-  authorizeInventoryRole(
-    InventoryRole.OWNER,
-    InventoryRole.WRITER,
-    InventoryRole.READER
-  ),
-  controller.getById
-);
+router.get("/", controller.getAll);
+router.get("/:itemId", controller.getById);
 
 router.put(
   "/:itemId",

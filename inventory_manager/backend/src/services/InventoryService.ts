@@ -22,30 +22,44 @@ import {
 } from "../utils/inventoryMembers.ts";
 
 export class InventoryService {
-  async getAll(userId: number, query: InventoryQueryParams) {
+  async getAll(userId: number | undefined, query: InventoryQueryParams) {
     const { page, limit, search, sortBy, sortOrder, inventoryFilter } = query;
     const skip = getSkip(page, limit);
-    const orderBy = buildOrderBy(sortBy, sortOrder);
 
-    const user = await prisma.user.findUnique({ where: { id: userId } });
-    if (!user) throw new Error("User not found");
+    const orderBy =
+      sortBy === "elementsCount"
+        ? { items: { _count: sortOrder } }
+        : buildOrderBy(sortBy, sortOrder);
 
-    if (user.role === SystemRole.ADMIN) {
+    if (userId) {
+      const user = await prisma.user.findUnique({ where: { id: userId } });
+      if (!user) throw new Error("User not found");
+
+      if (user.role === SystemRole.ADMIN) {
+        const [items, total] = await Promise.all([
+          fetchItems({ deleted: false }, skip, limit, orderBy),
+          countItems({ deleted: false }),
+        ]);
+        return { items, total, page, totalPages: Math.ceil(total / limit) };
+      }
+
+      const where = buildWhere(userId, search, inventoryFilter);
+
       const [items, total] = await Promise.all([
-        fetchItems({ deleted: false }, skip, limit, orderBy),
-        countItems({ deleted: false }),
+        fetchItems(where, skip, limit, orderBy),
+        countItems(where),
       ]);
+
+      return { items, total, page, totalPages: Math.ceil(total / limit) };
+    } else {
+      const where = { deleted: false, isPublic: true };
+      const [items, total] = await Promise.all([
+        fetchItems(where, skip, limit, orderBy),
+        countItems(where),
+      ]);
+
       return { items, total, page, totalPages: Math.ceil(total / limit) };
     }
-
-    const where = buildWhere(userId, search, inventoryFilter);
-
-    const [items, total] = await Promise.all([
-      fetchItems(where, skip, limit, orderBy),
-      countItems(where),
-    ]);
-
-    return { items, total, page, totalPages: Math.ceil(total / limit) };
   }
 
   async create(title: string, ownerId: number, isPublic = false) {
@@ -60,39 +74,75 @@ export class InventoryService {
     });
   }
 
-  async getById(id: number, userId: number) {
+  async getById(id: number, userId?: number) {
+    if (userId) {
+      return await this.getByIdForUser(id, userId);
+    }
+    return await this.getByIdForGuest(id);
+  }
+
+  async getByIdForUser(id: number, userId: number) {
     const user = await prisma.user.findUnique({ where: { id: userId } });
     if (!user) throw new Error("User not found");
 
-    let inventory;
     if (user.role === SystemRole.ADMIN) {
-      inventory = await prisma.inventory.findUnique({
-        where: { id },
-        include: {
-          owner: true,
-          members: { include: { user: true } },
-          fields: true,
-          items: true,
-        },
-      });
+      return this.findInventoryById(id, true);
     } else {
-      inventory = await prisma.inventory.findFirst({
-        where: {
-          id,
-          OR: [
-            { isPublic: true },
-            { members: { some: { userId } } },
-            { ownerId: userId },
-          ],
-        },
+      return this.findInventoryForMemberOrOwner(id, userId);
+    }
+  }
+
+  async getByIdForGuest(id: number) {
+    return prisma.inventory
+      .findFirst({
+        where: { id, isPublic: true },
         include: {
           owner: true,
-          members: { include: { user: true } },
           fields: true,
           items: true,
+          comments: { include: { user: true } },
         },
+      })
+      .then((inventory) => {
+        if (!inventory) throw new Error("Inventory not found or access denied");
+        return inventory;
       });
-    }
+  }
+
+  async findInventoryById(id: number, includeMembers = false) {
+    const inventory = await prisma.inventory.findUnique({
+      where: { id },
+      include: {
+        owner: true,
+        members: includeMembers ? { include: { user: true } } : false,
+        fields: true,
+        items: true,
+        comments: { include: { user: true } },
+      },
+    });
+
+    if (!inventory) throw new Error("Inventory not found or access denied");
+    return inventory;
+  }
+
+  async findInventoryForMemberOrOwner(id: number, userId: number) {
+    const inventory = await prisma.inventory.findFirst({
+      where: {
+        id,
+        OR: [
+          { isPublic: true },
+          { members: { some: { userId } } },
+          { ownerId: userId },
+        ],
+      },
+      include: {
+        owner: true,
+        members: { include: { user: true } },
+        fields: true,
+        items: true,
+        comments: { include: { user: true } },
+      },
+    });
 
     if (!inventory) throw new Error("Inventory not found or access denied");
     return inventory;

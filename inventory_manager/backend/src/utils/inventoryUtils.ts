@@ -86,10 +86,11 @@ export async function fetchItems(
     where,
     skip,
     take: limit,
-    orderBy,
+    orderBy: orderBy ?? {},
     include: {
       owner: true,
       members: { where: { deleted: false } },
+      items: true,
     },
   });
 }

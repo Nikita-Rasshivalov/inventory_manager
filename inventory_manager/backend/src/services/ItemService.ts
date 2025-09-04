@@ -31,7 +31,7 @@ export class ItemService {
     });
     if (!inventory) throw new Error("Inventory not found");
 
-    if (userRole !== SystemRole.ADMIN && !inventory.isPublic) {
+    if (userRole !== SystemRole.ADMIN && !inventory.isPublic && userId) {
       const membership = await prisma.inventoryMember.findUnique({
         where: { inventoryId_userId: { inventoryId, userId } },
       });
@@ -72,7 +72,7 @@ export class ItemService {
     });
     if (!inventory) throw new Error("Inventory not found");
 
-    if (userRole !== SystemRole.ADMIN && !inventory.isPublic) {
+    if (userRole !== SystemRole.ADMIN && !inventory.isPublic && userId) {
       const membership = await prisma.inventoryMember.findUnique({
         where: { inventoryId_userId: { inventoryId, userId } },
       });

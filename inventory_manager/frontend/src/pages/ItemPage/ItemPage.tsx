@@ -137,10 +137,13 @@ const ItemPage = ({ inventoryId }: { inventoryId: number }) => {
 
   const selectedCount =
     activeTab === TabId.Items
-      ? itemsSelection.selectedIds.length
-      : membersSelection.selectedIds.length;
+      ? itemsSelection.selectedIds?.length || 0
+      : membersSelection.selectedIds?.length || 0;
+
   const totalCount =
-    activeTab === TabId.Items ? items.length : inventoryMembers.length;
+    activeTab === TabId.Items
+      ? items?.length || 0
+      : inventoryMembers?.length || 0;
 
   return (
     <div className="max-w-6xl mx-auto px-6 pt-2 pb-4 bg-white rounded-lg shadow-md mt-1">
@@ -150,7 +153,7 @@ const ItemPage = ({ inventoryId }: { inventoryId: number }) => {
         onDelete={handleDelete}
         onCreate={() => setIsModalOpen(true)}
         tabs={visibleTabs}
-        hiddenTabs={[TabId.Discussion]}
+        hiddenTabs={[TabId.Discussion, TabId.Statistics]}
         activeTab={activeTab}
         onChangeTab={(tab) => setActiveTab(tab as TabId)}
         filterText={filterText}
@@ -193,7 +196,7 @@ const ItemPage = ({ inventoryId }: { inventoryId: number }) => {
         <CustomIdView inventoryId={inventoryId} />
       )}
 
-      {activeTab === TabId.Discussion && user && (
+      {activeTab === TabId.Discussion && (
         <DiscussionView inventoryId={inventoryId} currentUser={user} />
       )}
 

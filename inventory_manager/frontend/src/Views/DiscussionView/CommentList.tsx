@@ -6,7 +6,7 @@ import { Link } from "react-router-dom";
 
 interface CommentListProps {
   comments: Comment[];
-  currentUser: User;
+  currentUser: User | null;
   inventoryId: number;
   onDelete?: (commentId: number) => void;
 }
@@ -34,7 +34,7 @@ const CommentList = ({ comments, currentUser, onDelete }: CommentListProps) => {
         <div className="space-y-4">
           {comments.map((c) => {
             const canDelete =
-              c.userId === currentUser.id || currentUser.role === "ADMIN";
+              c.userId === currentUser?.id || currentUser?.role === "ADMIN";
 
             return (
               <div
@@ -44,7 +44,7 @@ const CommentList = ({ comments, currentUser, onDelete }: CommentListProps) => {
                 <div className="flex-shrink-0">
                   <Link
                     to={
-                      c.userId === currentUser.id
+                      c.userId === currentUser?.id
                         ? "/profile"
                         : `/users/${c.userId}`
                     }
@@ -60,7 +60,7 @@ const CommentList = ({ comments, currentUser, onDelete }: CommentListProps) => {
                   <div className="flex justify-between items-center w-full">
                     <Link
                       to={
-                        c.userId === currentUser.id
+                        c.userId === currentUser?.id
                           ? "/profile"
                           : `/users/${c.userId}`
                       }

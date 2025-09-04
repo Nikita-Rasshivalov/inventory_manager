@@ -7,7 +7,7 @@ const PrivateRoute = () => {
   if (loading) return <div>Loading...</div>;
 
   if (!user) {
-    return <Navigate to="/" replace />;
+    return <Navigate to="/dashboard" replace />;
   }
 
   return <Outlet />;

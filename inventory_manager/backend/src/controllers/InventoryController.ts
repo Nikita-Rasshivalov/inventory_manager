@@ -9,7 +9,7 @@ export class InventoryController extends BaseController {
   getAll = (req: Request, res: Response) =>
     this.handle(res, async () => {
       const user = (req as any).user;
-      if (!user) throw new Error("User not authenticated");
+
       const filterParam = req.query.inventoryFilter as string | undefined;
       let inventoryFilter: InventoryFilter | undefined;
       if (
@@ -23,12 +23,12 @@ export class InventoryController extends BaseController {
         page: parseInt((req.query.page as string) ?? "1", 10),
         limit: parseInt((req.query.limit as string) ?? "10", 10),
         search: (req.query.search as string) ?? "",
-        sortBy: req.query.sortBy as string,
-        sortOrder: req.query.sortOrder as "asc" | "desc",
+        sortBy: req.query.sortBy as string | undefined,
+        sortOrder: (req.query.sortOrder as "asc" | "desc") ?? "desc",
         inventoryFilter,
       };
 
-      return await inventoryService.getAll(user.userId, query);
+      return await inventoryService.getAll(user?.userId, query);
     });
 
   create = (req: Request, res: Response) =>
@@ -46,7 +46,7 @@ export class InventoryController extends BaseController {
     this.handle(res, async () => {
       const user = (req as any).user;
       const id = parseInt(req.params.inventoryId);
-      return await inventoryService.getById(id, user.userId);
+      return await inventoryService.getById(id, user?.userId);
     });
 
   update = (req: Request, res: Response) =>

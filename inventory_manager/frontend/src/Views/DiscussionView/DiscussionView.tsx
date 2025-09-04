@@ -8,7 +8,7 @@ import { User } from "../../models/models";
 
 interface DiscussionTabProps {
   inventoryId: number;
-  currentUser: User;
+  currentUser: User | null;
 }
 
 export const DiscussionView = ({
@@ -35,16 +35,15 @@ export const DiscussionView = ({
 
   const handleSend = () => {
     if (!newComment.trim()) return;
-    emitNewComment(newComment, currentUser.id);
+    if (currentUser) emitNewComment(newComment, currentUser.id);
     setNewComment("");
   };
 
   const handleDelete = (commentId: number) => {
-    emitDeleteComment(commentId, currentUser.id);
+    if (currentUser) emitDeleteComment(commentId, currentUser.id);
   };
 
-  if (!currentUser.id || loading) {
-    console.log(loading);
+  if (currentUser?.id || loading) {
     return <Loader className="mx-auto my-4 animate-spin" />;
   }
 
@@ -56,11 +55,13 @@ export const DiscussionView = ({
         currentUser={currentUser}
         onDelete={handleDelete}
       />
-      <CommentInput
-        value={newComment}
-        onChange={setNewComment}
-        onSend={handleSend}
-      />
+      {currentUser && (
+        <CommentInput
+          value={newComment}
+          onChange={setNewComment}
+          onSend={handleSend}
+        />
+      )}
     </div>
   );
 };

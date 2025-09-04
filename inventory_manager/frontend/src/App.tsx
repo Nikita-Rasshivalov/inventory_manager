@@ -28,17 +28,18 @@ function App() {
           <Route path="/login" element={<AuthPage />} />
           <Route path="/success" element={<AuthSuccess />} />
           <Route path="/users/:userId" element={<UserProfilePage />} />
-          <Route element={<PrivateRoute />}>
-            <Route path="/profile" element={<UserProfilePage />} />
-            <Route
-              path="/inventory/:inventoryId/items"
-              element={<InventoryItemPage />}
-            />
-          </Route>
+          <Route
+            path="/inventory/:inventoryId/items"
+            element={<InventoryItemPage />}
+          />
           <Route
             path="/inventory/:inventoryId/items/:itemId"
             element={<ItemDetailsPage />}
           />
+          <Route element={<PrivateRoute />}>
+            <Route path="/profile" element={<UserProfilePage />} />
+          </Route>
+
           <Route path="*" element={<DashboardPage />} />
         </Routes>
       </AuthProvider>
