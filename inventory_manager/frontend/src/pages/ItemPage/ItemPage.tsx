@@ -171,6 +171,7 @@ const ItemPage = ({ inventoryId }: { inventoryId: number }) => {
         onChangeTab={(tab) => setActiveTab(tab as TabId)}
         filterText={filterText}
         onFilterChange={setFilterText}
+        isAuthenticated={!!user}
       />
 
       {activeTab === TabId.Items && (

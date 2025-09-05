@@ -98,6 +98,7 @@ const InventoryPage = () => {
         onChangeTab={(tab) => handleTabChange(tab as InventoryTabId)}
         filterText={search}
         onFilterChange={handleFilterChange}
+        isAuthenticated={!!user}
       />
 
       <InventoryTable

@@ -18,7 +18,7 @@ router.delete(
   controller.delete
 );
 
-router.get("/:inventoryId", authMiddleware, controller.getById);
+router.get("/:inventoryId", controller.getById);
 
 router.put(
   "/:inventoryId",

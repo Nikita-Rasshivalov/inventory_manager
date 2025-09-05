@@ -1,6 +1,6 @@
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { AuthProvider } from "./contexts/AuthProvider";
-import DashboardPage from "./pages/DashboardPage";
+import DashboardPage from "./pages/DashboardPage/DashboardPage";
 import PrivateRoute from "./components/common/PrivateRoute";
 import AuthSuccess from "./pages/AuthPage/AuthSuccess";
 import { ToastContainer } from "react-toastify";

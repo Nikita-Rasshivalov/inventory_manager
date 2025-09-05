@@ -15,6 +15,7 @@ interface ToolbarProps {
   onFilterChange: (value: string) => void;
   hiddenTabs: string[];
   partialHiddenTabs?: string[];
+  isAuthenticated: boolean;
 }
 
 const Toolbar: React.FC<ToolbarProps> = ({
@@ -28,6 +29,7 @@ const Toolbar: React.FC<ToolbarProps> = ({
   onFilterChange,
   hiddenTabs = [],
   partialHiddenTabs = [],
+  isAuthenticated,
 }) => {
   const disabledDelete = selectedCount === 0;
   const [showSearch, setShowSearch] = useState(false);
@@ -35,33 +37,36 @@ const Toolbar: React.FC<ToolbarProps> = ({
   const shouldHideCreateButton = partialHiddenTabs.includes(activeTab);
 
   return (
-    <div className="flex flex-col-reverse sm:flex-row gap-2 min-h-17  mb-4 p-2 sm:p-3 bg-gray-50 rounded-lg shadow-sm border border-gray-200">
-      <div className="flex flex-row gap-2 items-center justify-center w-full  sm:w-auto sm:flex-1 sm:justify-start relative">
+    <div className="flex flex-col-reverse sm:flex-row gap-2 min-h-17 mb-4 p-2 sm:p-3 bg-gray-50 rounded-lg shadow-sm border border-gray-200">
+      <div className="flex flex-row gap-2 items-center justify-center w-full sm:w-auto sm:flex-1 sm:justify-start relative">
         <div className="flex gap-2 items-center w-65 xl:w-full flex-1">
-          {!shouldHideAllButtons && !shouldHideCreateButton && onCreate && (
-            <Button
-              onClick={onCreate}
-              className="flex items-center justify-center text-white rounded-lg p-1 sm:p-2"
-              aria-label="Create Inventory"
-            >
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                className="w-4 h-4 sm:w-5 sm:h-5"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
-                strokeWidth={2}
+          {!shouldHideAllButtons &&
+            !shouldHideCreateButton &&
+            onCreate &&
+            isAuthenticated && (
+              <Button
+                onClick={onCreate}
+                className="flex items-center justify-center text-white rounded-lg p-1 sm:p-2"
+                aria-label="Create Inventory"
               >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  d="M12 4v16m8-8H4"
-                />
-              </svg>
-            </Button>
-          )}
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  className="w-4 h-4 sm:w-5 sm:h-5"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                  strokeWidth={2}
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    d="M12 4v16m8-8H4"
+                  />
+                </svg>
+              </Button>
+            )}
 
-          {!shouldHideAllButtons && onDelete && (
+          {!shouldHideAllButtons && onDelete && isAuthenticated && (
             <Button
               disabled={disabledDelete}
               onClick={onDelete}
@@ -110,15 +115,13 @@ const Toolbar: React.FC<ToolbarProps> = ({
         </div>
       </div>
 
-      <div className="flex flex-wrap justify-end  gap-2 w-full md:w-auto">
+      <div className="flex flex-wrap justify-end gap-2 w-full md:w-auto">
         {tabs.map((tab) => (
           <Button
             key={tab}
             onClick={() => onChangeTab(tab)}
             active={activeTab === tab}
-            className="flex-1 md:flex-none px-4 py-2 rounded-lg text-xs 
-            sm:text-sm md:text-[15px] font-medium text-center min-w-[90px]
-            md:min-w-[120px] lg:min-w-[90px]"
+            className="flex-1 md:flex-none px-4 py-2 rounded-lg text-xs sm:text-sm md:text-[15px] font-medium text-center min-w-[90px] md:min-w-[120px] lg:min-w-[90px]"
           >
             {tab}
           </Button>

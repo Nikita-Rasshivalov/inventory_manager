@@ -131,6 +131,12 @@ export type InventoryPayload = {
   isPublic?: boolean;
 };
 
+export interface TopInventory extends Inventory {
+  _count: {
+    items: number;
+  };
+}
+
 export enum MemberAction {
   Add = "add",
   Update = "update",

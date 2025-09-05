@@ -3,6 +3,7 @@ import express from "express";
 import cors from "cors";
 import authRoutes from "./routes/authRoutes.ts";
 import oauthRoutes from "./routes/oauthRoutes.ts";
+import guestRoutes from "./routes/guestRoutes.ts";
 import inventoryRoutes from "./routes/inventoryRoutes.ts";
 import itemRoutes from "./routes/itemRoutes.ts";
 import userRoutes from "./routes/userRoutes.ts";
@@ -22,7 +23,7 @@ app.use(
 );
 
 app.use(express.json());
-
+app.use("/api/guest", guestRoutes);
 app.use("/api/auth", authRoutes);
 app.use("/api/auth", oauthRoutes);
 app.use("/api/users", userRoutes);
