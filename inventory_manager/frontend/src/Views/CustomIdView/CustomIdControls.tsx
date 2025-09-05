@@ -1,3 +1,4 @@
+import { useState } from "react";
 import Button from "../../components/common/Button";
 import Input from "../../components/common/Input";
 import { generateLiveExample } from "../../utils/customIdUtils";
@@ -13,7 +14,7 @@ interface CustomIdControlsProps {
   idElements: any[];
   setIdElements: (elements: any[]) => void;
   liveExample: string;
-  onSave: () => void;
+  onSave: () => Promise<void> | void;
   setLiveExample: (example: string) => void;
 }
 
@@ -28,6 +29,8 @@ export const CustomIdControls = ({
   onSave,
   setLiveExample,
 }: CustomIdControlsProps) => {
+  const [isSaving, setIsSaving] = useState(false);
+
   const handleAddElement = () => {
     if (!newElementType) return;
 
@@ -42,14 +45,23 @@ export const CustomIdControls = ({
     };
 
     const updatedElements = [...idElements, newElement];
-
     setIdElements(updatedElements);
-
     setLiveExample(generateLiveExample(updatedElements));
 
     setNewElementType("");
     setFixedTextValue("");
   };
+
+  const handleSave = async () => {
+    if (isSaving) return;
+    try {
+      setIsSaving(true);
+      await onSave();
+    } finally {
+      setIsSaving(false);
+    }
+  };
+
   return (
     <div className="space-y-4">
       <div className="p-4 rounded-md bg-gray-50">
@@ -63,25 +75,28 @@ export const CustomIdControls = ({
           onChange={(e) => setNewElementType(e.target.value)}
           options={elementOptions}
         />
+
         {newElementType === "fixedText" && (
           <Input
             type="text"
             value={fixedTextValue}
             onChange={(e) => setFixedTextValue(e.target.value)}
-            className="border rounded px-2 py-2 text-sm  min-[425px]:h-8"
+            className="border rounded px-2 py-2 text-sm min-[425px]:h-8"
           />
         )}
+
         <div className="flex flex-1 items-center gap-3">
           <Button
             onClick={handleAddElement}
-            className=" flex-1 items-center justify-center"
+            className="flex-1 items-center justify-center"
           >
             <Plus size={20} />
           </Button>
 
           <Button
-            onClick={onSave}
-            className=" flex-1 items-center justify-center"
+            onClick={handleSave}
+            disabled={isSaving}
+            className="flex-1 items-center justify-center bg-gray-600 hover:bg-gray-700 text-white disabled:bg-black-300"
           >
             <Save size={20} />
           </Button>

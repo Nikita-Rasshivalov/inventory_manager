@@ -160,7 +160,13 @@ const ItemPage = ({ inventoryId }: { inventoryId: number }) => {
         onDelete={handleDelete}
         onCreate={() => setIsModalOpen(true)}
         tabs={visibleTabs}
-        hiddenTabs={[TabId.Discussion, TabId.Statistics]}
+        hiddenTabs={[
+          TabId.Discussion,
+          TabId.Statistics,
+          TabId.Fields,
+          TabId.CustomId,
+        ]}
+        partialHiddenTabs={[TabId.Access]}
         activeTab={activeTab}
         onChangeTab={(tab) => setActiveTab(tab as TabId)}
         filterText={filterText}

@@ -24,7 +24,7 @@ interface GenericModalProps {
   fields: Field[];
   isOpen: boolean;
   onClose: () => void;
-  onSubmit: (values: Record<string, string | boolean>) => void;
+  onSubmit: (values: Record<string, string | boolean>) => Promise<void> | void;
 }
 
 const GenericModal: React.FC<GenericModalProps> = ({
@@ -45,18 +45,28 @@ const GenericModal: React.FC<GenericModalProps> = ({
     )
   );
 
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
   const handleChange = (name: string, value: string | boolean) => {
     setValues((prev) => ({ ...prev, [name]: value }));
   };
 
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
+    if (isSubmitting) return;
+
     for (const f of fields) {
       if (f.type !== "checkbox" && isNullOrEmpty(values[f.name] as string)) {
         toast.error(`"${f.label}" cannot be empty`);
         return;
       }
     }
-    onSubmit(values);
+
+    try {
+      setIsSubmitting(true);
+      await onSubmit(values);
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
@@ -121,14 +131,16 @@ const GenericModal: React.FC<GenericModalProps> = ({
                   <Button
                     onClick={onClose}
                     className="bg-gray-300 hover:bg-gray-400"
+                    disabled={isSubmitting}
                   >
                     Cancel
                   </Button>
                   <Button
                     onClick={handleSubmit}
                     className="bg-blue-600 hover:bg-blue-700 text-white"
+                    disabled={isSubmitting}
                   >
-                    Submit
+                    {isSubmitting ? "Submitting..." : "Submit"}
                   </Button>
                 </div>
               </DialogPanel>

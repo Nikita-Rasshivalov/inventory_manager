@@ -203,7 +203,6 @@ export class InventoryService {
   async delete(ids: number[], userId: number) {
     const user = await prisma.user.findUnique({ where: { id: userId } });
     if (!user) throw new Error("User not found");
-
     if (user.role === SystemRole.ADMIN) {
       await softDeleteTransaction(ids, new Date());
       return buildBulkResponse(ids.length, 0);

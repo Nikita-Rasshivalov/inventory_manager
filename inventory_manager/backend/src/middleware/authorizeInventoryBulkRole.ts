@@ -1,5 +1,5 @@
 import { Request, Response, NextFunction } from "express";
-import { InventoryRole } from "@prisma/client";
+import { InventoryRole, SystemRole } from "@prisma/client";
 import { InventoryService } from "../services/InventoryService.ts";
 
 const inventoryService = new InventoryService();
@@ -11,6 +11,8 @@ export async function authorizeInventoryBulkRole(
 ) {
   const user = (req as any).user;
   if (!user) return res.status(401).json({ error: "Unauthorized" });
+
+  if (user.role === SystemRole.ADMIN) return next();
 
   const ids: number[] = req.body.ids;
   if (!ids || !Array.isArray(ids) || ids.length === 0) {
