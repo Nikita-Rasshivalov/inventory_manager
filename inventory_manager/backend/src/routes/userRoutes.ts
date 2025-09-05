@@ -10,6 +10,8 @@ router.get("/", authMiddleware, controller.getAll);
 
 router.get("/:userId", controller.getById);
 
+router.post("/theme", authMiddleware, controller.updateTheme);
+
 router.post(
   "/upload-profile-photo",
   authMiddleware,

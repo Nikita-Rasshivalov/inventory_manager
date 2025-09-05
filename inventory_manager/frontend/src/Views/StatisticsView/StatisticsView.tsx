@@ -58,11 +58,13 @@ const StatisticsView: React.FC<StatisticsViewProps> = ({ items }) => {
   }, [items]);
 
   if (!stats) {
-    return <p className="text-gray-500">No data available</p>;
+    return (
+      <p className="text-gray-500 dark:text-gray-400">No data available</p>
+    );
   }
 
   return (
-    <div className="p-6 bg-gray-50 rounded-lg shadow-sm">
+    <div className="p-6 bg-gray-50 dark:bg-gray-800 text-gray-900 dark:text-gray-100 rounded-lg shadow-sm transition-colors duration-300">
       <h2 className="text-xl font-semibold mb-4">Statistics</h2>
       <p className="mb-4">Total items: {stats.total}</p>
 
@@ -71,7 +73,7 @@ const StatisticsView: React.FC<StatisticsViewProps> = ({ items }) => {
           <h3 className="text-lg font-medium mb-2">Numeric fields</h3>
           <ul className="space-y-1">
             {stats.numericStats.map((s) => (
-              <li key={s.field} className="text-gray-700">
+              <li key={s.field} className="text-gray-700 dark:text-gray-200">
                 <strong>{s.field}:</strong> min {s.min}, max {s.max}, avg{" "}
                 {s.avg}
               </li>
@@ -85,7 +87,7 @@ const StatisticsView: React.FC<StatisticsViewProps> = ({ items }) => {
           <h3 className="text-lg font-medium mb-2">String fields</h3>
           <ul className="space-y-1">
             {stats.stringStats.map((s) => (
-              <li key={s.field} className="text-gray-700">
+              <li key={s.field} className="text-gray-700 dark:text-gray-200">
                 <strong>{s.field}:</strong> most frequent «{s.mostUsed}» (
                 {s.count} times)
               </li>

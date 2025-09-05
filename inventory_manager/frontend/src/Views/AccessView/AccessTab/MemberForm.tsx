@@ -92,14 +92,15 @@ export const MemberForm: React.FC<MemberFormProps> = ({
   return (
     <div className="relative w-full" ref={containerRef}>
       <div
-        className={`absolute -top-17 sm:-top-7 left-0 mt-1 w-full max-w-sm sm:max-w-md max-h-60 overflow-auto border border-gray-300 bg-white shadow-lg rounded z-60 ${
-          showDropdown ? "block" : "hidden"
-        }`}
+        className={`absolute -top-17 sm:-top-7 left-0 mt-1 w-full max-w-sm sm:max-w-md max-h-60 overflow-auto 
+          border border-gray-300 dark:border-gray-600 
+          bg-white dark:bg-gray-800 shadow-lg rounded z-60 
+          ${showDropdown ? "block" : "hidden"}`}
       >
         {availableUsers.map((user) => (
           <div
             key={user.id}
-            className="p-2 hover:bg-blue-100 cursor-pointer break-words"
+            className="p-2 hover:bg-blue-100 dark:hover:bg-blue-800 cursor-pointer break-words text-gray-900 dark:text-gray-100"
             onClick={() => handleAddMember(user)}
           >
             {user.name} ({user.email})

@@ -39,27 +39,37 @@ const ItemInfo: React.FC<ItemInfoProps> = ({ item, canEditFields }) => {
 
   return (
     <div className="grid gap-4 sm:grid-cols-2 md:grid-cols-1 md:w-1/3">
-      <div className="bg-white p-4 rounded shadow flex flex-col gap-1">
-        <span className="text-sm text-gray-500">Version</span>
-        <span className="font-semibold">{item.version}</span>
+      <div className="bg-white dark:bg-gray-800 p-4 rounded shadow flex flex-col gap-1 transition-colors duration-300">
+        <span className="text-sm text-gray-500 dark:text-gray-400">
+          Version
+        </span>
+        <span className="font-semibold text-gray-900 dark:text-gray-100">
+          {item.version}
+        </span>
       </div>
 
-      <div className="bg-white p-4 rounded shadow flex flex-col gap-1">
-        <span className="text-sm text-gray-500">Created At</span>
-        <span className="font-semibold">
+      <div className="bg-white dark:bg-gray-800 p-4 rounded shadow flex flex-col gap-1 transition-colors duration-300">
+        <span className="text-sm text-gray-500 dark:text-gray-400">
+          Created At
+        </span>
+        <span className="font-semibold text-gray-900 dark:text-gray-100">
           {new Date(item.createdAt).toLocaleString()}
         </span>
       </div>
 
-      <div className="bg-white p-4 rounded shadow flex flex-col gap-1">
-        <span className="text-sm text-gray-500">Updated At</span>
-        <span className="font-semibold">
+      <div className="bg-white dark:bg-gray-800 p-4 rounded shadow flex flex-col gap-1 transition-colors duration-300">
+        <span className="text-sm text-gray-500 dark:text-gray-400">
+          Updated At
+        </span>
+        <span className="font-semibold text-gray-900 dark:text-gray-100">
           {new Date(item.updatedAt).toLocaleString()}
         </span>
       </div>
 
-      <div className="bg-white p-4 min-h-[6.5rem] rounded shadow flex flex-col gap-1">
-        <span className="text-sm text-gray-500">Custom ID</span>
+      <div className="bg-white dark:bg-gray-800 p-4 min-h-[6.5rem] rounded shadow flex flex-col gap-1 transition-colors duration-300">
+        <span className="text-sm text-gray-500 dark:text-gray-400">
+          Custom ID
+        </span>
         <div className="flex items-center gap-2">
           {editingCustomId ? (
             <Input
@@ -75,14 +85,17 @@ const ItemInfo: React.FC<ItemInfoProps> = ({ item, canEditFields }) => {
                 }
               }}
               autoFocus
+              className="bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 border border-gray-300 dark:border-gray-600"
             />
           ) : (
             <>
-              <span className="font-semibold">{customId}</span>
+              <span className="font-semibold text-gray-900 dark:text-gray-100">
+                {customId}
+              </span>
               {canEditFields && (
                 <Pencil
                   size={16}
-                  className="cursor-pointer text-gray-400 hover:text-gray-600"
+                  className="cursor-pointer text-gray-400 dark:text-gray-500 hover:text-gray-600 dark:hover:text-gray-300 transition-colors duration-200"
                   onClick={() => setEditingCustomId(true)}
                 />
               )}

@@ -72,10 +72,12 @@ const FieldView = ({ inventoryId }: FieldViewProps) => {
 
   return (
     <div className="space-y-6">
-      <h2 className="text-2xl font-semibold">Customize Fields</h2>
+      <h2 className="text-2xl font-semibold text-gray-900 dark:text-gray-100">
+        Customize Fields
+      </h2>
 
       <div className="flex flex-col md:flex-row gap-6">
-        <div className="md:w-1/3 ">
+        <div className="md:w-1/3">
           <FieldControls
             newType={newType}
             setNewType={setNewType}

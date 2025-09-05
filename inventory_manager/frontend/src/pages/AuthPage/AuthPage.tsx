@@ -13,16 +13,17 @@ const AuthPage = () => {
   const handleModeChange = (newMode: "login" | "register") => {
     setMode(newMode);
   };
+
   const handleError = (message: string) => {
     if (!message) return;
     toast.error(message);
   };
 
   return (
-    <div className="flex flex-col min-h-screen overflow-x-hidden">
+    <div className="flex flex-col min-h-screen overflow-x-hidden bg-gray-200 dark:bg-gray-900 transition-colors duration-300">
       <Header />
-      <main className="flex flex-1 items-center  justify-center bg-gray-200 px-4">
-        <div className="w-full max-w-sm bg-white p-10 rounded-md shadow-lg transition-all duration-300 mx-auto">
+      <main className="flex flex-1 items-center justify-center px-4">
+        <div className="w-full max-w-sm bg-white dark:bg-gray-800 p-10 rounded-md shadow-lg transition-all duration-300 mx-auto">
           <div className="flex justify-center mb-6 space-x-4">
             <Button
               onClick={() => handleModeChange("register")}
@@ -54,7 +55,7 @@ const AuthPage = () => {
           )}
 
           <div className="mt-5">
-            <p className="text-center text-gray-600 mb-3">
+            <p className="text-center text-gray-600 dark:text-gray-300 mb-3">
               Or {mode === "login" ? "sign in" : "sign up"} with
             </p>
             <Socials />

@@ -11,15 +11,12 @@ export async function authMiddleware(
 ) {
   try {
     const authHeader = req.headers.authorization;
-    if (!authHeader?.startsWith("Bearer ")) {
-      return res.status(401).json({ error: "Unauthorized" });
-    }
+    let payload: AuthPayload | undefined;
 
-    const token = authHeader.split(" ")[1];
-    const payload = authService.getJwtPayload(token) as AuthPayload | null;
-
-    if (!payload) {
-      return res.status(401).json({ error: "Unauthorized" });
+    if (authHeader?.startsWith("Bearer ")) {
+      const token = authHeader.split(" ")[1];
+      payload =
+        (authService.getJwtPayload(token) as AuthPayload | null) || undefined;
     }
 
     (req as Request & { user?: AuthPayload }).user = payload;
@@ -27,6 +24,7 @@ export async function authMiddleware(
     next();
   } catch (err) {
     console.error("Auth middleware error:", err);
-    return res.status(500).json({ error: "Internal server error" });
+    (req as Request & { user?: AuthPayload }).user = undefined;
+    next();
   }
 }

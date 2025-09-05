@@ -37,7 +37,7 @@ const Toolbar: React.FC<ToolbarProps> = ({
   const shouldHideCreateButton = partialHiddenTabs.includes(activeTab);
 
   return (
-    <div className="flex flex-col-reverse sm:flex-row gap-2 min-h-17 mb-4 p-2 sm:p-3 bg-gray-50 rounded-lg shadow-sm border border-gray-200">
+    <div className="flex flex-col-reverse sm:flex-row gap-2 min-h-17 mb-4 p-2 sm:p-3 bg-gray-50 dark:bg-gray-800 text-gray-900 dark:text-gray-200 rounded-lg shadow-sm border border-gray-200 dark:border-gray-600 transition-colors duration-300">
       <div className="flex flex-row gap-2 items-center justify-center w-full sm:w-auto sm:flex-1 sm:justify-start relative">
         <div className="flex gap-2 items-center w-65 xl:w-full flex-1">
           {!shouldHideAllButtons &&
@@ -46,7 +46,7 @@ const Toolbar: React.FC<ToolbarProps> = ({
             isAuthenticated && (
               <Button
                 onClick={onCreate}
-                className="flex items-center justify-center text-white rounded-lg p-1 sm:p-2"
+                className="flex items-center justify-center text-white bg-blue-600 hover:bg-blue-700 dark:bg-blue-500 dark:hover:bg-blue-400 rounded-lg p-1 sm:p-2 transition-colors duration-200"
                 aria-label="Create Inventory"
               >
                 <svg
@@ -70,7 +70,7 @@ const Toolbar: React.FC<ToolbarProps> = ({
             <Button
               disabled={disabledDelete}
               onClick={onDelete}
-              className="flex items-center justify-center bg-gray-600 hover:bg-gray-700 disabled:bg-gray-300 text-white rounded-lg p-1 sm:p-2"
+              className="flex items-center justify-center bg-gray-600 hover:bg-gray-700 dark:bg-gray-700 dark:hover:bg-gray-600 disabled:bg-gray-400 text-white dark:text-gray-200 rounded-lg p-1 sm:p-2 transition-colors duration-200"
               aria-label="Delete"
             >
               <svg
@@ -92,7 +92,7 @@ const Toolbar: React.FC<ToolbarProps> = ({
           {!shouldHideAllButtons && !showSearch && (
             <Button
               onClick={() => setShowSearch(true)}
-              className="flex items-center justify-center bg-gray-600 hover:bg-gray-700 disabled:bg-gray-300 text-white rounded-lg p-1 sm:p-2"
+              className="flex items-center justify-center bg-gray-600 hover:bg-gray-700 dark:bg-gray-700 dark:hover:bg-gray-600 disabled:bg-gray-400 text-white dark:text-gray-200 rounded-lg p-1 sm:p-2 transition-colors duration-200"
               aria-label="Show search"
             >
               <Search className="w-4 h-4 sm:w-5 sm:h-5" />
@@ -108,7 +108,7 @@ const Toolbar: React.FC<ToolbarProps> = ({
                 placeholder="Search..."
                 autoFocus
                 onBlur={() => setShowSearch(false)}
-                className="w-full sm:w-40 h-8 sm:h-10 px-2 sm:px-3 text-sm sm:text-sm"
+                className="w-full sm:w-40 h-8 sm:h-10 px-2 sm:px-3 text-sm sm:text-sm bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-200 border border-gray-300 dark:border-gray-600 rounded transition-colors duration-200"
               />
             </div>
           )}
@@ -121,7 +121,11 @@ const Toolbar: React.FC<ToolbarProps> = ({
             key={tab}
             onClick={() => onChangeTab(tab)}
             active={activeTab === tab}
-            className="flex-1 md:flex-none px-4 py-2 rounded-lg text-xs sm:text-sm md:text-[15px] font-medium text-center min-w-[90px] md:min-w-[120px] lg:min-w-[90px]"
+            className={`flex-1 md:flex-none px-4 py-2 rounded-lg text-xs sm:text-sm md:text-[15px] font-medium text-center min-w-[90px] md:min-w-[120px] lg:min-w-[90px] transition-colors duration-200 ${
+              activeTab === tab
+                ? "bg-blue-600 text-white dark:bg-blue-500 dark:hover:bg-blue-400 dark:text-gray-100"
+                : "bg-gray-200 text-gray-900 dark:bg-gray-700 dark:hover:bg-gray-600 dark:text-gray-200 hover:bg-gray-300"
+            }`}
           >
             {tab}
           </Button>

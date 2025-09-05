@@ -1,5 +1,5 @@
-import { TopInventory } from "../../models/models";
 import { Loader2 } from "lucide-react";
+import { TopInventory } from "../../models/models";
 
 interface Props {
   inventories: TopInventory[];
@@ -9,41 +9,41 @@ interface Props {
 
 const TopInventoriesTable = ({ inventories, loading, onClick }: Props) => {
   return (
-    <div className="bg-white shadow-lg rounded-xl p-6">
-      <h2 className="text-xl font-bold text-gray-800 mb-4">
+    <div className="bg-white dark:bg-gray-800  h-[50vh] shadow-md rounded-lg p-4">
+      <h2 className="text-lg font-semibold text-gray-800 dark:text-gray-100 mb-3">
         Top 5 Popular Inventories
       </h2>
 
       {loading ? (
-        <div className="flex justify-center items-center py-12">
-          <Loader2 className="w-8 h-8 text-gray-500 animate-spin" />
+        <div className="flex items-center justify-center py-10">
+          <Loader2 className="animate-spin w-6 h-6 text-gray-500 dark:text-gray-200" />
         </div>
       ) : inventories.length === 0 ? (
-        <p className="text-center text-gray-400 py-6">No inventories found</p>
+        <p className="text-gray-400 dark:text-gray-300">No inventories found</p>
       ) : (
-        <div className="overflow-x-auto">
-          <table className="w-full text-sm text-left border border-gray-200 rounded-lg">
-            <thead className="bg-gray-100 text-gray-600 uppercase text-xs">
+        <div className="overflow-x-auto h-[40vh]">
+          <table className="w-full min-w-[500px] text-sm text-left border border-gray-200 dark:border-gray-700 rounded-md overflow-hidden">
+            <thead className="bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300 uppercase text-xs">
               <tr>
-                <th className="px-4 py-3">Title</th>
-                <th className="px-4 py-3">Created by</th>
-                <th className="px-4 py-3">Elements</th>
+                <th className="px-3 py-2">Title</th>
+                <th className="px-3 py-2">Created by</th>
+                <th className="px-3 py-2">Elements</th>
               </tr>
             </thead>
             <tbody>
               {inventories.map((inv) => (
                 <tr
                   key={inv.id}
-                  className="border-t hover:bg-gray-50 cursor-pointer transition-colors duration-200"
+                  className="border-t border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700 cursor-pointer transition"
                   onClick={() => onClick(inv.id, inv.title)}
                 >
-                  <td className="px-4 py-3 text-gray-700 font-medium">
+                  <td className="px-3 py-2 text-gray-700 dark:text-gray-100">
                     {inv.title}
                   </td>
-                  <td className="px-4 py-3 text-gray-600">
+                  <td className="px-3 py-2 text-gray-700 dark:text-gray-100">
                     {inv.owner?.name || "—"}
                   </td>
-                  <td className="px-4 py-3 text-gray-500">
+                  <td className="px-3 py-2 text-gray-700 dark:text-gray-100">
                     {inv._count?.items ?? 0}
                   </td>
                 </tr>

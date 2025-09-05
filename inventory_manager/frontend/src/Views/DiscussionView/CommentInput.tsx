@@ -27,7 +27,7 @@ const CommentInput = ({ value, onChange, onSend }: CommentInputProps) => {
         ref={textareaRef}
         rows={1}
         style={{ height }}
-        className="flex-1 px-4 py-2 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-300 focus:outline-none bg-white text-gray-900 placeholder-gray-400 resize-none overflow-hidden"
+        className="flex-1 px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-600 focus:ring-2 focus:ring-blue-300 focus:outline-none bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 placeholder-gray-400 dark:placeholder-gray-400 resize-none overflow-hidden transition-colors duration-200"
         value={value}
         onChange={(e) => onChange(e.target.value)}
         onKeyDown={(e) => {
@@ -39,7 +39,7 @@ const CommentInput = ({ value, onChange, onSend }: CommentInputProps) => {
       />
       <Button
         onClick={onSend}
-        className="flex-shrink-0 h-10 rounded-lg bg-blue-500 hover:bg-blue-600 text-white flex items-center justify-center"
+        className="flex-shrink-0 h-10 rounded-lg bg-blue-500 dark:bg-blue-600 hover:bg-blue-600 dark:hover:bg-blue-700 text-white flex items-center justify-center transition-colors duration-200"
       >
         <ArrowRight className="w-4 h-4" />
       </Button>

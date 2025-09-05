@@ -56,27 +56,27 @@ const ItemDetailsPage = () => {
 
   if (loading || !currentItem)
     return (
-      <div className="absolute inset-0 flex items-center justify-center bg-white bg-opacity-60 z-10">
-        <Loader />
+      <div className="absolute inset-0 flex items-center justify-center bg-white/60 dark:bg-gray-900/60 z-10">
+        <Loader className="text-gray-900 dark:text-white" />
       </div>
     );
 
   return (
     <>
       <Header />
-      <div className="max-w-5xl mx-auto p-6 mt-1 bg-white rounded-lg shadow-md">
+      <div className="max-w-5xl mx-auto p-6 mt-1 bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-gray-100 rounded-lg shadow-md transition-colors duration-300">
         <div className="flex items-center gap-2 mb-4">
           <ArrowLeft
             size={20}
-            className="text-gray-500 hover:text-gray-700 cursor-pointer"
+            className="text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200 cursor-pointer transition-colors duration-200"
             onClick={() => navigate(-1)}
           />
-          <h2 className="text-2xl font-semibold">
+          <h2 className="text-2xl font-semibold truncate">
             {currentItem.customId || `Item ${currentItem.id}`}
           </h2>
         </div>
 
-        <div className="flex w-full justify-between items-center gap-2 mb-4 pb-3 rounded-lg border-b border-gray-300">
+        <div className="flex w-full justify-between items-center gap-2 mb-4 pb-3 rounded-lg border-b border-gray-300 dark:border-gray-600">
           {user && (
             <LikeButton
               itemId={currentItem.id}

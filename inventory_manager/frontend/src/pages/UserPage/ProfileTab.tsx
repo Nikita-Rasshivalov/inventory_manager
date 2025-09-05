@@ -11,7 +11,7 @@ const ProfileTab = ({ user }: ProfileTabProps) => {
   const isCurrentUser = currentUser?.id === user.id;
 
   return (
-    <div className="flex flex-col mt-4 pb-2 md:flex-row items-center gap-6">
+    <div className="flex flex-col mt-4 pb-2 md:flex-row items-center gap-6 transition-colors duration-300">
       {isCurrentUser ? (
         <AvatarUploader currentUrl={user.imageUrl || ""} />
       ) : (
@@ -25,8 +25,10 @@ const ProfileTab = ({ user }: ProfileTabProps) => {
       )}
 
       <div className="flex-1">
-        <h2 className="text-2xl font-bold mb-4">{user.name}</h2>
-        <div className="space-y-3 text-gray-700">
+        <h2 className="text-2xl font-bold mb-4 text-gray-900 dark:text-gray-100">
+          {user.name}
+        </h2>
+        <div className="space-y-3 text-gray-700 dark:text-gray-300">
           <p>
             <span className="font-semibold">Email:</span> {user.email}
           </p>

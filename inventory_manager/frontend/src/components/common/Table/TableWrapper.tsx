@@ -1,8 +1,8 @@
 import React from "react";
 import { ChevronLeft, ChevronRight, Loader } from "lucide-react";
-import { Button } from "@headlessui/react";
 import { getPageNumbers } from "../../../utils/pagination";
 import { PageItem } from "./PageItem";
+import Button from "../Button";
 
 interface TableWrapperProps {
   page: number;
@@ -21,12 +21,12 @@ export const TableWrapper: React.FC<TableWrapperProps> = ({
 }) => {
   return (
     <>
-      <div className="relative overflow-x-auto border border-gray-300/70 rounded-lg">
+      <div className="relative overflow-x-auto border border-gray-300/70 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 transition-colors duration-300">
         {children}
 
         {loading && (
-          <div className="absolute inset-0 flex items-center justify-center bg-white bg-opacity-60 z-10">
-            <Loader />
+          <div className="absolute inset-0 flex items-center justify-center bg-white dark:bg-gray-900 bg-opacity-60 dark:bg-opacity-60 z-10">
+            <Loader className="text-gray-700 dark:text-gray-200" />
           </div>
         )}
       </div>
@@ -35,7 +35,7 @@ export const TableWrapper: React.FC<TableWrapperProps> = ({
           <Button
             onClick={() => onPageChange(page - 1)}
             disabled={page === 1}
-            className="px-3 py-1 rounded bg-gray-200 disabled:opacity-50"
+            className="px-3 py-1 rounded text-gray-900 dark:text-gray-200 disabled:opacity-50 transition-colors duration-200"
           >
             <ChevronLeft size={18} />
           </Button>
@@ -47,7 +47,7 @@ export const TableWrapper: React.FC<TableWrapperProps> = ({
           <Button
             onClick={() => onPageChange(page + 1)}
             disabled={page === totalPages}
-            className="px-3 py-1 rounded bg-gray-200 disabled:opacity-50"
+            className="px-3 py-1 rounded text-gray-900 dark:text-gray-200 disabled:opacity-50 transition-colors duration-200"
           >
             <ChevronRight size={18} />
           </Button>

@@ -84,7 +84,6 @@ export class InventoryService {
   async getByIdForUser(id: number, userId: number) {
     const user = await prisma.user.findUnique({ where: { id: userId } });
     if (!user) throw new Error("User not found");
-
     if (user.role === SystemRole.ADMIN) {
       return this.findInventoryById(id, true);
     } else {

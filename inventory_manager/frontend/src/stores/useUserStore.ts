@@ -13,6 +13,7 @@ interface UserStore {
   setSearch: (search: string) => void;
   uploadProfilePhoto: (file: File) => Promise<User | null>;
   getById: (userId: number) => Promise<User | null>;
+  updateTheme: (theme: "light" | "dark") => Promise<User | null>;
 }
 
 export const useUserStore = create<UserStore>((set, get) => ({
@@ -62,6 +63,21 @@ export const useUserStore = create<UserStore>((set, get) => ({
       return user;
     } catch (err: any) {
       set({ error: err.message || "Failed to fetch user" });
+      return null;
+    } finally {
+      set({ loading: false });
+    }
+  },
+
+  updateTheme: async (theme: "light" | "dark") => {
+    set({ loading: true, error: null });
+    try {
+      if (!get().currentUser) throw new Error("No current user");
+      const updatedUser = await UserService.updateTheme(theme);
+      set({ currentUser: updatedUser });
+      return updatedUser;
+    } catch (err: any) {
+      set({ error: err.message || "Failed to update theme" });
       return null;
     } finally {
       set({ loading: false });

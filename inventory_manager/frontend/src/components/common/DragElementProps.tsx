@@ -18,7 +18,8 @@ const DragElement: React.FC<DragElementProps> = ({
 }) => {
   return (
     <div
-      className="flex items-center justify-between p-3 bg-white rounded-md shadow-sm"
+      className="bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 rounded-lg shadow-sm p-3 mb-2 transition-colors duration-200 hover:bg-gray-100 dark:hover:bg-gray-600
+      flex items-center justify-between p-3 bg-white rounded-md shadow-sm"
       ref={provided.innerRef}
       {...provided.draggableProps}
       {...provided.dragHandleProps}

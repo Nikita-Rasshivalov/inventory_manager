@@ -49,15 +49,19 @@ export const Table = <T,>({
   const rows = table.getRowModel().rows;
 
   if (rows.length === 0) {
-    return <div className="w-full text-center py-6 text-gray-500">No data</div>;
+    return (
+      <div className="w-full text-center py-6 text-gray-500 dark:text-gray-400">
+        No data
+      </div>
+    );
   }
 
   const emptyRowsCount = limit ? limit - rows.length : 0;
 
   return (
-    <table className="min-w-full divide-y divide-gray-200">
+    <table className="min-w-full divide-y divide-gray-200 dark:divide-gray-600">
       {renderHeader && renderHeader(table)}
-      <tbody className="divide-y divide-gray-200 bg-white">
+      <tbody className="divide-y divide-gray-200 dark:divide-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-200 transition-colors duration-300">
         {renderRow && rows.map((row, idx) => renderRow(row, table, idx))}
       </tbody>
 

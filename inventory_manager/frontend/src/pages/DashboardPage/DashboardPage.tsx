@@ -14,18 +14,20 @@ const DashboardPage = () => {
 
   return (
     <>
-      <Header />
-      <div className="mt-6 grid grid-cols-1 md:grid-cols-2 gap-6">
-        <LatestInventoriesTable
-          inventories={latest}
-          loading={loading}
-          onClick={handleClick}
-        />
-        <TopInventoriesTable
-          inventories={top}
-          loading={loading}
-          onClick={handleClick}
-        />
+      <div className="flex flex-col dark:bg-gray-500 min-h-screen">
+        <Header />
+        <div className="flex-1 mt-6 grid grid-cols-1 md:grid-cols-2 gap-6 p-4">
+          <LatestInventoriesTable
+            inventories={latest}
+            loading={loading}
+            onClick={handleClick}
+          />
+          <TopInventoriesTable
+            inventories={top}
+            loading={loading}
+            onClick={handleClick}
+          />
+        </div>
       </div>
     </>
   );

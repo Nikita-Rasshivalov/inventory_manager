@@ -6,6 +6,7 @@ import { useInventoryStore } from "../stores/useInventoryStore";
 import Header from "../components/layout/Header";
 import { useAuthStore } from "../stores/useAuthStore";
 import { InventoryRole, SystemRole } from "../models/models";
+import Button from "../components/common/Button";
 
 const InventoryItemPage = () => {
   const { inventoryId } = useParams<{ inventoryId: string }>();
@@ -58,18 +59,18 @@ const InventoryItemPage = () => {
   return (
     <>
       <Header />
-      <div className="max-w-5xl mx-auto px-0 sm:px-6 py-0 pt-8 bg-white rounded-lg shadow-md">
+      <div className="max-w-5xl mx-auto mt-2 px-0 sm:px-6 py-0 pt-8 bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-gray-100 rounded-lg shadow-md transition-colors duration-300">
         <div className="flex items-center justify-between px-4 mb-6">
           <div className="flex items-center gap-2">
             <ArrowLeft
               size={20}
-              className="text-gray-500 hover:text-gray-700 cursor-pointer"
+              className="text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200 cursor-pointer transition-colors duration-200"
               onClick={() => navigate(-1)}
             />
 
             {isEditingTitle && canEdit ? (
               <input
-                className="border rounded px-2 py-1 text-xl font-semibold"
+                className="border rounded px-2 py-1 text-xl font-semibold bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 transition-colors duration-200"
                 value={titleDraft}
                 onChange={(e) => setTitleDraft(e.target.value)}
                 onBlur={handleSaveTitle}
@@ -82,7 +83,7 @@ const InventoryItemPage = () => {
                 {canEdit && (
                   <Pencil
                     size={20}
-                    className="text-gray-400 hover:text-gray-600 cursor-pointer"
+                    className="text-gray-400 dark:text-gray-500 hover:text-gray-600 dark:hover:text-gray-200 cursor-pointer transition-colors duration-200"
                     onClick={() => setIsEditingTitle(true)}
                   />
                 )}
@@ -97,15 +98,15 @@ const InventoryItemPage = () => {
                   type="checkbox"
                   checked={isPublicDraft}
                   onChange={(e) => setIsPublicDraft(e.target.checked)}
-                  className="h-5 w-5 cursor-pointer"
+                  className="h-5 w-5 cursor-pointer accent-blue-600"
                   autoFocus
                 />
-                <button
+                <Button
                   onClick={handleSavePublic}
-                  className="ml-1 text-gray-600 hover:text-gray-800 font-medium"
+                  className="ml-1 bg-transparent text-gray-600 dark:text-gray-300 hover:text-gray-800 dark:hover:text-gray-100 font-medium transition-colors duration-200"
                 >
                   <Save />
-                </button>
+                </Button>
               </>
             ) : (
               <>
@@ -114,12 +115,12 @@ const InventoryItemPage = () => {
                   type="checkbox"
                   checked={isPublicDraft}
                   readOnly
-                  className="h-5 w-5 cursor-not-allowed"
+                  className="h-5 w-5 cursor-not-allowed accent-blue-600"
                 />
                 {canEdit && (
                   <Pencil
                     size={16}
-                    className="text-gray-400 hover:text-gray-600 cursor-pointer ml-1"
+                    className="text-gray-400 dark:text-gray-500 hover:text-gray-600 dark:hover:text-gray-200 cursor-pointer ml-1 transition-colors duration-200"
                     onClick={() => setIsEditingPublic(true)}
                   />
                 )}

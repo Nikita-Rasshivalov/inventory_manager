@@ -30,4 +30,9 @@ export class UserApi {
     const res = await axiosInstance.get<User>(`/users/${userId}`);
     return res.data;
   }
+
+  static async updateTheme(theme: "light" | "dark"): Promise<User> {
+    const res = await axiosInstance.post<User>("/users/theme", { theme });
+    return res.data;
+  }
 }

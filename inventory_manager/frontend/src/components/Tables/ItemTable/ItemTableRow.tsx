@@ -20,7 +20,7 @@ const ItemTableRow: React.FC<ItemTableRowProps> = ({ rows, page, limit }) => {
       {rows.map((row, idx) => (
         <tr
           key={row.original?.id ?? idx}
-          className="hover:bg-gray-50 cursor-pointer"
+          className="cursor-pointer bg-white dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors duration-200"
           onClick={() =>
             handleRowClick(row.original.id, row.original.inventoryId)
           }

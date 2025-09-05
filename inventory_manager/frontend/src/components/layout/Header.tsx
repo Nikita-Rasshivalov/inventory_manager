@@ -1,6 +1,7 @@
-import { useAuth } from "../../hooks/useAuth";
-import { LogOut, User, Home } from "lucide-react";
 import { useNavigate } from "react-router-dom";
+import { LogOut, User, Home } from "lucide-react";
+import { useAuth } from "../../hooks/useAuth";
+import ThemeToggle from "./ThemeToggle";
 
 const Header = () => {
   const { user, logout } = useAuth();
@@ -20,6 +21,8 @@ const Header = () => {
         >
           <Home className="w-5 h-5 sm:w-6 sm:h-6 text-white hover:text-yellow-400" />
         </button>
+
+        <ThemeToggle />
 
         {user ? (
           <>

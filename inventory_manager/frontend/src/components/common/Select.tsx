@@ -9,10 +9,12 @@ const Select = forwardRef<HTMLSelectElement, SelectProps>(
     <select
       ref={ref}
       {...props}
-      className={`w-full border border-gray-300 rounded-md 
+      className={`w-full border border-gray-300 rounded-md
         px-2 py-1 text-xs text-gray-700
         bg-gray-200 placeholder-gray-400
         focus:outline-none focus:ring-1 focus:border-gray-400
+        dark:bg-gray-700 dark:text-gray-100 dark:placeholder-gray-400 dark:border-gray-600
+        dark:focus:border-gray-500
         transition duration-200 ease-in-out
         ${className || ""}`}
     >

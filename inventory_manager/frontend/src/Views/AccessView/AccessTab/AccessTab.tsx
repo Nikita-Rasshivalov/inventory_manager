@@ -53,7 +53,7 @@ export const AccessTab: React.FC<AccessTabProps> = ({
         updateInventory={handleUpdateMembers}
         search={search}
       />
-      <div className="border border-gray-200 rounded bg-white w-full overflow-auto">
+      <div className="border border-gray-200 dark:border-gray-600 rounded bg-white dark:bg-gray-800 w-full overflow-auto transition-colors duration-200">
         <MembersTable
           inventoryId={inventoryId}
           members={members}

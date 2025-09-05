@@ -64,9 +64,13 @@ export const CustomIdControls = ({
 
   return (
     <div className="space-y-4">
-      <div className="p-4 rounded-md bg-gray-50">
-        <h3 className="text-lg font-medium">Live Example:</h3>
-        <div className="text-xl text-gray-700">{liveExample}</div>
+      <div className="p-4 rounded-md bg-gray-50 dark:bg-gray-800 transition-colors duration-200">
+        <h3 className="text-lg font-medium text-gray-900 dark:text-gray-100">
+          Live Example:
+        </h3>
+        <div className="text-xl text-gray-700 dark:text-gray-200">
+          {liveExample}
+        </div>
       </div>
 
       <div className="flex flex-col gap-2 w-full">
@@ -81,14 +85,14 @@ export const CustomIdControls = ({
             type="text"
             value={fixedTextValue}
             onChange={(e) => setFixedTextValue(e.target.value)}
-            className="border rounded px-2 py-2 text-sm min-[425px]:h-8"
+            className="border rounded px-2 py-2 text-sm min-[425px]:h-8 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 border-gray-300 dark:border-gray-600 transition-colors duration-200"
           />
         )}
 
         <div className="flex flex-1 items-center gap-3">
           <Button
             onClick={handleAddElement}
-            className="flex-1 items-center justify-center"
+            className="flex-1 items-center justify-center bg-gray-600 hover:bg-gray-700 dark:bg-gray-500 dark:hover:bg-gray-600 text-white dark:text-gray-100 transition-colors duration-200"
           >
             <Plus size={20} />
           </Button>
@@ -96,7 +100,7 @@ export const CustomIdControls = ({
           <Button
             onClick={handleSave}
             disabled={isSaving}
-            className="flex-1 items-center justify-center bg-gray-600 hover:bg-gray-700 text-white disabled:bg-black-300"
+            className="flex-1 items-center justify-center bg-blue-600 hover:bg-blue-700 dark:bg-blue-500 dark:hover:bg-blue-600 text-white dark:text-gray-100 disabled:bg-gray-400 dark:disabled:bg-gray-600 transition-colors duration-200"
           >
             <Save size={20} />
           </Button>
