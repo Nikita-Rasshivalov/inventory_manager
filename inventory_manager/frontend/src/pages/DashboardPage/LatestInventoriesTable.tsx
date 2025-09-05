@@ -2,14 +2,18 @@ import { Loader2 } from "lucide-react";
 import { Inventory } from "../../models/models";
 
 interface Props {
-  inventories: Inventory[];
+  inventories?: Inventory[];
   loading: boolean;
   onClick: (id: number, title: string) => void;
 }
 
-const LatestInventoriesTable = ({ inventories, loading, onClick }: Props) => {
+const LatestInventoriesTable = ({
+  inventories = [],
+  loading,
+  onClick,
+}: Props) => {
   return (
-    <div className="bg-white dark:bg-gray-800  h-[50vh] shadow-md rounded-lg p-4">
+    <div className="bg-white dark:bg-gray-800 h-[50vh] shadow-md rounded-lg p-4">
       <h2 className="text-lg font-semibold text-gray-800 dark:text-gray-100 mb-3">
         Latest Inventories
       </h2>
@@ -19,7 +23,12 @@ const LatestInventoriesTable = ({ inventories, loading, onClick }: Props) => {
           <Loader2 className="animate-spin w-6 h-6 text-gray-500 dark:text-gray-200" />
         </div>
       ) : inventories.length === 0 ? (
-        <p className="text-gray-400 dark:text-gray-300">No inventories found</p>
+        <div className="flex flex-col items-center justify-center py-10">
+          <p className="text-gray-400 dark:text-gray-300 mb-2">
+            No inventories found
+          </p>
+          <div className="w-16 h-16 bg-gray-200 dark:bg-gray-700 rounded-full"></div>
+        </div>
       ) : (
         <div className="overflow-x-auto h-[40vh]">
           <table className="w-full min-w-[500px] text-sm text-left border border-gray-200 dark:border-gray-700 rounded-md overflow-hidden">
