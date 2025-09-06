@@ -3,6 +3,7 @@ import { useAuth } from "../../hooks/useAuth";
 import Input from "../common/Input";
 import Button from "../common/Button";
 import { isEmpty, isNullOrEmpty } from "../../utils/validators";
+import { useTranslation } from "react-i18next";
 
 interface LoginFormProps {
   onError: (msg: string) => void;
@@ -15,6 +16,7 @@ const LoginForm: React.FC<LoginFormProps> = ({
   loading,
   setLoading,
 }) => {
+  const { t } = useTranslation();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const { login } = useAuth();
@@ -24,7 +26,7 @@ const LoginForm: React.FC<LoginFormProps> = ({
     onError("");
 
     if (isNullOrEmpty(email) || isEmpty(password)) {
-      onError("Please fill in both email and password.");
+      onError(t("fill_email_password"));
       return;
     }
 
@@ -32,7 +34,7 @@ const LoginForm: React.FC<LoginFormProps> = ({
     try {
       await login(email, password);
     } catch (err: any) {
-      onError(err.response?.data?.error || err.message || "Login failed");
+      onError(err.response?.data?.error || err.message || t("login"));
     } finally {
       setLoading(false);
     }
@@ -42,7 +44,7 @@ const LoginForm: React.FC<LoginFormProps> = ({
     <form onSubmit={handleSubmit} className="space-y-4" noValidate>
       <Input
         type="email"
-        placeholder="Email"
+        placeholder={t("email")}
         required
         value={email}
         onChange={(e) => setEmail(e.target.value)}
@@ -50,7 +52,7 @@ const LoginForm: React.FC<LoginFormProps> = ({
       />
       <Input
         type="password"
-        placeholder="Password"
+        placeholder={t("password")}
         required
         value={password}
         onChange={(e) => setPassword(e.target.value)}
@@ -58,10 +60,10 @@ const LoginForm: React.FC<LoginFormProps> = ({
       />
       <Button
         type="submit"
-        className=" bg-gray-700  w-full py-3 text-lg font-medium"
+        className="bg-gray-700 w-full py-3 text-lg font-medium"
         loading={loading}
       >
-        {loading ? "Logging in..." : "Login"}
+        {loading ? t("logging_in") : t("login")}
       </Button>
     </form>
   );

@@ -8,10 +8,12 @@ import { useInventoryStore } from "../../stores/useInventoryStore";
 import InventoryTable from "../../components/Tables/InventoryTable/InventoryTable";
 import { useDebounce } from "../../hooks/useDebounce";
 import { useAuth } from "../../hooks/useAuth";
+import { useTranslation } from "react-i18next";
 
 const debounceTime = 400;
 
 const InventoryPage = () => {
+  const { t } = useTranslation();
   const { createInventory, deleteInventories } = useInventoryActions();
   const { user } = useAuth();
   const {
@@ -116,12 +118,12 @@ const InventoryPage = () => {
 
       {isModalOpen && (
         <GenericModal
-          title="Create Inventory"
+          title={t("create_inventory")}
           fields={[
-            { name: "title", label: "Title" },
+            { name: "title", label: t("title") },
             {
               name: "isPublic",
-              label: "Public",
+              label: t("public"),
               type: "checkbox",
               initialBooleanValue: false,
             },

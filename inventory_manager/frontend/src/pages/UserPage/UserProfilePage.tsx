@@ -8,13 +8,14 @@ import { useUserStore } from "../../stores/useUserStore";
 import { User } from "../../models/models";
 import InventoryPage from "../InventoryPage/InventoryPage";
 import { Loader } from "lucide-react";
+import { useTranslation } from "react-i18next";
 
 enum ProfileTabs {
-  PROFILE = "Profile",
-  INVENTORIES = "Inventories",
+  PROFILE = "profile_tab",
+  INVENTORIES = "inventories_tab",
 }
-
 const UserProfilePage = () => {
+  const { t } = useTranslation();
   const { user: currentUser } = useAuth();
   const { userId } = useParams<{ userId: string }>();
   const getById = useUserStore((state) => state.getById);
@@ -57,7 +58,7 @@ const UserProfilePage = () => {
   if (!user) {
     return (
       <div className="p-6 text-center text-gray-900 dark:text-gray-200">
-        User not found.
+        {t("user_not_found")}
       </div>
     );
   }
@@ -78,7 +79,7 @@ const UserProfilePage = () => {
                   : "bg-gray-200 text-gray-900 dark:bg-gray-700 dark:hover:bg-gray-600 dark:text-gray-200 hover:bg-gray-300"
               }`}
             >
-              {tab}
+              {t(tab)}
             </Button>
           ))}
         </div>

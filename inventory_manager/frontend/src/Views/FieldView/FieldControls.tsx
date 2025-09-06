@@ -4,6 +4,7 @@ import Input from "../../components/common/Input";
 import SelectWithTooltip from "../../components/common/SelectWithTooltip";
 import { fieldOptions } from "./fieldOptions";
 import { Save } from "lucide-react";
+import { useTranslation } from "react-i18next";
 
 interface FieldControlsProps {
   newType: string;
@@ -21,6 +22,7 @@ export const FieldControls: React.FC<FieldControlsProps> = ({
   onAdd,
 }) => {
   const [isSaving, setIsSaving] = useState(false);
+  const { t } = useTranslation();
 
   const handleAdd = async () => {
     if (isSaving) return;
@@ -42,7 +44,7 @@ export const FieldControls: React.FC<FieldControlsProps> = ({
       <Input
         type="text"
         value={name}
-        placeholder="Field name"
+        placeholder={t("placeholder_field_name")}
         onChange={(e) => setName(e.target.value)}
         className="border rounded px-2 py-2 text-sm min-[425px]:h-8 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 border-gray-300 dark:border-gray-600 transition-colors duration-200"
       />
@@ -52,7 +54,6 @@ export const FieldControls: React.FC<FieldControlsProps> = ({
         className="w-full min-[425px]:h-8 disabled:bg-gray-400 bg-blue-600 hover:bg-blue-700 dark:bg-blue-500 dark:hover:bg-blue-600 text-white dark:text-gray-100 transition-colors duration-200 flex items-center justify-center gap-2"
       >
         <Save size={16} />
-        Add Field
       </Button>
     </div>
   );

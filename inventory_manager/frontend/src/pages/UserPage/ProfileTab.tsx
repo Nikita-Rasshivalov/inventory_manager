@@ -1,6 +1,7 @@
 import AvatarUploader from "./AvatarUploader";
 import { User } from "../../models/models";
 import { useAuth } from "../../hooks/useAuth";
+import { useTranslation } from "react-i18next";
 
 interface ProfileTabProps {
   user: User;
@@ -9,6 +10,7 @@ interface ProfileTabProps {
 const ProfileTab = ({ user }: ProfileTabProps) => {
   const { user: currentUser } = useAuth();
   const isCurrentUser = currentUser?.id === user.id;
+  const { t } = useTranslation();
 
   return (
     <div className="flex flex-col mt-4 pb-2 md:flex-row items-center gap-6 transition-colors duration-300">
@@ -30,10 +32,11 @@ const ProfileTab = ({ user }: ProfileTabProps) => {
         </h2>
         <div className="space-y-3 text-gray-700 dark:text-gray-300">
           <p>
-            <span className="font-semibold">Email:</span> {user.email}
+            <span className="font-semibold">{t("email_label")}</span>{" "}
+            {user.email}
           </p>
           <p>
-            <span className="font-semibold">System Role:</span>
+            <span className="font-semibold">{t("system_role_label")}</span>{" "}
             {user.role || "-"}
           </p>
         </div>

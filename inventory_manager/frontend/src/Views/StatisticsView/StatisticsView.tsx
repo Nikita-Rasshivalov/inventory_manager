@@ -1,5 +1,6 @@
 import { useMemo } from "react";
 import { Item } from "../../models/models";
+import { useTranslation } from "react-i18next";
 
 interface StatisticsViewProps {
   items: Item[];
@@ -14,6 +15,7 @@ const EXCLUDED_FIELDS = [
 ];
 
 const StatisticsView: React.FC<StatisticsViewProps> = ({ items }) => {
+  const { t } = useTranslation();
   const stats = useMemo(() => {
     if (!items.length) return null;
 
@@ -58,23 +60,24 @@ const StatisticsView: React.FC<StatisticsViewProps> = ({ items }) => {
   }, [items]);
 
   if (!stats) {
-    return (
-      <p className="text-gray-500 dark:text-gray-400">No data available</p>
-    );
+    return <p className="text-gray-500 dark:text-gray-400">{t("no_data")}</p>;
   }
 
   return (
     <div className="p-6 bg-gray-50 dark:bg-gray-800 text-gray-900 dark:text-gray-100 rounded-lg shadow-sm transition-colors duration-300">
-      <h2 className="text-xl font-semibold mb-4">Statistics</h2>
-      <p className="mb-4">Total items: {stats.total}</p>
+      <h2 className="text-xl font-semibold mb-4">{t("statistics")}</h2>
+      <p className="mb-4">
+        {t("total_items")} {stats.total}
+      </p>
 
       {stats.numericStats.length > 0 && (
         <div className="mb-6">
-          <h3 className="text-lg font-medium mb-2">Numeric fields</h3>
+          <h3 className="text-lg font-medium mb-2">{t("numeric_fields")}</h3>
           <ul className="space-y-1">
             {stats.numericStats.map((s) => (
               <li key={s.field} className="text-gray-700 dark:text-gray-200">
-                <strong>{s.field}:</strong> min {s.min}, max {s.max}, avg{" "}
+                <strong>{s.field}:</strong> {t("min")} {s.min}, {t("max")}{" "}
+                {s.max}, {t("avg")} {s.avg}
                 {s.avg}
               </li>
             ))}
@@ -84,12 +87,12 @@ const StatisticsView: React.FC<StatisticsViewProps> = ({ items }) => {
 
       {stats.stringStats.length > 0 && (
         <div>
-          <h3 className="text-lg font-medium mb-2">String fields</h3>
+          <h3 className="text-lg font-medium mb-2">{t("string_fields")}</h3>
           <ul className="space-y-1">
             {stats.stringStats.map((s) => (
               <li key={s.field} className="text-gray-700 dark:text-gray-200">
-                <strong>{s.field}:</strong> most frequent «{s.mostUsed}» (
-                {s.count} times)
+                <strong>{s.field}:</strong> {t("most_frequent")} «{s.mostUsed}»
+                ({s.count} {t("times")})
               </li>
             ))}
           </ul>

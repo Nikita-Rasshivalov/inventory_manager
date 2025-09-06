@@ -3,6 +3,7 @@ import { useAuth } from "../../hooks/useAuth";
 import { isNullOrEmpty, isValidEmail } from "../../utils/validators";
 import Button from "../common/Button";
 import Input from "../common/Input";
+import { useTranslation } from "react-i18next";
 
 interface RegisterFormProps {
   onError: (msg: string) => void;
@@ -15,6 +16,7 @@ const RegisterForm: React.FC<RegisterFormProps> = ({
   loading,
   setLoading,
 }) => {
+  const { t } = useTranslation();
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -26,13 +28,13 @@ const RegisterForm: React.FC<RegisterFormProps> = ({
     setLoading(true);
 
     if (isNullOrEmpty(name)) {
-      onError("Please fill name.");
+      onError(t("fill_name"));
       setLoading(false);
       return;
     }
 
     if (!isValidEmail(email)) {
-      onError("Email must contain '@' and a domain like user@example.com");
+      onError(t("invalid_email"));
       setLoading(false);
       return;
     }
@@ -41,7 +43,7 @@ const RegisterForm: React.FC<RegisterFormProps> = ({
       await register(name, email, password);
     } catch (err: any) {
       onError(
-        err.response?.data?.error || err.message || "Registration failed"
+        err.response?.data?.error || err.message || t("registration_failed")
       );
     } finally {
       setLoading(false);
@@ -51,7 +53,7 @@ const RegisterForm: React.FC<RegisterFormProps> = ({
   return (
     <form onSubmit={handleSubmit} className="space-y-4" noValidate>
       <Input
-        placeholder="Name"
+        placeholder={t("name")}
         required
         value={name}
         onChange={(e) => setName(e.target.value)}
@@ -59,7 +61,7 @@ const RegisterForm: React.FC<RegisterFormProps> = ({
       />
       <Input
         type="email"
-        placeholder="Email"
+        placeholder={t("email")}
         required
         value={email}
         onChange={(e) => setEmail(e.target.value)}
@@ -67,7 +69,7 @@ const RegisterForm: React.FC<RegisterFormProps> = ({
       />
       <Input
         type="password"
-        placeholder="Password"
+        placeholder={t("password")}
         required
         value={password}
         onChange={(e) => setPassword(e.target.value)}
@@ -78,7 +80,7 @@ const RegisterForm: React.FC<RegisterFormProps> = ({
         className="bg-gray-700 w-full py-3 text-lg font-medium"
         loading={loading}
       >
-        {loading ? "Registering..." : "Register"}
+        {loading ? t("registering") : t("register")}
       </Button>
     </form>
   );

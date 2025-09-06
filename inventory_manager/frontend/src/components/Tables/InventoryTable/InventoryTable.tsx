@@ -5,6 +5,7 @@ import { Table } from "../../common/Table/Table";
 import { getInventoryColumns } from "./columns";
 import TableHeader from "../../common/Table/TableHeader";
 import InventoryTableRow from "./InventoryTableRow";
+import { useTranslation } from "react-i18next";
 
 interface InventoryTableProps {
   inventories: Inventory[];
@@ -34,6 +35,7 @@ const InventoryTable: React.FC<InventoryTableProps> = ({
   setSorting,
   showCheckboxes,
 }) => {
+  const { t } = useTranslation();
   return (
     <TableWrapper
       page={page}
@@ -48,7 +50,8 @@ const InventoryTable: React.FC<InventoryTableProps> = ({
           inventories,
           selectedIds,
           toggleSelect,
-          showCheckboxes
+          showCheckboxes,
+          t
         )}
         onSortChange={(sortBy, sortOrder) => setSorting({ sortBy, sortOrder })}
         renderHeader={(table) => (

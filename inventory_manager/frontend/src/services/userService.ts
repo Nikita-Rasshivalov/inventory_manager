@@ -11,7 +11,4 @@ export const UserService = {
   getById: async (userId: number): Promise<User> => {
     return await UserApi.getById(userId);
   },
-  updateTheme: async (theme: "light" | "dark"): Promise<User> => {
-    return await UserApi.updateTheme(theme);
-  },
 };

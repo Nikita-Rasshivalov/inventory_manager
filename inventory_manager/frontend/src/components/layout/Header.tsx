@@ -2,15 +2,18 @@ import { useNavigate } from "react-router-dom";
 import { LogOut, User, Home } from "lucide-react";
 import { useAuth } from "../../hooks/useAuth";
 import ThemeToggle from "./ThemeToggle";
+import LanguageSwitcher from "./LanguageSwitcher";
+import { useTranslation } from "react-i18next";
 
 const Header = () => {
   const { user, logout } = useAuth();
   const navigate = useNavigate();
+  const { t } = useTranslation();
 
   return (
     <header className="bg-gray-900 text-white flex justify-between items-center px-4 sm:px-6 py-3 sm:py-4 shadow-md">
-      <div className="text-[15px] sm:text-2xl font-extrabold tracking-wide truncate">
-        Inventory Manager
+      <div className="text-[15px] sm:text-2xl font-extrabold tracking-wide break-words">
+        {t("app_name")}
       </div>
 
       <div className="flex items-center gap-4">
@@ -52,6 +55,8 @@ const Header = () => {
           </button>
         )}
       </div>
+
+      <LanguageSwitcher />
     </header>
   );
 };

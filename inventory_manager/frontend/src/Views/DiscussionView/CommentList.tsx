@@ -2,6 +2,7 @@ import { useEffect, useRef } from "react";
 import { Trash } from "lucide-react";
 import { Comment, User } from "../../models/models";
 import { Link } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 
 interface CommentListProps {
   comments: Comment[];
@@ -12,6 +13,7 @@ interface CommentListProps {
 
 const CommentList = ({ comments, currentUser, onDelete }: CommentListProps) => {
   const containerRef = useRef<HTMLDivElement>(null);
+  const { t } = useTranslation();
 
   useEffect(() => {
     if (containerRef.current) {
@@ -27,7 +29,7 @@ const CommentList = ({ comments, currentUser, onDelete }: CommentListProps) => {
     >
       {comments.length === 0 ? (
         <div className="text-center text-gray-400 dark:text-gray-500 py-10">
-          No comments yet. Be the first!
+          {t("no_comments")}
         </div>
       ) : (
         <div className="space-y-4">

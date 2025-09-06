@@ -21,7 +21,6 @@ export class User {
   email: string;
   role: SystemRole;
   imageUrl: string;
-  theme: string;
 
   constructor(data: any) {
     this.id = data.id;
@@ -29,7 +28,6 @@ export class User {
     this.email = data.email;
     this.role = data.role || SystemRole.USER;
     this.imageUrl = data.imageUrl;
-    this.theme = data.theme;
   }
 }
 

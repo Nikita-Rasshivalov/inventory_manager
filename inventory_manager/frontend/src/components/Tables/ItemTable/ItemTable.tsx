@@ -5,6 +5,7 @@ import { TableWrapper } from "../../common/Table/TableWrapper";
 import { getItemColumns } from "./columns";
 import ItemTableRow from "./ItemTableRow";
 import { Table } from "../../common/Table/Table";
+import { useTranslation } from "react-i18next";
 
 interface ItemTableProps {
   items: Item[];
@@ -34,6 +35,7 @@ const ItemTable: React.FC<ItemTableProps> = ({
   setSorting,
   showCheckboxes,
 }) => {
+  const { t } = useTranslation();
   return (
     <TableWrapper
       page={page}
@@ -47,7 +49,8 @@ const ItemTable: React.FC<ItemTableProps> = ({
           items,
           selectedIds,
           toggleSelect,
-          showCheckboxes
+          showCheckboxes,
+          t
         )}
         initialSorting={[{ id: "createdAt", desc: true }]}
         onSortChange={(sortBy: any, sortOrder: any) =>

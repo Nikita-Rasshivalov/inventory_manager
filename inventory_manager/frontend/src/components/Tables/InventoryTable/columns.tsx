@@ -6,7 +6,8 @@ export const getInventoryColumns = (
   inventories: Inventory[],
   selectedIds: number[],
   toggleSelect: (id: number) => void,
-  showCheckboxes: boolean = true
+  showCheckboxes: boolean = true,
+  t: (key: string) => string
 ): ColumnDef<Inventory>[] => {
   const columns: ColumnDef<Inventory>[] = [];
 
@@ -62,19 +63,19 @@ export const getInventoryColumns = (
     },
     {
       accessorKey: "title",
-      header: "Title",
+      header: t("column_title"),
       enableSorting: false,
     },
     {
       accessorFn: (row) => row.owner?.name,
       id: "owner",
-      header: "Created by",
+      header: t("column_owner"),
       enableSorting: true,
     },
     {
       accessorFn: (row) => row.members.length,
       id: "members",
-      header: "Members",
+      header: t("column_members"),
       size: 50,
       minSize: 40,
       maxSize: 80,
@@ -83,7 +84,7 @@ export const getInventoryColumns = (
     {
       accessorFn: (row) => new Date(row.createdAt),
       id: "created",
-      header: "Created",
+      header: t("column_created"),
       enableSorting: true,
       cell: ({ getValue }) => (getValue() as Date).toLocaleDateString(),
     }

@@ -9,12 +9,14 @@ import { elementMapper } from "./elementMapper";
 import { ElementsList } from "../../components/common/ElementsList";
 import { CustomIdControls } from "./CustomIdControls";
 import DragElement from "../../components/common/DragElementProps";
+import { useTranslation } from "react-i18next";
 
 const CustomIdView = ({ inventoryId }: { inventoryId: number }) => {
   const [idElements, setIdElements] = useState<any[]>([]);
   const [liveExample, setLiveExample] = useState<string>("");
   const [newElementType, setNewElementType] = useState<string>("");
   const [fixedTextValue, setFixedTextValue] = useState<string>("");
+  const { t } = useTranslation();
 
   const { customIdTemplate, loadCustomIdTemplate, update, version } =
     useInventoryStore();
@@ -40,10 +42,9 @@ const CustomIdView = ({ inventoryId }: { inventoryId: number }) => {
       toast.error("Failed to save template", err);
     }
   };
-
   return (
     <div className="space-y-6">
-      <h2 className="text-2xl font-semibold">Customize ID Format</h2>
+      <h2 className="text-2xl font-semibold">{t("custom_id_title")}</h2>
       <div className="flex flex-col md:flex-row gap-6">
         <div className="md:w-1/3">
           <CustomIdControls

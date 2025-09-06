@@ -121,7 +121,7 @@ const Toolbar: React.FC<ToolbarProps> = ({
             key={tab}
             onClick={() => onChangeTab(tab)}
             active={activeTab === tab}
-            className={`flex-1 md:flex-none px-4 py-2 rounded-lg text-xs sm:text-sm md:text-[15px] font-medium text-center min-w-[90px] md:min-w-[120px] lg:min-w-[90px] transition-colors duration-200 ${
+            className={`flex-1 md:flex-none px-4 py-2 rounded-lg text-[14px] sm:text-sm md:text-[13px] font-medium text-center min-w-[90px] md:min-w-[120px] lg:min-w-[90px] transition-colors duration-200 ${
               activeTab === tab
                 ? "bg-blue-600 text-white dark:bg-blue-500 dark:hover:bg-blue-400 dark:text-gray-100"
                 : "bg-gray-200 text-gray-900 dark:bg-gray-700 dark:hover:bg-gray-600 dark:text-gray-200 hover:bg-gray-300"

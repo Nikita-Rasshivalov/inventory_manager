@@ -5,19 +5,15 @@ import Socials from "../../components/common/Socials";
 import LoginForm from "../../components/Froms/LoginForm";
 import RegisterForm from "../../components/Froms/RegisterForm";
 import Button from "../../components/common/Button";
+import { useTranslation } from "react-i18next";
 
 const AuthPage = () => {
+  const { t } = useTranslation();
   const [mode, setMode] = useState<"login" | "register">("login");
   const [loading, setLoading] = useState(false);
 
-  const handleModeChange = (newMode: "login" | "register") => {
-    setMode(newMode);
-  };
-
-  const handleError = (message: string) => {
-    if (!message) return;
-    toast.error(message);
-  };
+  const handleModeChange = (newMode: "login" | "register") => setMode(newMode);
+  const handleError = (message: string) => message && toast.error(message);
 
   return (
     <div className="flex flex-col min-h-screen overflow-x-hidden bg-gray-200 dark:bg-gray-900 transition-colors duration-300">
@@ -29,14 +25,14 @@ const AuthPage = () => {
               onClick={() => handleModeChange("register")}
               active={mode === "register"}
             >
-              Sign Up
+              {t("sign_up")}
             </Button>
 
             <Button
               onClick={() => handleModeChange("login")}
               active={mode === "login"}
             >
-              Sign In
+              {t("sign_in")}
             </Button>
           </div>
 
@@ -56,7 +52,7 @@ const AuthPage = () => {
 
           <div className="mt-5">
             <p className="text-center text-gray-600 dark:text-gray-300 mb-3">
-              Or {mode === "login" ? "sign in" : "sign up"} with
+              {mode === "login" ? t("or_sign_in_with") : t("or_sign_up_with")}
             </p>
             <Socials />
           </div>
@@ -65,5 +61,4 @@ const AuthPage = () => {
     </div>
   );
 };
-
 export default AuthPage;

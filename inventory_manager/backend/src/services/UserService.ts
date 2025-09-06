@@ -22,15 +22,7 @@ export class UserService {
         email: true,
         imageUrl: true,
         role: true,
-        theme: true,
       },
-    });
-  }
-
-  async updateTheme(userId: number, theme: "light" | "dark") {
-    return prisma.user.update({
-      where: { id: userId },
-      data: { theme },
     });
   }
 }

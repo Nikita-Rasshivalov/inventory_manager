@@ -6,12 +6,14 @@ import { useFieldStore } from "../../stores/useFieldStore";
 
 import { mapFieldToOption } from "./filedMapper";
 import DragElement from "../../components/common/DragElementProps";
+import { useTranslation } from "react-i18next";
 
 interface FieldViewProps {
   inventoryId: number;
 }
 
 const FieldView = ({ inventoryId }: FieldViewProps) => {
+  const { t } = useTranslation();
   const {
     fields: storeFields,
     getAll,
@@ -73,7 +75,7 @@ const FieldView = ({ inventoryId }: FieldViewProps) => {
   return (
     <div className="space-y-6">
       <h2 className="text-2xl font-semibold text-gray-900 dark:text-gray-100">
-        Customize Fields
+        {t("customize_fields")}
       </h2>
 
       <div className="flex flex-col md:flex-row gap-6">

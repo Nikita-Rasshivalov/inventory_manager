@@ -16,7 +16,7 @@ const DashboardPage = () => {
     <>
       <div className="flex flex-col dark:bg-gray-500 min-h-screen">
         <Header />
-        <div className="flex-1 mt-6 grid grid-cols-1 md:grid-cols-2 gap-6 p-4">
+        <div className="flex-1 mt-6 grid grid-cols-1 pb-10 sm:pb-0 md:grid-cols-2 gap-6 p-4">
           <LatestInventoriesTable
             inventories={latest}
             loading={loading}

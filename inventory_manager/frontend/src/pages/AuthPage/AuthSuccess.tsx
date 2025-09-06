@@ -21,7 +21,6 @@ const AuthSuccess = () => {
         email: "",
         role: SystemRole.USER,
         imageUrl: "",
-        theme: "light",
       });
     }
     navigate("/dashboard", { replace: true });

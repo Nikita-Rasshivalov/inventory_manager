@@ -14,6 +14,7 @@ import { DiscussionView } from "../../Views/DiscussionView/DiscussionView";
 import { useAuthStore } from "../../stores/useAuthStore";
 import StatisticsView from "../../Views/StatisticsView/StatisticsView";
 import { useDebounce } from "../../hooks/useDebounce";
+import { useTranslation } from "react-i18next";
 
 enum TabId {
   Items = "Items",
@@ -49,6 +50,7 @@ const ItemPage = ({ inventoryId }: { inventoryId: number }) => {
   } = useItemStore();
   const { user } = useAuthStore();
   const { inventoryMembers, updateMembers, getById } = useInventoryStore();
+  const { t } = useTranslation();
 
   const [filterText, setFilterText] = useState("");
   const debouncedFilter = useDebounce(filterText, 300);
@@ -84,12 +86,17 @@ const ItemPage = ({ inventoryId }: { inventoryId: number }) => {
   }, [isAdminOrOwner]);
 
   useEffect(() => {
-    if (!visibleTabs.includes(activeTab)) setActiveTab(TabId.Items);
+    if (!visibleTabs.includes(activeTab)) {
+      if (activeTab !== TabId.CustomId) {
+        setActiveTab(TabId.Items);
+      }
+    }
   }, [activeTab, visibleTabs]);
 
   useEffect(() => {
-    searchParams.set("tab", activeTab);
-    setSearchParams(searchParams, { replace: true });
+    const params = new URLSearchParams(searchParams.toString());
+    params.set("tab", activeTab);
+    setSearchParams(params, { replace: true });
   }, [activeTab, searchParams, setSearchParams]);
 
   useEffect(() => {
@@ -151,7 +158,6 @@ const ItemPage = ({ inventoryId }: { inventoryId: number }) => {
       : inventoryMembers?.length || 0;
 
   const showCheckboxes = isAdminOrOwner;
-
   return (
     <div className="max-w-6xl mx-auto px-6 pt-2 pb-4 bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-gray-100 rounded-lg shadow-md mt-1 transition-colors duration-300">
       <Toolbar
@@ -159,7 +165,7 @@ const ItemPage = ({ inventoryId }: { inventoryId: number }) => {
         totalCount={totalCount}
         onDelete={handleDelete}
         onCreate={() => setIsModalOpen(true)}
-        tabs={visibleTabs}
+        tabs={visibleTabs.map((tab) => t(`${tab}`))}
         hiddenTabs={[
           TabId.Discussion,
           TabId.Statistics,

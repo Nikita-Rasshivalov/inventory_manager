@@ -48,20 +48,4 @@ export class UserController extends BaseController {
       if (!user) throw new Error("User not found");
       return user;
     });
-
-  updateTheme = (req: Request, res: Response) =>
-    this.handle(res, async () => {
-      const user = (req as any).user;
-      if (!user) throw new Error("Unauthorized");
-
-      const { theme } = req.body;
-      if (!["light", "dark"].includes(theme)) throw new Error("Invalid theme");
-
-      const updatedUser = await userService.updateTheme(
-        user.userId,
-        theme as "light" | "dark"
-      );
-
-      return updatedUser;
-    });
 }

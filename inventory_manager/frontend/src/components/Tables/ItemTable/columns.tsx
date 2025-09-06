@@ -6,7 +6,8 @@ export const getItemColumns = (
   items: Item[],
   selectedIds: number[],
   toggleSelect: (id: number) => void,
-  showCheckboxes: boolean = true
+  showCheckboxes: boolean = true,
+  t: (key: string) => string
 ): ColumnDef<Item>[] => {
   const columns: ColumnDef<Item>[] = [];
 
@@ -60,21 +61,21 @@ export const getItemColumns = (
     },
     {
       accessorKey: "customId",
-      header: "Custom ID",
+      header: t("column_customId"),
       enableSorting: true,
       size: 250,
     },
     {
       accessorFn: (row) => row.createdBy?.name,
       id: "createdBy",
-      header: "Created By",
+      header: t("column_createdBy"),
       enableSorting: false,
       size: 250,
     },
     {
       accessorFn: (row) => new Date(row.createdAt),
       id: "createdAt",
-      header: "Created",
+      header: t("column_createdAt"),
       enableSorting: true,
       cell: ({ getValue }) => (getValue() as Date).toLocaleDateString(),
       size: 250,

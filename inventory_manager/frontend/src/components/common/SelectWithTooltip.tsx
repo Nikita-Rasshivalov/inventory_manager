@@ -1,5 +1,6 @@
 import React from "react";
 import Select from "./Select";
+import { useTranslation } from "react-i18next";
 
 interface ElementOption {
   label: string;
@@ -18,6 +19,7 @@ const SelectWithTooltip: React.FC<SelectWithTooltipProps> = ({
   onChange,
   options,
 }) => {
+  const { t } = useTranslation();
   return (
     <>
       <Select
@@ -25,7 +27,7 @@ const SelectWithTooltip: React.FC<SelectWithTooltipProps> = ({
         onChange={onChange}
         className="w-full  min-[425px]:h-8"
       >
-        <option value="">Select an element</option>
+        <option value="">{t("select_element")}</option>
         {options.map((option) => (
           <option key={option.type} value={option.type}>
             {option.label}

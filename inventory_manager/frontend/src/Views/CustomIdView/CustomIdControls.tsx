@@ -5,6 +5,7 @@ import { generateLiveExample } from "../../utils/customIdUtils";
 import { elementOptions } from "./elementOptions";
 import SelectWithTooltip from "../../components/common/SelectWithTooltip";
 import { Plus, Save } from "lucide-react";
+import { useTranslation } from "react-i18next";
 
 interface CustomIdControlsProps {
   newElementType: string;
@@ -30,6 +31,7 @@ export const CustomIdControls = ({
   setLiveExample,
 }: CustomIdControlsProps) => {
   const [isSaving, setIsSaving] = useState(false);
+  const { t } = useTranslation();
 
   const handleAddElement = () => {
     if (!newElementType) return;
@@ -66,7 +68,7 @@ export const CustomIdControls = ({
     <div className="space-y-4">
       <div className="p-4 rounded-md bg-gray-50 dark:bg-gray-800 transition-colors duration-200">
         <h3 className="text-lg font-medium text-gray-900 dark:text-gray-100">
-          Live Example:
+          {t("custom_id_example")}
         </h3>
         <div className="text-xl text-gray-700 dark:text-gray-200">
           {liveExample}
