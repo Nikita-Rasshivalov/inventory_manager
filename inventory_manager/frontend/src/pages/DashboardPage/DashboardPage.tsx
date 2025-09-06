@@ -18,12 +18,12 @@ const DashboardPage = () => {
         <Header />
         <div className="flex-1 mt-6 grid grid-cols-1 pb-10 sm:pb-0 md:grid-cols-2 gap-6 p-4">
           <LatestInventoriesTable
-            inventories={latest}
+            inventories={latest ?? []}
             loading={loading}
             onClick={handleClick}
           />
           <TopInventoriesTable
-            inventories={top}
+            inventories={top ?? []}
             loading={loading}
             onClick={handleClick}
           />

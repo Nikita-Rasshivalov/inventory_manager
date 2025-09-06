@@ -1,8 +1,7 @@
 import { Sun, Moon } from "lucide-react";
 import { useEffect, useState } from "react";
-import { useUserStore } from "../../stores/useUserStore";
+
 const ThemeToggle = () => {
-  const { currentUser, updateTheme } = useUserStore();
   const [theme, setTheme] = useState(localStorage.getItem("theme") || "light");
 
   useEffect(() => {
@@ -13,9 +12,6 @@ const ThemeToggle = () => {
   const toggleTheme = () => {
     const newTheme = theme === "light" ? "dark" : "light";
     setTheme(newTheme);
-    if (currentUser) {
-      updateTheme(newTheme);
-    }
   };
 
   return (
