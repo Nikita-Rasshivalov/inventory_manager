@@ -52,7 +52,7 @@ const TagCategoryControls = ({ inventoryId }: TagCategoryControlsProps) => {
       await update(currentInventory.id, {
         description,
         categoryId: categoryId ?? undefined,
-        tags: selectedTags.map((t) => ({ id: t.value })),
+        tags: selectedTags.map((t) => ({ id: t.value, name: t.label })),
         version: currentInventory.version,
       });
 
