@@ -7,6 +7,7 @@ const controller = new TagController();
 
 router.get("/", controller.getAll);
 router.get("/search", controller.search);
+router.get("/top", controller.getTop);
 router.post("/", authMiddleware, controller.create);
 
 export default router;

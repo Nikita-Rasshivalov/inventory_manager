@@ -47,6 +47,29 @@ export class GuestService {
       tags: inv.tags.map((t) => t.tag),
     }));
   }
+  async getInventoriesByTag(tag: string) {
+    return prisma.inventory.findMany({
+      where: {
+        deleted: false,
+        isPublic: true,
+        tags: {
+          some: {
+            tag: {
+              name: tag,
+            },
+          },
+        },
+      },
+      orderBy: {
+        createdAt: "desc",
+      },
+      include: {
+        owner: { select: { id: true, name: true } },
+        category: { select: { id: true, name: true } },
+        tags: { select: { tag: { select: { id: true, name: true } } } },
+      },
+    });
+  }
 }
 
 export const guestService = new GuestService();

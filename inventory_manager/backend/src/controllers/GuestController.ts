@@ -15,6 +15,14 @@ class GuestController extends BaseController {
       return guestService.getTopInventories(5);
     });
   }
+
+  async getByTag(req: Request, res: Response) {
+    await this.handle(res, async () => {
+      const tag = req.params.tag;
+      if (!tag) throw new Error("Tag is required");
+      return guestService.getInventoriesByTag(tag);
+    });
+  }
 }
 
 export const guestController = new GuestController();

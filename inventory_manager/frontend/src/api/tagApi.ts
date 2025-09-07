@@ -11,4 +11,9 @@ export class TagApi {
     const res = await axiosInstance.get<Tag>(`/tags/${id}`);
     return res.data;
   }
+
+  static async getTop(limit: number = 20): Promise<Tag[]> {
+    const res = await axios.get<Tag[]>(`/tags/top?limit=${limit}`);
+    return res.data;
+  }
 }

@@ -22,4 +22,22 @@ export class TagService {
   async create(name: string) {
     return prisma.tag.create({ data: { name } });
   }
+
+  async getTopTags(limit: number = 20) {
+    return prisma.tag.findMany({
+      take: limit,
+      orderBy: {
+        inventories: { _count: "desc" },
+      },
+      select: {
+        id: true,
+        name: true,
+        _count: {
+          select: { inventories: true },
+        },
+      },
+    });
+  }
 }
+
+export const tagService = new TagService();

@@ -157,7 +157,7 @@ const ItemPage = ({ inventoryId }: { inventoryId: number }) => {
 
   const showCheckboxes = isAdminOrOwner;
   return (
-    <div className="max-w-6xl mx-auto px-6 pt-2 pb-4 bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-gray-100 rounded-lg shadow-md mt-1 transition-colors duration-300">
+    <div className="max-w-6xl mx-auto pb-11 sm:pb-0 px-6 pt-2 pb-4 bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-gray-100 rounded-lg shadow-md mt-1 transition-colors duration-300">
       <Toolbar
         selectedCount={selectedCount}
         totalCount={totalCount}

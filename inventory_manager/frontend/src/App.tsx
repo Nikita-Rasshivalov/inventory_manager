@@ -9,6 +9,7 @@ import InventoryItemPage from "./pages/InventoryItemPage";
 import AuthPage from "./pages/AuthPage/AuthPage";
 import ItemDetailsPage from "./pages/ItemDetailsPage/ItemDetailsPage";
 import UserProfilePage from "./pages/UserPage/UserProfilePage";
+import SearchPage from "./pages/SearchPage";
 
 const queryClient = new QueryClient();
 
@@ -32,6 +33,7 @@ function App() {
             <Route path="/" element={<DashboardPage />} />
             <Route path="/login" element={<AuthPage />} />
             <Route path="/success" element={<AuthSuccess />} />
+            <Route path="/search" element={<SearchPage />} />
             <Route path="/users/:userId" element={<UserProfilePage />} />
             <Route
               path="/inventory/:inventoryId/items"

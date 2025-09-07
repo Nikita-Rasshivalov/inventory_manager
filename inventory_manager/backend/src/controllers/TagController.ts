@@ -32,4 +32,10 @@ export class TagController extends BaseController {
       },
       201
     );
+
+  getTop = (req: Request, res: Response) =>
+    this.handle(res, async () => {
+      const limit = req.query.limit ? parseInt(req.query.limit as string) : 20;
+      return await tagService.getTopTags(limit);
+    });
 }

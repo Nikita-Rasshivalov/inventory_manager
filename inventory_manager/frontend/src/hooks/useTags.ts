@@ -18,3 +18,11 @@ export const useTags = (search?: string) => {
     staleTime: 5 * 60 * 1000,
   });
 };
+
+export const useTopTags = (limit: number = 20) => {
+  return useQuery<Tag[], Error>({
+    queryKey: ["tags", "top", limit],
+    queryFn: () => TagApi.getTop(limit),
+    staleTime: 5 * 60 * 1000,
+  });
+};
