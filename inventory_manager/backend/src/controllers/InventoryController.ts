@@ -53,14 +53,30 @@ export class InventoryController extends BaseController {
 
   update = (req: Request, res: Response) =>
     this.handle(res, async () => {
-      const user = (req as any).user;
       const inventoryId = parseInt(req.params.inventoryId);
+      const user = (req as any).user;
 
-      const { version, isPublic, ...data } = req.body;
+      const {
+        title,
+        description,
+        isPublic,
+        categoryId,
+        customIdFormat,
+        tags,
+        version,
+      } = req.body;
 
+      const data: any = {
+        title,
+        description,
+        isPublic,
+        categoryId,
+        customIdFormat,
+        tags,
+      };
       return await inventoryService.update(
         inventoryId,
-        { ...data, isPublic },
+        data,
         user.userId,
         version
       );

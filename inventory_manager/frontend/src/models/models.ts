@@ -40,6 +40,7 @@ export type AuthPayload = {
 export interface Inventory {
   id: number;
   title: string;
+  description: string;
   ownerId: number;
   owner?: User;
   createdAt: string;
@@ -51,6 +52,19 @@ export interface Inventory {
   comments: Comment[];
   version: number;
   isPublic: boolean;
+  categoryId?: number;
+  category?: Category;
+  tags?: Tag[];
+}
+
+export interface Category {
+  id: number;
+  name: string;
+}
+
+export interface Tag {
+  id: number;
+  name: string;
 }
 
 export interface Item {
@@ -129,6 +143,9 @@ export type InventoryPayload = {
   customIdFormat?: CustomIdPart[];
   version: number;
   isPublic?: boolean;
+  description?: string;
+  categoryId?: number;
+  tags?: Tag[];
 };
 
 export interface TopInventory extends Inventory {

@@ -25,8 +25,6 @@ model User {
   password      String?
   imageUrl      String?
   role          SystemRole      @default(USER)
-  locale        String          @default("en")
-  theme         String          @default("light")
   emailVerified DateTime?
   createdAt     DateTime        @default(now())
   updatedAt     DateTime        @updatedAt
@@ -67,6 +65,7 @@ model Inventory {
   ownerId   Int
   owner     User              @relation(fields: [ownerId], references: [id])
   createdAt DateTime          @default(now())
+  description String?
   updatedAt DateTime          @updatedAt
   version   Int               @default(0)
   deleted   Boolean           @default(false)
@@ -75,8 +74,12 @@ model Inventory {
   fields    Field[]
   items     Item[]
   customIdFormat Json? 
-  comments      Comment[]
-  isPublic Boolean            @default(false)
+  comments       Comment[]
+  isPublic       Boolean           @default(false)
+  categoryId     Int?
+  category       Category?         @relation(fields: [categoryId], references: [id])
+  tags           InventoryTag[]
+  @@fulltext([title, description])
 }
 
 model InventoryMember {
@@ -164,4 +167,28 @@ model Like {
 model InventorySequence {
   inventoryId Int @id
   currentSeq Int
+}
+
+
+
+model Category {
+  id          Int          @id @default(autoincrement())
+  name        String       @unique
+  inventories Inventory[]
+}
+
+model Tag {
+  id          Int             @id @default(autoincrement())
+  name        String          @unique
+  inventories InventoryTag[]
+}
+
+model InventoryTag {
+  id          Int       @id @default(autoincrement())
+  inventoryId Int
+  tagId       Int
+  inventory   Inventory @relation(fields: [inventoryId], references: [id])
+  tag         Tag       @relation(fields: [tagId], references: [id])
+
+  @@unique([inventoryId, tagId])
 }

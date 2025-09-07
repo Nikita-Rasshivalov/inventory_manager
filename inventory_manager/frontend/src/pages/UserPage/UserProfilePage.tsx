@@ -66,7 +66,7 @@ const UserProfilePage = () => {
   return (
     <>
       <Header />
-      <div className="max-w-4xl mx-auto pt-2 pb-0 p-6 bg-white dark:bg-gray-800 rounded-xl shadow-lg transition-colors duration-300">
+      <div className="max-w-6xl mx-auto pt-2 pb-0 p-6 bg-white dark:bg-gray-800 rounded-xl shadow-lg transition-colors duration-300">
         <div className="flex border-b px-6 py-2 border-gray-200 dark:border-gray-600 gap-2">
           {Object.values(ProfileTabs).map((tab) => (
             <Button

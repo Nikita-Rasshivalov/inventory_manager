@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import Button from "../common/Button";
 import Input from "../common/Input";
 import { Search } from "lucide-react";
+import { useTranslation } from "react-i18next";
 
 interface ToolbarProps {
   selectedCount: number;
@@ -35,6 +36,7 @@ const Toolbar: React.FC<ToolbarProps> = ({
   const [showSearch, setShowSearch] = useState(false);
   const shouldHideAllButtons = hiddenTabs.includes(activeTab);
   const shouldHideCreateButton = partialHiddenTabs.includes(activeTab);
+  const { t } = useTranslation();
 
   return (
     <div className="flex flex-col-reverse sm:flex-row gap-2 min-h-17 mb-4 p-2 sm:p-3 bg-gray-50 dark:bg-gray-800 text-gray-900 dark:text-gray-200 rounded-lg shadow-sm border border-gray-200 dark:border-gray-600 transition-colors duration-300">
@@ -127,7 +129,7 @@ const Toolbar: React.FC<ToolbarProps> = ({
                 : "bg-gray-200 text-gray-900 dark:bg-gray-700 dark:hover:bg-gray-600 dark:text-gray-200 hover:bg-gray-300"
             }`}
           >
-            {tab}
+            {t(tab)}
           </Button>
         ))}
       </div>

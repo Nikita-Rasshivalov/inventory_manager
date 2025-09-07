@@ -62,15 +62,32 @@ export class InventoryService {
     }
   }
 
-  async create(title: string, ownerId: number, isPublic = false) {
+  async create(
+    title: string,
+    ownerId: number,
+    isPublic = false,
+    description?: string,
+    categoryId?: number,
+    tagIds?: number[]
+  ) {
     return prisma.inventory.create({
       data: {
         title,
+        description,
+        categoryId,
         ownerId,
         isPublic,
         members: { create: { userId: ownerId, role: InventoryRole.OWNER } },
+        tags: tagIds
+          ? { create: tagIds.map((tagId) => ({ tagId })) }
+          : undefined,
       },
-      include: { owner: true, members: true },
+      include: {
+        owner: true,
+        members: true,
+        category: true,
+        tags: { include: { tag: true } },
+      },
     });
   }
 
@@ -92,20 +109,20 @@ export class InventoryService {
   }
 
   async getByIdForGuest(id: number) {
-    return prisma.inventory
-      .findFirst({
-        where: { id, isPublic: true },
-        include: {
-          owner: true,
-          fields: true,
-          items: true,
-          comments: { include: { user: true } },
-        },
-      })
-      .then((inventory) => {
-        if (!inventory) throw new Error("Inventory not found or access denied");
-        return inventory;
-      });
+    const inventory = await prisma.inventory.findFirst({
+      where: { id, isPublic: true },
+      include: {
+        owner: true,
+        fields: true,
+        items: true,
+        comments: { include: { user: true } },
+        category: true,
+        tags: { include: { tag: true } },
+      },
+    });
+
+    if (!inventory) throw new Error("Inventory not found or access denied");
+    return inventory;
   }
 
   async findInventoryById(id: number, includeMembers = false) {
@@ -117,6 +134,8 @@ export class InventoryService {
         fields: true,
         items: true,
         comments: { include: { user: true } },
+        category: true,
+        tags: { include: { tag: true } },
       },
     });
 
@@ -140,6 +159,8 @@ export class InventoryService {
         fields: true,
         items: true,
         comments: { include: { user: true } },
+        category: true,
+        tags: { include: { tag: true } },
       },
     });
 
@@ -151,6 +172,9 @@ export class InventoryService {
     id: number,
     data: Partial<{
       title: string;
+      description?: string;
+      categoryId?: number;
+      tags?: number[];
       customIdFormat?: any[];
       isPublic?: boolean;
     }>,
@@ -181,21 +205,58 @@ export class InventoryService {
       where: { id },
       select: { version: true },
     });
+
     if (!current) throw new Error("Inventory not found");
+
     checkVersion(current, clientVersion);
 
     const updateData: any = { ...data };
+
     if (data.customIdFormat) {
       updateData.customIdFormat = JSON.stringify(data.customIdFormat);
     }
 
-    return prisma.inventory.update({
+    delete updateData.tags;
+
+    const updatedInventory = await prisma.inventory.update({
       where: { id },
       data: {
         ...updateData,
         version: { increment: 1 },
       },
-      include: { members: true, owner: true },
+      include: {
+        members: true,
+        owner: true,
+        category: true,
+        tags: { include: { tag: true } },
+      },
+    });
+
+    if ("tags" in data && Array.isArray(data.tags)) {
+      await prisma.inventoryTag.deleteMany({
+        where: { inventoryId: id },
+      });
+
+      const tagCreates = data.tags.map((tag: any) => ({
+        inventoryId: id,
+        tagId: tag.id,
+      }));
+
+      if (tagCreates.length > 0) {
+        await prisma.inventoryTag.createMany({
+          data: tagCreates,
+        });
+      }
+    }
+
+    return prisma.inventory.findUnique({
+      where: { id },
+      include: {
+        members: true,
+        owner: true,
+        category: true,
+        tags: { include: { tag: true } },
+      },
     });
   }
 

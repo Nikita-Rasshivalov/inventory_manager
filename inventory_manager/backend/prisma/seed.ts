@@ -8,21 +8,49 @@ async function main() {
   const existing = await prisma.user.findUnique({ where: { email } });
   if (existing) {
     console.log("Admin already exists");
-    return;
+  } else {
+    const hashedPassword = await bcrypt.hash("admin", 10);
+    const admin = await prisma.user.create({
+      data: {
+        email,
+        name: "Admin",
+        password: hashedPassword,
+        role: SystemRole.ADMIN,
+      },
+    });
+    console.log("Admin created:", admin);
   }
 
-  const hashedPassword = await bcrypt.hash("admin", 10);
+  const categories = ["Equipment", "Furniture", "Book", "Other"];
+  for (const name of categories) {
+    await prisma.category.upsert({
+      where: { name },
+      update: {},
+      create: { name },
+    });
+  }
+  console.log("Categories seeded");
 
-  const admin = await prisma.user.create({
-    data: {
-      email,
-      name: "Admin",
-      password: hashedPassword,
-      role: SystemRole.ADMIN,
-    },
-  });
-
-  console.log("Admin created:", admin);
+  const tags = [
+    "Laptops",
+    "Printers",
+    "Phones",
+    "Monitors",
+    "Desks",
+    "Chairs",
+    "Books",
+    "Projectors",
+    "Scanners",
+    "Cables",
+  ];
+  for (const name of tags) {
+    await prisma.tag.upsert({
+      where: { name },
+      update: {},
+      create: { name },
+    });
+  }
+  console.log("Tags seeded");
 }
 
 main()

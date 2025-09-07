@@ -60,7 +60,7 @@ const InventoryItemPage = () => {
     <>
       <Header />
       <div className="max-w-5xl mx-auto mt-2 px-0 sm:px-6 py-0 pt-8 bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-gray-100 rounded-lg shadow-md transition-colors duration-300">
-        <div className="flex items-center justify-between px-4 mb-6">
+        <div className="flex items-center justify-between h-15  overflow-hidden px-4 mb-6">
           <div className="flex items-center gap-2">
             <ArrowLeft
               size={20}
@@ -70,7 +70,7 @@ const InventoryItemPage = () => {
 
             {isEditingTitle && canEdit ? (
               <input
-                className="border rounded px-2 py-1 text-xl font-semibold bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 transition-colors duration-200"
+                className="border w-full rounded px-2 py-1 text-xl font-semibold bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 transition-colors duration-200"
                 value={titleDraft}
                 onChange={(e) => setTitleDraft(e.target.value)}
                 onBlur={handleSaveTitle}

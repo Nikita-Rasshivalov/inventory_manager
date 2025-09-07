@@ -56,7 +56,7 @@ interface InventoryStore {
   ) => Promise<void>;
   currentUser: User | null;
   setCurrentUser: (user: User) => void;
-  fetchAll: () => Promise<void>; // новая удобная обёртка
+  fetchAll: () => Promise<void>;
 }
 
 export const useInventoryStore = create<InventoryStore>((set, get) => ({

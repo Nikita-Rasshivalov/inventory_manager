@@ -82,7 +82,7 @@ export async function fetchItems(
   limit: number,
   orderBy?: any
 ) {
-  return prisma.inventory.findMany({
+  const inventories = await prisma.inventory.findMany({
     where,
     skip,
     take: limit,
@@ -91,8 +91,15 @@ export async function fetchItems(
       owner: true,
       members: { where: { deleted: false } },
       items: true,
+      tags: { include: { tag: true } },
+      category: true,
     },
   });
+
+  return inventories.map((inv) => ({
+    ...inv,
+    tags: inv.tags.map((t) => t.tag),
+  }));
 }
 
 export async function countItems(where: any) {

@@ -8,6 +8,8 @@ import inventoryRoutes from "./routes/inventoryRoutes.ts";
 import itemRoutes from "./routes/itemRoutes.ts";
 import userRoutes from "./routes/userRoutes.ts";
 import fieldRoutes from "./routes/fieldRoutes.ts";
+import categoryRoutes from "./routes/categoriesRouter.ts";
+import tagRoutes from "./routes/tagsRouter.ts";
 import registerSocketHandlers from "./sokets/index.ts";
 import { createServer } from "http";
 import { Server } from "socket.io";
@@ -24,6 +26,8 @@ app.use(
 
 app.use(express.json());
 app.use("/api/guest", guestRoutes);
+app.use("/api/categories", categoryRoutes);
+app.use("/api/tags", tagRoutes);
 app.use("/api/auth", authRoutes);
 app.use("/api/auth", oauthRoutes);
 app.use("/api/users", userRoutes);

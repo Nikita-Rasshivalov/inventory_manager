@@ -1,6 +1,8 @@
 import { Loader2 } from "lucide-react";
 import { TopInventory } from "../../models/models";
 import { useTranslation } from "react-i18next";
+import Markdown from "react-markdown";
+import remarkGfm from "remark-gfm";
 
 interface Props {
   inventories?: TopInventory[];
@@ -33,12 +35,15 @@ const TopInventoriesTable = ({ inventories = [], loading, onClick }: Props) => {
         </div>
       ) : (
         <div className="overflow-x-auto h-[40vh]">
-          <table className="w-full min-w-[500px] text-sm text-left border border-gray-200 dark:border-gray-700 rounded-md overflow-hidden">
+          <table className="w-full min-w-[600px] text-sm text-left border border-gray-200 dark:border-gray-700 rounded-md overflow-hidden">
             <thead className="bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300 uppercase text-xs">
               <tr>
                 <th className="px-3 py-2">{t("title")}</th>
                 <th className="px-3 py-2">{t("created_by")}</th>
                 <th className="px-3 py-2">{t("elements")}</th>
+                <th className="px-3 py-2">{t("category")}</th>
+                <th className="px-3 py-2">{t("tags")}</th>
+                <th className="px-3 py-2">{t("description")}</th>
               </tr>
             </thead>
             <tbody>
@@ -56,6 +61,23 @@ const TopInventoriesTable = ({ inventories = [], loading, onClick }: Props) => {
                   </td>
                   <td className="px-3 py-2 text-gray-700 dark:text-gray-100">
                     {inv._count?.items ?? 0}
+                  </td>
+                  <td className="px-3 py-2 text-gray-700 dark:text-gray-100">
+                    {inv.category?.name || "—"}
+                  </td>
+                  <td className="px-3 py-2 text-gray-700 dark:text-gray-100">
+                    {inv.tags?.length
+                      ? inv.tags.map((t) => <div key={t.id}>{t.name}</div>)
+                      : "—"}
+                  </td>
+                  <td className="px-3 py-2 text-gray-700 dark:text-gray-100 max-w-xs">
+                    {inv.description ? (
+                      <Markdown remarkPlugins={[remarkGfm]}>
+                        {inv.description}
+                      </Markdown>
+                    ) : (
+                      "—"
+                    )}
                   </td>
                 </tr>
               ))}

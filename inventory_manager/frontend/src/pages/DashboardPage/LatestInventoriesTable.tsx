@@ -1,6 +1,8 @@
 import { Loader2 } from "lucide-react";
 import { Inventory } from "../../models/models";
 import { useTranslation } from "react-i18next";
+import Markdown from "react-markdown";
+import remarkGfm from "remark-gfm";
 
 interface Props {
   inventories?: Inventory[];
@@ -14,7 +16,6 @@ const LatestInventoriesTable = ({
   onClick,
 }: Props) => {
   const { t } = useTranslation();
-
   return (
     <div className="bg-white dark:bg-gray-800 h-[50vh] shadow-md rounded-lg p-4">
       <h2 className="text-lg font-semibold text-gray-800 dark:text-gray-100 mb-3">
@@ -42,6 +43,9 @@ const LatestInventoriesTable = ({
               <tr>
                 <th className="px-3 py-2">{t("title")}</th>
                 <th className="px-3 py-2">{t("owner")}</th>
+                <th className="px-3 py-2">{t("category")}</th>
+                <th className="px-3 py-2">{t("tags")}</th>
+                <th className="px-3 py-2">{t("description")}</th>
                 <th className="px-3 py-2">{t("created_at")}</th>
               </tr>
             </thead>
@@ -57,6 +61,23 @@ const LatestInventoriesTable = ({
                   </td>
                   <td className="px-3 py-2 text-gray-700 dark:text-gray-100">
                     {inv.owner?.name || "—"}
+                  </td>
+                  <td className="px-3 py-2 text-gray-700 dark:text-gray-100">
+                    {inv.category?.name || "—"}
+                  </td>
+                  <td className="px-3 py-2 text-gray-700 dark:text-gray-100">
+                    {inv.tags?.length
+                      ? inv.tags.map((t) => <div key={t.id}>{t.name}</div>)
+                      : "—"}
+                  </td>
+                  <td className="px-3 py-2 text-gray-700 dark:text-gray-100 max-w-xs">
+                    {inv.description ? (
+                      <Markdown remarkPlugins={[remarkGfm]}>
+                        {inv.description}
+                      </Markdown>
+                    ) : (
+                      "—"
+                    )}
                   </td>
                   <td className="px-3 py-2 text-gray-700 dark:text-gray-100">
                     {inv.createdAt

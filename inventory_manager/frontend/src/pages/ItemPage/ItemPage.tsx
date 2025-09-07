@@ -8,29 +8,28 @@ import { useSelection } from "../../hooks/useSelection";
 import { InventoryRole, MemberAction, SystemRole } from "../../models/models";
 import { AccessView } from "../../Views/AccessView/AccessView";
 import { ItemsView } from "../../Views/ItemsView/ItemsView";
-import CustomIdView from "../../Views/CustomIdView/CustomIdView";
 import FieldView from "../../Views/FieldView/FieldView";
 import { DiscussionView } from "../../Views/DiscussionView/DiscussionView";
 import { useAuthStore } from "../../stores/useAuthStore";
 import StatisticsView from "../../Views/StatisticsView/StatisticsView";
 import { useDebounce } from "../../hooks/useDebounce";
-import { useTranslation } from "react-i18next";
+import SettingsView from "../../Views/SettingsView/SettingsView";
 
 enum TabId {
   Items = "Items",
   Access = "Access",
-  CustomId = "Settings",
   Fields = "Fields",
   Discussion = "Discussion",
   Statistics = "Statistics",
+  Settings = "Settings",
 }
 
 const ALL_TABS: TabId[] = [
   TabId.Items,
   TabId.Access,
-  TabId.CustomId,
   TabId.Fields,
   TabId.Discussion,
+  TabId.Settings,
   TabId.Statistics,
 ];
 
@@ -50,7 +49,6 @@ const ItemPage = ({ inventoryId }: { inventoryId: number }) => {
   } = useItemStore();
   const { user } = useAuthStore();
   const { inventoryMembers, updateMembers, getById } = useInventoryStore();
-  const { t } = useTranslation();
 
   const [filterText, setFilterText] = useState("");
   const debouncedFilter = useDebounce(filterText, 300);
@@ -81,13 +79,13 @@ const ItemPage = ({ inventoryId }: { inventoryId: number }) => {
   const visibleTabs = useMemo(() => {
     if (isAdminOrOwner) return ALL_TABS;
     return ALL_TABS.filter(
-      (t) => t !== TabId.Access && t !== TabId.CustomId && t !== TabId.Fields
+      (t) => t !== TabId.Access && t !== TabId.Settings && t !== TabId.Fields
     );
   }, [isAdminOrOwner]);
 
   useEffect(() => {
     if (!visibleTabs.includes(activeTab)) {
-      if (activeTab !== TabId.CustomId) {
+      if (activeTab !== TabId.Settings) {
         setActiveTab(TabId.Items);
       }
     }
@@ -165,12 +163,12 @@ const ItemPage = ({ inventoryId }: { inventoryId: number }) => {
         totalCount={totalCount}
         onDelete={handleDelete}
         onCreate={() => setIsModalOpen(true)}
-        tabs={visibleTabs.map((tab) => t(`${tab}`))}
+        tabs={visibleTabs}
         hiddenTabs={[
           TabId.Discussion,
           TabId.Statistics,
           TabId.Fields,
-          TabId.CustomId,
+          TabId.Settings,
         ]}
         partialHiddenTabs={[TabId.Access]}
         activeTab={activeTab}
@@ -212,8 +210,8 @@ const ItemPage = ({ inventoryId }: { inventoryId: number }) => {
       {activeTab === TabId.Fields && isAdminOrOwner && (
         <FieldView inventoryId={inventoryId} />
       )}
-      {activeTab === TabId.CustomId && isAdminOrOwner && (
-        <CustomIdView inventoryId={inventoryId} />
+      {activeTab === TabId.Settings && isAdminOrOwner && (
+        <SettingsView inventoryId={inventoryId} />
       )}
       {activeTab === TabId.Discussion && (
         <DiscussionView inventoryId={inventoryId} currentUser={user} />
