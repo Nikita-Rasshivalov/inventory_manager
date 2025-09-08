@@ -14,6 +14,7 @@ interface FieldValueFormProps {
   onAddField: () => void;
   onSave: () => void;
   onlyShowInTable?: boolean;
+  isSubmitting: boolean;
 }
 
 const FieldValueForm: React.FC<FieldValueFormProps> = ({
@@ -26,6 +27,7 @@ const FieldValueForm: React.FC<FieldValueFormProps> = ({
   onAddField,
   onSave,
   onlyShowInTable = false,
+  isSubmitting = false,
 }) => (
   <>
     {!onlyShowInTable && (
@@ -57,6 +59,7 @@ const FieldValueForm: React.FC<FieldValueFormProps> = ({
       <Button
         onClick={onSave}
         className="border rounded px-2 py-2 text-sm min-[425px]:h-8"
+        disabled={isSubmitting}
       >
         <Save size={16} />
       </Button>

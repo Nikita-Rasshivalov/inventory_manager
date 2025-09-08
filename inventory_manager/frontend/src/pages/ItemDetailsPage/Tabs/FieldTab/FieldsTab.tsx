@@ -16,6 +16,7 @@ const FieldsTab: React.FC<FieldsTabProps> = ({ inventoryId }) => {
   const currentItem = useItemStore((s) => s.currentItem);
   const update = useItemStore((s) => s.update);
   const setCurrentItem = useItemStore((s) => s.setCurrentItem);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const [itemFieldValues, setItemFieldValues] = useState<ItemFieldValue[]>([]);
   const [selectedFieldId, setSelectedFieldId] = useState<number | null>(null);
@@ -90,6 +91,7 @@ const FieldsTab: React.FC<FieldsTabProps> = ({ inventoryId }) => {
     }
 
     try {
+      setIsSubmitting(true);
       const updatedItem = await update(
         currentItem.inventoryId,
         currentItem.id,
@@ -124,6 +126,8 @@ const FieldsTab: React.FC<FieldsTabProps> = ({ inventoryId }) => {
       toast.success("Item field values saved!");
     } catch (err: any) {
       toast.error(err.response?.data?.error || "Failed to save field values");
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
@@ -174,6 +178,7 @@ const FieldsTab: React.FC<FieldsTabProps> = ({ inventoryId }) => {
           setShowInTable={setShowInTable}
           onAddField={onAddField}
           onSave={handleSave}
+          isSubmitting={isSubmitting}
         />
       </div>
       <FieldValuesList

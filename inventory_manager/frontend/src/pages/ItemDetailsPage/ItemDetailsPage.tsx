@@ -76,7 +76,7 @@ const ItemDetailsPage = () => {
           </h2>
         </div>
 
-        <div className="flex w-full justify-between items-center gap-2 mb-4 pb-3 rounded-lg border-b border-gray-300 dark:border-gray-600">
+        <div className="flex w-full justify-between items-center gap-2 mb-4 pb-3 rounded-lg border-b border-gray-300 dark:border-gray-600 flex-wrap">
           {user && (
             <LikeButton
               itemId={currentItem.id}
@@ -84,10 +84,10 @@ const ItemDetailsPage = () => {
               initialLikes={currentItem.likes}
             />
           )}
-          <div className="flex gap-2">
+          <div className="flex gap-2 flex-wrap w-full sm:w-auto">
             <Button
               active={activeTab === TabId.ItemDetails}
-              className="w-30 px-2 py-1 rounded-lg text-xs sm:text-sm md:text-base font-medium truncate"
+              className="flex-1 sm:flex-none min-w-[100px] px-2 py-1 rounded-lg text-xs sm:text-sm md:text-base font-medium truncate"
               onClick={() => setActiveTab(TabId.ItemDetails)}
             >
               {TabId.ItemDetails}
@@ -96,7 +96,7 @@ const ItemDetailsPage = () => {
             {canEditFields && (
               <Button
                 active={activeTab === TabId.ItemFields}
-                className="w-30 px-2 py-1 rounded-lg text-xs sm:text-sm md:text-base font-medium truncate"
+                className="flex-1 sm:flex-none min-w-[100px] px-2 py-1 rounded-lg text-xs sm:text-sm md:text-base font-medium truncate"
                 onClick={() => setActiveTab(TabId.ItemFields)}
               >
                 {TabId.ItemFields}
