@@ -21,6 +21,8 @@ export class User {
   email: string;
   role: SystemRole;
   imageUrl: string;
+  salesforceAccountId?: string;
+  salesforceContactId?: string;
 
   constructor(data: any) {
     this.id = data.id;
@@ -28,6 +30,8 @@ export class User {
     this.email = data.email;
     this.role = data.role || SystemRole.USER;
     this.imageUrl = data.imageUrl;
+    this.salesforceAccountId = data.salesforceAccountId;
+    this.salesforceContactId = data.salesforceContactId;
   }
 }
 
@@ -172,3 +176,10 @@ export type CustomIdPart =
   | { type: "guid" }
   | { type: "datetime"; format?: string }
   | { type: "sequence" };
+
+export interface SalesforcePayload {
+  company?: string;
+  position?: string;
+  phone?: string;
+  [key: string]: any;
+}

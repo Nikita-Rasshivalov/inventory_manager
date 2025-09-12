@@ -27,6 +27,7 @@
     "create_inventory": "Create Inventory",
     "public": "Public",
     "profile_tab": "Profile",
+    "salesforce_tab": "Salesforce",
     "inventories_tab": "Inventories",
     "user_not_found": "User not found.",
     "email_label": "Email:",

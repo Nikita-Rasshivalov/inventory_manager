@@ -22,6 +22,8 @@ export class UserService {
         email: true,
         imageUrl: true,
         role: true,
+        salesforceAccountId: true,
+        salesforceContactId: true,
       },
     });
   }

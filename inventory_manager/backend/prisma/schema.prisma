@@ -35,6 +35,8 @@ model User {
   createdItems  Item[]
   comments      Comment[]
   likes         Like[]
+  salesforceAccountId     String?         
+  salesforceContactId     String?       
 }
 
 model OAuthAccount {

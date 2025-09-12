@@ -5,7 +5,7 @@ import {
   Transition,
   TransitionChild,
 } from "@headlessui/react";
-import { Fragment, useState } from "react";
+import { Fragment, useEffect, useState } from "react";
 import Button from "../common/Button";
 import Input from "../common/Input";
 import { isNullOrEmpty } from "../../utils/validators";
@@ -34,16 +34,19 @@ const GenericModal: React.FC<GenericModalProps> = ({
   onClose,
   onSubmit,
 }) => {
-  const [values, setValues] = useState<Record<string, string | boolean>>(
-    Object.fromEntries(
+  const [values, setValues] = useState<Record<string, string | boolean>>({});
+
+  useEffect(() => {
+    const initialValues = Object.fromEntries(
       fields.map((f) => [
         f.name,
         f.type === "checkbox"
           ? f.initialBooleanValue ?? false
           : f.initialValue ?? "",
       ])
-    )
-  );
+    );
+    setValues(initialValues);
+  }, [fields]);
 
   const [isSubmitting, setIsSubmitting] = useState(false);
 
