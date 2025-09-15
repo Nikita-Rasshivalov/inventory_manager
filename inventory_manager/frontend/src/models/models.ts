@@ -23,6 +23,7 @@ export class User {
   imageUrl: string;
   salesforceAccountId?: string;
   salesforceContactId?: string;
+  apiToken?: string;
 
   constructor(data: any) {
     this.id = data.id;
@@ -32,6 +33,7 @@ export class User {
     this.imageUrl = data.imageUrl;
     this.salesforceAccountId = data.salesforceAccountId;
     this.salesforceContactId = data.salesforceContactId;
+    this.apiToken = data.apiToken;
   }
 }
 
@@ -182,4 +184,38 @@ export interface SalesforcePayload {
   position?: string;
   phone?: string;
   [key: string]: any;
+}
+
+export interface Template {
+  id: number;
+  name: string;
+  authorId: number;
+  questions?: Question[];
+}
+
+export interface Question {
+  id: number;
+  text: string;
+  type: "text" | "number" | "choice" | "checkbox";
+  templateId: number;
+  answers?: Answer[];
+}
+
+export interface Answer {
+  id: number;
+  questionId: number;
+  value: string | number;
+  createdAt?: string;
+}
+
+export interface OdooUser {
+  id: number;
+  userId: number;
+  apiToken: string;
+  user?: User;
+}
+
+export interface AggregatedAnswer {
+  type: string;
+  aggregated: any;
 }

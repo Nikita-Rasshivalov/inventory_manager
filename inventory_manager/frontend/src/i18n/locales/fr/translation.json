@@ -28,6 +28,7 @@
     "public": "Public",
     "profile_tab": "Profil",
     "salesforce_tab": "Salesforce",
+    "odoo_tab": "Odoo",
     "inventories_tab": "Inventaires",
     "user_not_found": "Utilisateur non trouvé.",
     "email_label": "Email :",

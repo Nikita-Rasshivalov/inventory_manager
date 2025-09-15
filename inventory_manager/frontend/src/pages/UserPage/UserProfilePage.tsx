@@ -10,11 +10,13 @@ import InventoryPage from "../InventoryPage/InventoryPage";
 import { Loader } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import SalesforceTab from "./SalesforceTab";
+import OdooTab from "./OdooTab";
 
 enum ProfileTabs {
   PROFILE = "profile_tab",
   INVENTORIES = "inventories_tab",
   SALESFORCE = "salesforce_tab",
+  ODOO = "odoo_tab",
 }
 const UserProfilePage = () => {
   const { t } = useTranslation();
@@ -108,6 +110,8 @@ const UserProfilePage = () => {
             currentUser?.role === SystemRole.ADMIN) && (
             <SalesforceTab user={user} />
           )}
+
+        {activeTab === ProfileTabs.ODOO && <OdooTab user={user} />}
       </div>
     </>
   );

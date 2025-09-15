@@ -84,7 +84,18 @@ export class AuthService {
   }
 
   async getUserById(id: number) {
-    return prisma.user.findUnique({ where: { id } });
+    const user = await prisma.user.findUnique({
+      where: { id },
+      include: { odooUser: true },
+    });
+
+    if (!user) return null;
+
+    const { odooUser, ...rest } = user;
+    return {
+      ...rest,
+      apiToken: odooUser?.apiToken || null,
+    };
   }
 
   async revokeRefreshToken(refreshToken: string) {

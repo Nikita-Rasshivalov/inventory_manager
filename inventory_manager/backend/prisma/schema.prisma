@@ -37,6 +37,8 @@ model User {
   likes         Like[]
   salesforceAccountId     String?         
   salesforceContactId     String?       
+  templates      Template[]
+  odooUser       OdooUser?
 }
 
 model OAuthAccount {
@@ -193,4 +195,37 @@ model InventoryTag {
   tag         Tag       @relation(fields: [tagId], references: [id])
 
   @@unique([inventoryId, tagId])
+}
+
+
+model OdooUser {
+  id       Int    @id @default(autoincrement())
+  userId   Int    @unique
+  apiToken String @unique
+
+  user User @relation(fields: [userId], references: [id])
+}
+
+model Template {
+  id        Int        @id @default(autoincrement())
+  name      String
+  authorId  Int
+  author    User       @relation(fields: [authorId], references: [id])
+  questions Question[]
+}
+
+model Question {
+  id        Int       @id @default(autoincrement())
+  text      String
+  type      String
+  template  Template  @relation(fields: [templateId], references: [id])
+  templateId Int
+  answers   Answer[]
+}
+
+model Answer {
+  id         Int      @id @default(autoincrement())
+  value      String
+  question   Question @relation(fields: [questionId], references: [id])
+  questionId Int
 }

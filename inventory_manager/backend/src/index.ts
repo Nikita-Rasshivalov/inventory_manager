@@ -1,6 +1,9 @@
 import "./config.ts";
+import { createServer } from "http";
+import { Server } from "socket.io";
 import express from "express";
 import cors from "cors";
+import registerSocketHandlers from "./sokets/index.ts";
 import authRoutes from "./routes/authRoutes.ts";
 import oauthRoutes from "./routes/oauthRoutes.ts";
 import guestRoutes from "./routes/guestRoutes.ts";
@@ -11,9 +14,10 @@ import fieldRoutes from "./routes/fieldRoutes.ts";
 import categoryRoutes from "./routes/categoriesRouter.ts";
 import tagRoutes from "./routes/tagsRouter.ts";
 import salesforceRoutes from "./routes/salesforceRoutes.ts";
-import registerSocketHandlers from "./sokets/index.ts";
-import { createServer } from "http";
-import { Server } from "socket.io";
+import questionRoutes from "./routes/Odoo/questionRoutes.ts";
+import answerRoutes from "./routes/Odoo/answerRoutes.ts";
+import templateRoutes from "./routes/Odoo/templateRoutes.ts";
+import odooRoutes from "./routes/Odoo/odooRoutes.ts";
 
 const app = express();
 const allowedOrigins = process.env.CORS_ORIGINS?.split(",") || [];
@@ -27,6 +31,12 @@ app.use(
 
 app.use(express.json());
 app.use("/api/guest", guestRoutes);
+
+app.use("/api/questions", questionRoutes);
+app.use("/api/answers", answerRoutes);
+app.use("/api/templates", templateRoutes);
+app.use("/api/odoo", odooRoutes);
+
 app.use("/api/categories", categoryRoutes);
 app.use("/api/tags", tagRoutes);
 app.use("/api/auth", authRoutes);
