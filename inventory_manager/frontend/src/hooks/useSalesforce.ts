@@ -1,6 +1,6 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { SalesforcePayload } from "../models/models";
-import { SalesforceService } from "../services/SalesforceService";
+import { SalesforceService } from "../services/salesforceService";
 
 export const useSalesforce = (
   userId: number,
